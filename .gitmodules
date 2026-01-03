@@ -1,0 +1,3 @@
+[submodule "ports"]
+	path = ports
+	url = https://github.com/lygstate/MSYS2-packages
