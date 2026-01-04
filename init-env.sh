@@ -1,3 +1,5 @@
+#  sh ./build-all.sh > build.txt 2>&1
+
 pacman -Syu --noconfirm --needed
 pacman -Syu --noconfirm --needed
 pacman -S ca-certificates --noconfirm --needed

@@ -26,9 +26,9 @@ let devel_black_list = [
   "libtool", // In bootstrap step
   "libltdl",
 
-  "doxygen", // ["doxygen","python"]
+  "doxygen", // ["python"]
 
-  "git", // ["git","libcurl-devel","rust"]
+  "git", // ["libcurl-devel","rust"]
   "mingw-w64-cross-gcc",
   "mingw-w64-cross-mingwarm64-gcc",
 
@@ -146,7 +146,7 @@ async function main() {
       dir_set.add(new_dir);
     }
   }
-  // dirs = dirs.slice(dirs.indexOf("libxcrypt"));
+  dirs = dirs.slice(dirs.indexOf("c-ares"));
   // let dir_lines = await fs.readFile("failed_dirs.txt", "utf-8");
   // dirs = dir_lines.split("\n");
   // console.log(dirs)
