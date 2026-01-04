@@ -117,19 +117,21 @@ async function main() {
   for (let item of devel_black_list) {
     deps_map_make[item] = [];
   }
+
+  // gcc libreadline-devel zlib-devel autotools libxslt docbook-xsl doxygen libiconv-devel
   deps_map_make["libxml2"] = [
     "gcc",
     "libreadline-devel",
     "zlib-devel",
     "autotools",
-    //  "docbook-xsl",
-    "doxygen",
     // 'libxslt',
+    "doxygen",
+    // "docbook-xsl",
     "libiconv-devel",
   ];
   deps_map_make["libxml2-devel"] = deps_map_make["libxml2"];
-  deps_map_make["libxcrypt-devel"] = ["gcc", "autotools"];
-  console.log("cargo-edit:" + deps_map_make["cargo-edit"]);
+  deps_map_make["libxcrypt-devel"] = ["gcc", "autotools"]; // gcc autotools perl
+  console.log('deps_map_make update finished')
 
   let packages = dump_deps(deps_map_make);
   packages = packages.filter((x) => devel_black_list.indexOf(x) < 0);
@@ -157,9 +159,13 @@ if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: ${new_dir} with retcode:$retVal "
     exit $retVal
 fi
-# find  -name "*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
-find -name "*-devel*" -or -name "*llvm*" | xargs -I ARG tar xf ARG -C /
-find  -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building ${new_dir} finished"
 popd\n`;
   }
   // console.log(dirs)
