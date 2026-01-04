@@ -7,6 +7,7 @@ update-ca-trust
 
 # updpkgsums
 # makepkg --nobuild --cleanbuild
+# makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 
 pacman -Sl msys  >msys.txt
 
