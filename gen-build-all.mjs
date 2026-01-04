@@ -25,20 +25,15 @@ let devel_black_list = [
   "cmake",
   "autotools",
 
-  "libiconv",
-  "libiconv-devel",
-  "iconv",
-
-  "libxml2",
-  "libxml2-devel",
-
-  "libxcrypt-devel", // "libxcrypt-devel","perl"
-
   "doxygen", // ["doxygen","python"]
 
   "git", // ["git","libcurl-devel","rust"]
   "mingw-w64-cross-gcc",
   "mingw-w64-cross-mingwarm64-gcc",
+
+  "libiconv",
+  "libiconv-devel",
+  "iconv",
 ];
 
 function dump_deps(deps_map) {
@@ -46,6 +41,7 @@ function dump_deps(deps_map) {
   let keys_count = -1;
 
   // gettext-devel
+  let packages = [];
 
   for (;;) {
     let keys = Object.keys(deps_map);
@@ -57,8 +53,8 @@ function dump_deps(deps_map) {
       break;
     }
     for (let key of keys) {
-      if (deps_map[key].length == 1) {
-        console.log(key);
+      if (deps_map[key].length == 0) {
+        packages.push(key);
         delete deps_map[key];
       }
     }
@@ -78,8 +74,9 @@ function dump_deps(deps_map) {
   let final_keys = Object.keys(deps_map);
   console.log(`Circular map ${final_keys.length}`);
   for (let key of final_keys) {
-    console.log(JSON.stringify(deps_map[key]));
+    console.log(`${key}: ${JSON.stringify(deps_map[key])}`);
   }
+  return packages;
 }
 
 async function main() {
@@ -87,27 +84,59 @@ async function main() {
   const deps_json = JSON.parse(await fs.readFile(deps_json_filepath, "utf-8"));
   // dump_deps(deps_json.deps_map);
   const deps_map_make = {};
+  const dir_for_package = {};
   for (let pkg of deps_json.pkg_info) {
     for (let pkgname of pkg.pkgname.split(" ")) {
       if (pkg.makedepends.length > 0) {
-        let items = pkg.makedepends.split(" ")
-        deps_map_make[pkgname] = [].concat(
-          [pkgname],
-          items.filter((item)=>{
-            return item != pkgname
-          })
-        );
+        let items = pkg.makedepends.split(" ");
+        deps_map_make[pkgname] = items.filter((item) => {
+          return item != pkgname;
+        });
       } else {
-        deps_map_make[pkgname] = [pkgname];
+        deps_map_make[pkgname] = deps_json.deps_map[pkgname];
       }
-      console.log(deps_map_make[pkgname]);
+      dir_for_package[pkgname] = pkg.dir;
+      // console.log(deps_map_make[pkgname]);
     }
   }
 
   for (let item of devel_black_list) {
-    deps_map_make[item] = [item];
+    deps_map_make[item] = [];
   }
-  dump_deps(deps_map_make);
+  deps_map_make["libxml2"] = [
+    "gcc",
+    "libreadline-devel",
+    "zlib-devel",
+    "autotools",
+    //  "docbook-xsl",
+    "doxygen",
+    // 'libxslt',
+    "libiconv-devel",
+  ];
+  deps_map_make["libxml2-devel"] = deps_map_make["libxml2"];
+  deps_map_make["libxcrypt-devel"] = ["gcc", "autotools"];
+  console.log("cargo-edit:" + deps_map_make["cargo-edit"]);
+
+  let packages = dump_deps(deps_map_make);
+  packages = packages.filter((x) => devel_black_list.indexOf(x) < 0);
+  // console.log(JSON.stringify(packages))
+  let dirs = [];
+  let dir_set = new Set();
+  let script = "";
+  for (let pkg of packages) {
+    let new_dir = dir_for_package[pkg];
+    if (!dir_set.has(new_dir)) {
+      dirs.push(new_dir);
+      dir_set.add(new_dir);
+      script += `pushd ./ports/${new_dir}
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+find  -name "*.pkg.tar.zst"  | xargs -I ARG tar xf ARG -C /
+mv -f *.pkg.tar.zst ../../dist/
+popd\n`;
+    }
+  }
+  // console.log(dirs)
+  await fs.writeFile("build-all.sh", script);
 }
 
 main();

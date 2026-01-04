@@ -23,6 +23,7 @@ async function main() {
     if (!fsSync.existsSync(fullUrl)) {
       console.log(`Invalid ${fullUrl}`);
     }
+    if (pkg_name.startsWith(".")) continue;
     script += `pkgrel=\n`;
     script += `pkgver=\n`;
     script += `pkgname=()\n`;
@@ -58,7 +59,7 @@ async function main() {
       [pkg_name, "-u", "-d", "1"]
     );
     console.log(`Deps for ${pkg_name} is :[\n${deps.stdout}\n]`);
-    deps_map[pkg_name] = deps.stdout.trim().split("\n");
+    deps_map[pkg_name] = deps.stdout.trim().split("\n").slice(1);
   }
   await fs.writeFile(
     "deps.json",
