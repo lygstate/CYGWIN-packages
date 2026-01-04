@@ -19,3 +19,18 @@ tar xf ../../dist/msys2-runtime-devel-3.6.5.1-1-x86_64.pkg.tar.zst  -C /
 tar xf ../../dist/msys2-runtime-3.6.5.1-1-x86_64.pkg.tar.zst  -C /
 
 popd
+
+pushd ./ports/libtool
+gpg --recv-keys 6570EA01146F7354
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+mv -f *.pkg.tar.zst ../../dist/
+popd
+tar xf ./dist/libtool-2.5.4-5-x86_64.pkg.tar.zst -C /
+
+pushd ./ports/libiconv
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+mv -f *.pkg.tar.zst ../../dist/
+popd
+
+tar xf ./dist/libiconv-devel-1.18-2-x86_64.pkg.tar.zst -C /
+tar xf ./dist/libiconv-1.18-2-x86_64.pkg.tar.zst -C /
