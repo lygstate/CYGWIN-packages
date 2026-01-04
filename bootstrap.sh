@@ -1,7 +1,6 @@
 mkdir -p dist
-pacman -Syu base-devel --noconfirm
-pacman -U ./dist-init/msys2-runtime-3.6.5-1-x86_64.pkg.tar.zst --noconfirm
-pacman -U ./dist-init/msys2-runtime-devel-3.6.5-1-x86_64.pkg.tar.zst --noconfirm
+pacman -U --overwrite \* ./dist-init/msys2-runtime-3.6.5-1-x86_64.pkg.tar.zst --noconfirm
+pacman -U --overwrite \* ./dist-init/msys2-runtime-devel-3.6.5-1-x86_64.pkg.tar.zst --noconfirm
 pacman -U --overwrite \* ./dist-init/gcc-libs-15.2.0-1-x86_64.pkg.tar.zst --noconfirm
 pacman -U --overwrite \* ./dist-init/gcc-15.2.0-1-x86_64.pkg.tar.zst --noconfirm
 rm -rf /usr/bin/cygwin1.dll
