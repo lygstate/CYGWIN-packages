@@ -25,6 +25,9 @@ let devel_black_list = [
   "cmake",
   "autotools",
 
+  "libtool", // In bootstrap step
+  "libltdl",
+
   "doxygen", // ["doxygen","python"]
 
   "git", // ["git","libcurl-devel","rust"]
