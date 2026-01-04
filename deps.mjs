@@ -22,7 +22,9 @@ async function main() {
     const fullUrl = path.join(portsDir, pkg_name, "PKGBUILD");
     if (!fsSync.existsSync(fullUrl)) {
       console.log(`Invalid ${fullUrl}`);
+      continue
     }
+    // if (pkg_name.startsWith(".")) continue;
     script += `pkgrel=\n`;
     script += `pkgver=\n`;
     script += `pkgname=()\n`;
@@ -47,9 +49,11 @@ async function main() {
   const packages = await fs.readFile(msys_packages, "utf-8");
 
   const deps_map = {};
-  for (let pkg of packages.trim().split("\n")) {
-    const pkg_name = pkg.split(" ")[1];
+  for (let pkg_name of packages.trim().split("\n")) {
     if (black_list.has(pkg_name)) continue;
+    if (pkg_name == undefined) {
+      continue
+    }
     if (need_exit) {
       break;
     }
@@ -58,7 +62,7 @@ async function main() {
       [pkg_name, "-u", "-d", "1"]
     );
     console.log(`Deps for ${pkg_name} is :[\n${deps.stdout}\n]`);
-    deps_map[pkg_name] = deps.stdout.trim().split("\n");
+    deps_map[pkg_name] = deps.stdout.trim().split("\n").slice(1);
   }
   await fs.writeFile(
     "deps.json",
