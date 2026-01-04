@@ -1,9 +1,7 @@
 import * as fs from "fs/promises";
-import * as fsSync from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
 import process from "node:process";
-import { black_list, spawnProcessAsyncCapture } from "./utils.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -144,12 +142,25 @@ async function main() {
     if (!dir_set.has(new_dir)) {
       dirs.push(new_dir);
       dir_set.add(new_dir);
-      script += `pushd ./ports/${new_dir}
-makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
-find  -name "*.pkg.tar.zst"  | xargs -I ARG tar xf ARG -C /
-mv -f *.pkg.tar.zst ../../dist/
-popd\n`;
     }
+  }
+  // dirs = dirs.slice(dirs.indexOf("libxcrypt"));
+  // let dir_lines = await fs.readFile("failed_dirs.txt", "utf-8");
+  // dirs = dir_lines.split("\n");
+  // console.log(dirs)
+  for (let new_dir of dirs) {
+    script += `pushd ./ports/${new_dir}
+# makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: ${new_dir} with retcode:$retVal "
+    exit $retVal
+fi
+# find  -name "*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*-devel*" -or -name "*llvm*" | xargs -I ARG tar xf ARG -C /
+find  -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+popd\n`;
   }
   // console.log(dirs)
   await fs.writeFile("build-all.sh", script);

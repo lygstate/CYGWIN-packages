@@ -13,7 +13,6 @@ popd
 
 # Building/install binutils and gcc first
 pushd ./ports/binutils
-gpg --recv-keys 738409F520DF9190
 makepkg --cleanbuild --syncdeps --force --noconfirm
 mv -f binutils-2.45.1-2-x86_64.pkg.tar.zst ../../dist/binutils-2.45.1-2-x86_64-stage0.pkg.tar.zst
 popd

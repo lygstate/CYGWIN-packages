@@ -21,7 +21,6 @@ tar xf ../../dist/msys2-runtime-3.6.5.1-1-x86_64.pkg.tar.zst  -C /
 popd
 
 pushd ./ports/libtool
-gpg --recv-keys 6570EA01146F7354
 makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 mv -f *.pkg.tar.zst ../../dist/
 popd
