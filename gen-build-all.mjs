@@ -31,6 +31,19 @@ let devel_black_list = [
   "mingw-w64-cross-gcc",
   "mingw-w64-cross-mingwarm64-gcc",
 
+  "cmake-bootstrap",
+  "mingw-w64-cross-clang", // mingw-w64-cross-clang: /opt/i686-w64-mingw32/bin/ar exists in filesystem
+  "mingw-w64-cross-clang-crt",
+  "mingw-w64-cross-clang-headers",
+  "msys2-runtime-3.3",
+  "msys2-runtime-3.3-devel",
+  "msys2-runtime-3.4",
+  "msys2-runtime-3.4-devel",
+  "msys2-runtime-3.5",
+  "msys2-runtime-3.5-devel",
+  "parallel", // parallel: /usr/bin/parallel exists in filesystem /usr/bin/parallel.exe is owned by moreutils 0.70-1
+  "gnu-netcat", // gnu-netcat-0.7.1-3 and openbsd-netcat-1.234_1-1 are in conflict. Remove openbsd-netcat? [Y/n] "
+
   "libiconv",
   "libiconv-devel",
   "iconv",
