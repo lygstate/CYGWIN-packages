@@ -150,8 +150,8 @@ async function main() {
   // console.log(dirs)
   for (let new_dir of dirs) {
     script += `pushd ./ports/${new_dir}
-# makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
-makepkg --nobuild --cleanbuild
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: ${new_dir} with retcode:$retVal "
