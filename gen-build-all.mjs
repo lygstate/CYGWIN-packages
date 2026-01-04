@@ -146,7 +146,7 @@ async function main() {
       dir_set.add(new_dir);
     }
   }
-  dirs = dirs.slice(dirs.indexOf("c-ares"));
+  dirs = dirs.slice(dirs.indexOf("db"));
   // let dir_lines = await fs.readFile("failed_dirs.txt", "utf-8");
   // dirs = dir_lines.split("\n");
   // console.log(dirs)

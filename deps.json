@@ -481,7 +481,7 @@
       "pkgbase": ""
     },
     {
-      "makedepends": "autotools gcc git libiconv-devel",
+      "makedepends": "autotools gcc git libiconv-devel jansson-devel pcre2-devel libxml2-devel libyaml-devel",
       "pkgrel": "2",
       "pkgver": "6.2.1",
       "dir": "ctags",
