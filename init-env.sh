@@ -6,6 +6,8 @@ pacman -S ca-certificates --noconfirm --needed
 update-ca-trust
 
 # updpkgsums
+# Do not extract source
+# makepkg  -e -f
 # makepkg --nobuild --cleanbuild
 # makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 
