@@ -30,5 +30,5 @@ popd
 pacman -U --overwrite \* ./dist/binutils-2.45.1-2-x86_64-stage0.pkg.tar.zst --noconfirm
 
 sh bootstrap-msys2-runtime.sh
-sh bootstrap-msys2-extras.sh
+sh bootstrap-extras.sh
 sh bootstrap-gcc.sh
