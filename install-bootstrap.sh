@@ -6,9 +6,8 @@
 rm -rf tmp
 mkdir -p tmp
 
-tar xf ./dist/msys2-runtime-devel-3.6.5.5-1-x86_64.pkg.tar.zst -C ./tmp
-tar xf ./dist/msys2-runtime-3.6.5.5-1-x86_64.pkg.tar.zst -C ./tmp
-rm -rf /usr/lib/*.origin
+tar xf ./dist/msys2-runtime-devel-3.6.5.6-1-x86_64.pkg.tar.zst -C ./tmp
+tar xf ./dist/msys2-runtime-3.6.5.6-1-x86_64.pkg.tar.zst -C ./tmp
 
 tar xf ./dist/libiconv-devel-1.18-2-x86_64.pkg.tar.zst -C ./tmp
 tar xf ./dist/libiconv-1.18-2-x86_64.pkg.tar.zst -C ./tmp
@@ -33,6 +32,9 @@ tar xf ./dist/isl-devel-0.27-2-x86_64.pkg.tar.zst -C ./tmp
 
 tar xf ./dist/gmp-6.3.0-3-x86_64.pkg.tar.zst -C ./tmp
 tar xf ./dist/gmp-devel-6.3.0-3-x86_64.pkg.tar.zst -C ./tmp
+
+tar xf ./dist/bash-5.3.009-2-x86_64.pkg.tar.zst -C ./tmp
+
 # rm -rf ./tmp/usr/lib/
 cp -arf ./tmp/usr/ /
 echo "All installed"
