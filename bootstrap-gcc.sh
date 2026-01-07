@@ -2,7 +2,6 @@ rm -rf ./dist/gcc-libs-15.2.0-2-x86_64-stage0.pkg.tar.zst
 rm -rf ./dist/gcc-15.2.0-2-x86_64-stage0.pkg.tar.zst
 
 pushd dist-init
-# find -name "*.pkg.tar.zst" | xargs -I ARG pacman -U --overwrite \* ARG  --noconfirm
 popd
 
 pushd ./ports/gcc
