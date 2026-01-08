@@ -146,7 +146,7 @@ async function main() {
       dir_set.add(new_dir);
     }
   }
-  dirs = dirs.slice(dirs.indexOf("fcode-utils"));
+  dirs = dirs.slice(dirs.indexOf("brotli"));
   // let dir_lines = await fs.readFile("failed_dirs.txt", "utf-8");
   // dirs = dir_lines.split("\n");
   // console.log(dirs)
@@ -157,7 +157,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: ${new_dir} with retcode:$retVal "
-#    exit $retVal
+    exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
