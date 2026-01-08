@@ -77,12 +77,11 @@ tar xf ./dist/libzstd-1.5.7-2-x86_64.pkg.tar.zst -C /
 tar xf ./dist/libzstd-devel-1.5.7-2-x86_64.pkg.tar.zst -C /
 tar xf ./dist/zstd-1.5.7-2-x86_64.pkg.tar.zst -C /
 
-pushd ./ports/readline
+pushd ./ports/ncurses
 # updpkgsums
 makepkg --cleanbuild --syncdeps --force --noconfirm
 find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
 popd
-
 
 pushd ./ports/readline
 # updpkgsums
