@@ -24,8 +24,8 @@ tar xf ./dist/msys2-runtime-devel-3.6.5-5-x86_64.pkg.tar.zst -C /
 
 sh bootstrap-extras-extract.sh
 
-sh bootstrap-bash.sh
+# sh bootstrap-bash.sh
 
 # tar xf ./dist/bash-5.3.009-2-x86_64.pkg.tar.zst -C /
 
-# sh bootstrap-gcc.sh
+# sh bootstrap-gcc-stage1.sh
