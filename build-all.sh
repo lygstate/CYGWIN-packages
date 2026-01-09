@@ -1,19 +1,3 @@
-pushd ./ports/groff
-makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
-# makepkg --nobuild --cleanbuild
-retVal=$?
-if [ $retVal -ne 0 ]; then
-    echo "Error for pkgbase: groff with retcode:$retVal "
-    exit $retVal
-fi
-echo "All packages:"
-find -name "*.pkg.tar.zst"
-echo "Packages to install:"
-find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
-find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
-find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
-echo "Building groff finished"
-popd
 pushd ./ports/gzip
 makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 # makepkg --nobuild --cleanbuild
