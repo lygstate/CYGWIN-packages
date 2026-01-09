@@ -1,18 +1,9 @@
-# Install cmake and libtool
-pacman -U --overwrite \* ./dist-init/libltdl-2.5.4-5-x86_64.pkg.tar.zst --noconfirm
-pacman -U --overwrite \* ./dist-init/libtool-2.5.4-5-x86_64.pkg.tar.zst --noconfirm
-pacman -U --overwrite \* ./dist-init/cmake-4.2.1-2-x86_64.pkg.tar.zst --noconfirm
-pacman -U --overwrite \* ./dist-init/msys2-runtime-devel-3.6.5-3-x86_64.pkg.tar.zst --noconfirm
-pacman -U --overwrite \* ./dist-init/msys2-runtime-3.6.5-3-x86_64.pkg.tar.zst --noconfirm
-
-# Install binutils
-pacman -U --overwrite \* ./dist-init/binutils-2.45.1-2-x86_64-stage0.pkg.tar.zst --noconfirm
-
+sh bootstrap-init.sh
 
 rm -rf ./tmp
 mkdir -p ./tmp
 
-tar xf ./dist-init/gcc-15.2.0-2-x86_64-stage0.pkg.tar.zst -C /
+# tar xf ./dist-init/gcc-15.2.0-2-x86_64-stage0.pkg.tar.zst -C /
 
 tar xf ./dist-init/filesystem-2025.05.08-2-x86_64.pkg.tar.zst -C ./tmp
 tar xf ./dist/msys2-runtime-3.6.5-5-x86_64.pkg.tar.zst -C ./tmp
@@ -54,6 +45,7 @@ tar xf ./dist/gawk-5.3.2-2-x86_64.pkg.tar.zst -C ./tmp
 tar xf ./dist/bash-devel-5.3.009-2-x86_64.pkg.tar.zst -C ./tmp
 tar xf ./dist/bash-5.3.009-2-x86_64.pkg.tar.zst -C ./tmp
 
+rm -rf ./dist-tmp
 cp -rf ./tmp ./dist-tmp
 
 cp -arf ./tmp/usr/bin/*.dll /usr/bin/
