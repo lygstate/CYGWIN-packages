@@ -17,6 +17,9 @@ pacman -U --noconfirm --overwrite \* ./dist-init/gmp-devel-6.3.0-2-x86_64.pkg.ta
 pacman -U --noconfirm --overwrite \* ./dist-init/isl-devel-0.27-1-x86_64.pkg.tar.zst
 pacman -U --noconfirm --overwrite \* ./dist-init/libiconv-devel-1.18-1-x86_64.pkg.tar.zst
 pacman -U --noconfirm --overwrite \* ./dist-init/libzstd-devel-1.5.7-1-x86_64.pkg.tar.zst
+pacman -U --noconfirm --overwrite \* ./dist-init/zstd-1.5.7-1-x86_64.pkg.tar.zst
 pacman -U --noconfirm --overwrite \* ./dist-init/mpc-devel-1.3.1-1-x86_64.pkg.tar.zst
 pacman -U --noconfirm --overwrite \* ./dist-init/mpfr-devel-4.2.2-1-x86_64.pkg.tar.zst
 pacman -U --noconfirm --overwrite \* ./dist-init/zlib-devel-1.3.1-1-x86_64.pkg.tar.zst
+
+pacman -U --noconfirm --overwrite \* ./dist-init/gawk-5.3.2-1-x86_64.pkg.tar.zst

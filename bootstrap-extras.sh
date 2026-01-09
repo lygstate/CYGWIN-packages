@@ -75,25 +75,27 @@ find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
 popd
 tar xf ./dist/libzstd-1.5.7-2-x86_64.pkg.tar.zst -C /
 tar xf ./dist/libzstd-devel-1.5.7-2-x86_64.pkg.tar.zst -C /
-tar xf ./dist/zstd-1.5.7-2-x86_64.pkg.tar.zst -C /
+# tar xf ./dist/zstd-1.5.7-2-x86_64.pkg.tar.zst -C /
 
 pushd ./ports/ncurses
 # updpkgsums
 makepkg --cleanbuild --syncdeps --force --noconfirm
 find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
 popd
+tar xf ./dist/ncurses-devel-6.6-2-x86_64.pkg.tar.zst -C /
+# tar xf ./dist/ncurses-6.6-2-x86_64.pkg.tar.zst -C /
 
 pushd ./ports/readline
 # updpkgsums
 makepkg --cleanbuild --syncdeps --force --noconfirm
 find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
 popd
-
 tar xf ./dist/libreadline-devel-8.3.003-2-x86_64.pkg.tar.zst -C /
-tar xf ./dist/libreadline-8.3.003-2-x86_64.pkg.tar.zst -C /
+# tar xf ./dist/libreadline-8.3.003-2-x86_64.pkg.tar.zst -C /
 
 pushd ./ports/gawk
 # updpkgsums
 makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
 popd
+# tar xf ./dist/gawk-5.3.2-2-x86_64.pkg.tar.zst -C /

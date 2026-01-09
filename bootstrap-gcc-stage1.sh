@@ -1,5 +1,6 @@
 rm -rf ./dist/gcc-libs-15.2.0-2-x86_64-stage1.pkg.tar.zst
 rm -rf ./dist/gcc-15.2.0-2-x86_64-stage1.pkg.tar.zst
+rm -rf ./ports/gcc/base/*.pkg.tar.zst
 
 pushd ./ports/gcc
 # updpkgsums

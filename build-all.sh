@@ -1,3 +1,707 @@
+pushd ./ports/filesystem
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: filesystem with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building filesystem finished"
+popd
+pushd ./ports/gradle
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: gradle with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building gradle finished"
+popd
+pushd ./ports/localepurge
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: localepurge with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building localepurge finished"
+popd
+pushd ./ports/msys2-keyring
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: msys2-keyring with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building msys2-keyring finished"
+popd
+pushd ./ports/pacman-mirrors
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: pacman-mirrors with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building pacman-mirrors finished"
+popd
+pushd ./ports/perl-Term-Table
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: perl-Term-Table with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building perl-Term-Table finished"
+popd
+pushd ./ports/aspell-de
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: aspell-de with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building aspell-de finished"
+popd
+pushd ./ports/atool
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: atool with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building atool finished"
+popd
+pushd ./ports/autoconf-archive
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: autoconf-archive with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building autoconf-archive finished"
+popd
+pushd ./ports/autoconf2.13
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: autoconf2.13 with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building autoconf2.13 finished"
+popd
+pushd ./ports/autoconf2.69
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: autoconf2.69 with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building autoconf2.69 finished"
+popd
+pushd ./ports/autoconf2.71
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: autoconf2.71 with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building autoconf2.71 finished"
+popd
+pushd ./ports/autoconf2.72
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: autoconf2.72 with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building autoconf2.72 finished"
+popd
+pushd ./ports/automake1.11
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: automake1.11 with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building automake1.11 finished"
+popd
+pushd ./ports/automake1.12
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: automake1.12 with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building automake1.12 finished"
+popd
+pushd ./ports/automake1.13
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: automake1.13 with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building automake1.13 finished"
+popd
+pushd ./ports/automake1.14
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: automake1.14 with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building automake1.14 finished"
+popd
+pushd ./ports/automake1.15
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: automake1.15 with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building automake1.15 finished"
+popd
+pushd ./ports/automake1.16
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: automake1.16 with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building automake1.16 finished"
+popd
+pushd ./ports/autotools-wrappers
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: autotools-wrappers with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building autotools-wrappers finished"
+popd
+pushd ./ports/bash-completion
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: bash-completion with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building bash-completion finished"
+popd
+pushd ./ports/brotli
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: brotli with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building brotli finished"
+popd
+pushd ./ports/btyacc
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: btyacc with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building btyacc finished"
+popd
+pushd ./ports/c-ares
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: c-ares with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building c-ares finished"
+popd
+pushd ./ports/colormake
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: colormake with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building colormake finished"
+popd
+pushd ./ports/cygnative
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: cygnative with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building cygnative finished"
+popd
+pushd ./ports/cygrunsrv
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: cygrunsrv with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building cygrunsrv finished"
+popd
+pushd ./ports/dash
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: dash with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building dash finished"
+popd
+pushd ./ports/db
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: db with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building db finished"
+popd
+pushd ./ports/dejagnu
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: dejagnu with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building dejagnu finished"
+popd
+pushd ./ports/diffstat
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: diffstat with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building diffstat finished"
+popd
+pushd ./ports/doctest
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: doctest with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building doctest finished"
+popd
+pushd ./ports/docx2txt
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: docx2txt with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building docx2txt finished"
+popd
+pushd ./ports/dosfstools
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: dosfstools with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building dosfstools finished"
+popd
+pushd ./ports/ed
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: ed with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building ed finished"
+popd
+pushd ./ports/expat
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: expat with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building expat finished"
+popd
+pushd ./ports/fcode-utils
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: fcode-utils with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building fcode-utils finished"
+popd
+pushd ./ports/flexcpp
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: flexcpp with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building flexcpp finished"
+popd
+pushd ./ports/fmt
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: fmt with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building fmt finished"
+popd
+pushd ./ports/fzy
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: fzy with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building fzy finished"
+popd
+pushd ./ports/gc
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: gc with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building gc finished"
+popd
+pushd ./ports/genromfs
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: genromfs with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building genromfs finished"
+popd
+pushd ./ports/git-extras
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: git-extras with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building git-extras finished"
+popd
+pushd ./ports/gmp
+makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
+# makepkg --nobuild --cleanbuild
+retVal=$?
+if [ $retVal -ne 0 ]; then
+    echo "Error for pkgbase: gmp with retcode:$retVal "
+    exit $retVal
+fi
+echo "All packages:"
+find -name "*.pkg.tar.zst"
+echo "Packages to install:"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
+find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
+find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
+echo "Building gmp finished"
+popd
 pushd ./ports/groff
 makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 # makepkg --nobuild --cleanbuild
