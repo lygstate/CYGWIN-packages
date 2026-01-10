@@ -146,7 +146,7 @@ async function main() {
       dir_set.add(new_dir);
     }
   }
-  dirs = dirs.slice(dirs.indexOf("m4")); // depends on C++
+  dirs = dirs.slice(dirs.indexOf("pax")); // depends on C++
   // let dir_lines = await fs.readFile("failed_dirs.txt", "utf-8");
   // dirs = dir_lines.split("\n");
   // console.log(dirs)
