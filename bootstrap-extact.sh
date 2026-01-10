@@ -58,6 +58,8 @@ cp -arf ./tmp/usr/ /
 rm -rf ./tmp
 echo "All installed"
 
-tar xf ./dist-init/gcc-15.2.0-2-x86_64-stage0.pkg.tar.zst -C /
-tar xf ./dist-init/binutils-2.45.1-2-x86_64-stage0.pkg.tar.zst -C /
+# tar xf ./dist-init/gcc-15.2.0-2-x86_64-stage0.pkg.tar.zst -C /
+# tar xf ./dist-init/binutils-2.45.1-2-x86_64-stage0.pkg.tar.zst -C /
+
 tar xf ./dist/binutils-2.45.1-2-x86_64-stage1.pkg.tar.zst -C /
+tar xf ./dist/gcc-15.2.0-2-x86_64-stage1.pkg.tar.zst -C /
