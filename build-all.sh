@@ -1,90 +1,10 @@
-pushd ./ports/apr
-makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
-# makepkg --nobuild --cleanbuild
-retVal=$?
-if [ $retVal -ne 0 ]; then
-    echo "Error for pkgbase: apr with retcode:$retVal "
-    exit $retVal
-fi
-echo "All packages:"
-find -name "*.pkg.tar.zst"
-echo "Packages to install:"
-find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
-find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
-find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
-echo "Building apr finished"
-popd
-pushd ./ports/bisoncpp
-makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
-# makepkg --nobuild --cleanbuild
-retVal=$?
-if [ $retVal -ne 0 ]; then
-    echo "Error for pkgbase: bisoncpp with retcode:$retVal "
-    exit $retVal
-fi
-echo "All packages:"
-find -name "*.pkg.tar.zst"
-echo "Packages to install:"
-find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
-find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
-find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
-echo "Building bisoncpp finished"
-popd
-pushd ./ports/busybox
-makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
-# makepkg --nobuild --cleanbuild
-retVal=$?
-if [ $retVal -ne 0 ]; then
-    echo "Error for pkgbase: busybox with retcode:$retVal "
-    exit $retVal
-fi
-echo "All packages:"
-find -name "*.pkg.tar.zst"
-echo "Packages to install:"
-find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
-find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
-find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
-echo "Building busybox finished"
-popd
-pushd ./ports/cmatrix
-makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
-# makepkg --nobuild --cleanbuild
-retVal=$?
-if [ $retVal -ne 0 ]; then
-    echo "Error for pkgbase: cmatrix with retcode:$retVal "
-    exit $retVal
-fi
-echo "All packages:"
-find -name "*.pkg.tar.zst"
-echo "Packages to install:"
-find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
-find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
-find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
-echo "Building cmatrix finished"
-popd
-pushd ./ports/cocom
-makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
-# makepkg --nobuild --cleanbuild
-retVal=$?
-if [ $retVal -ne 0 ]; then
-    echo "Error for pkgbase: cocom with retcode:$retVal "
-    exit $retVal
-fi
-echo "All packages:"
-find -name "*.pkg.tar.zst"
-echo "Packages to install:"
-find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst"
-find -name "*-devel*.pkg.tar.zst" -or -name "*llvm*.pkg.tar.zst" | xargs -I ARG tar xf ARG -C /
-find -name "*.pkg.tar.zst" | xargs -I ARG mv -f ARG ../../dist/
-echo "Building cocom finished"
-popd
 pushd ./ports/cscope
 makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 # makepkg --nobuild --cleanbuild
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: cscope with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -100,7 +20,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: docbook-sgml with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -116,7 +36,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: docbook-sgml31 with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -132,7 +52,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: expect with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -148,7 +68,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: getent with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -164,7 +84,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: gettext with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -180,7 +100,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: hexcurse with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -196,7 +116,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: icu with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -212,7 +132,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: isl with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -228,7 +148,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: joe with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -244,7 +164,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: libedit with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -260,7 +180,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: mpfr with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -276,7 +196,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: ncdu with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -292,7 +212,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: nettle with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -308,7 +228,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: pass with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -324,7 +244,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: patch with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -340,7 +260,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Font-TTF with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -356,7 +276,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-http-cookiejar with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -372,7 +292,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Module-Build with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -388,7 +308,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: protobuf with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -404,7 +324,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: rcs with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -420,7 +340,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: readline with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -436,7 +356,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: tcsh with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -452,7 +372,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: upx with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -468,7 +388,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: vifm with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -484,7 +404,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: aspell with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -500,7 +420,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: bash with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -516,7 +436,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: bc with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -532,7 +452,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: bzip2 with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -548,7 +468,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: cpio with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -564,7 +484,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: dialog with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -580,7 +500,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: diffutils with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -596,7 +516,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: enscript with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -612,7 +532,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: findutils with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -628,7 +548,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: flex with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -644,7 +564,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: gawk with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -660,7 +580,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: gdbm with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -676,7 +596,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: gnulib-l10n with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -692,7 +612,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: help2man with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -708,7 +628,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: idutils with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -724,7 +644,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: libgpg-error with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -740,7 +660,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: libtre with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -756,7 +676,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: libxml2 with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -772,7 +692,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: luit with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -788,7 +708,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: lzo2 with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -804,7 +724,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: mingw-w64-cross-binutils with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -820,7 +740,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: mingw-w64-cross-mingwarm64-binutils with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -836,7 +756,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: mpc with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -852,7 +772,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: nano with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -868,7 +788,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Module-Runtime with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -884,7 +804,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-TAP-Harness-Archive with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -900,7 +820,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: popt with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -916,7 +836,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: procps-ng with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -932,7 +852,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: psmisc with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -948,7 +868,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: pv with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -964,7 +884,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: rlwrap with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -980,7 +900,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: rpcsvc-proto with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -996,7 +916,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: sed with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1012,7 +932,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: sharutils with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1028,7 +948,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: sqlite with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1044,7 +964,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: tar with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1060,7 +980,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: tftp-hpa with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1076,7 +996,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: txt2html with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1092,7 +1012,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: apr-util with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1108,7 +1028,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: aspell-en with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1124,7 +1044,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: bison with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1140,7 +1060,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: cflow with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1156,7 +1076,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: cgdb with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1172,7 +1092,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: coreutils with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1188,7 +1108,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: cygutils with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1204,7 +1124,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: docbook-mathml with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1220,7 +1140,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: docbook-xml with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1236,7 +1156,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: etc-update with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1252,7 +1172,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: inetutils with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1268,7 +1188,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: libassuan with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1284,7 +1204,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: libgcrypt with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1300,7 +1220,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: libksba with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1316,7 +1236,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: lzop with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1332,7 +1252,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: mingw-w64-cross-crt with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1348,7 +1268,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: mingw-w64-cross-mingwarm64-crt with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1364,7 +1284,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: mingw-w64-cross-mingwarm64-tools with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1380,7 +1300,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: mingw-w64-cross-mingwarm64-windows-default-manifest with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1396,7 +1316,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: mingw-w64-cross-tools with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1412,7 +1332,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: mingw-w64-cross-windows-default-manifest with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1428,7 +1348,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: nano-syntax-highlighting with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1444,7 +1364,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: pcre with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1460,7 +1380,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: pcre2 with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1476,7 +1396,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1492,7 +1412,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: screenfetch with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1508,7 +1428,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: shellspec with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1524,7 +1444,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: unzip with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1540,7 +1460,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: xorriso with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1556,7 +1476,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: cdecl with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1572,7 +1492,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: ctags with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1588,7 +1508,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: docbook-dsssl with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1604,7 +1524,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: dos2unix with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1620,7 +1540,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: gengetopt with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1636,7 +1556,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: gpgme with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1652,7 +1572,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: intltool with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1668,7 +1588,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: less with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1684,7 +1604,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: libxslt with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1700,7 +1620,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: markdown with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1716,7 +1636,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: mingw-w64-cross-mingwarm64-winpthreads with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1732,7 +1652,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: mingw-w64-cross-mingwarm64-winstorecompat with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1748,7 +1668,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: mingw-w64-cross-winpthreads with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1764,7 +1684,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: mingw-w64-cross-winstorecompat with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1780,7 +1700,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: nawk with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1796,7 +1716,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Algorithm-Diff with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1812,7 +1732,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Archive-Zip with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1828,7 +1748,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Authen-SASL with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1844,7 +1764,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Benchmark-Timer with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1860,7 +1780,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Capture-Tiny with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1876,7 +1796,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Carp-Clan with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1892,7 +1812,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Clone with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1908,7 +1828,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-common-sense with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1924,7 +1844,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Compress-Bzip2 with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1940,7 +1860,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Convert-BinHex with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1956,7 +1876,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Data-Munge with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1972,7 +1892,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Date-Calc with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -1988,7 +1908,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-DBI with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2004,7 +1924,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Encode-compat with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2020,7 +1940,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Error with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2036,7 +1956,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Exporter-Lite with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2052,7 +1972,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Exporter-Tiny with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2068,7 +1988,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-ExtUtils-Config with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2084,7 +2004,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-ExtUtils-Depends with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2100,7 +2020,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-ExtUtils-Helpers with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2116,7 +2036,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-ExtUtils-MakeMaker with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2132,7 +2052,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-FFI-CheckLib with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2148,7 +2068,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-File-chdir with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2164,7 +2084,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-File-Copy-Recursive with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2180,7 +2100,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-File-Next with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2196,7 +2116,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-File-Which with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2212,7 +2132,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Getopt-ArgvFile with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2228,7 +2148,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Getopt-Tabular with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2244,7 +2164,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-HTML-Parser with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2260,7 +2180,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Importer with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2276,7 +2196,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-IO-HTML with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2292,7 +2212,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-IO-Stringy with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2308,7 +2228,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-IPC-Run3 with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2324,7 +2244,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-List-MoreUtils with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2340,7 +2260,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-List-MoreUtils-XS with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2356,7 +2276,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Locale-Gettext with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2372,7 +2292,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-LWP-MediaTypes with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2388,7 +2308,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Math-Int64 with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2404,7 +2324,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-MIME-Charset with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2420,7 +2340,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Module-Pluggable with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2436,7 +2356,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Params-Util with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2452,7 +2372,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Path-Class with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2468,7 +2388,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-PerlIO-gzip with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2484,7 +2404,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Pod-Parser with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2500,7 +2420,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Probe-Perl with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2516,7 +2436,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Regexp-Common with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2532,7 +2452,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Role-Tiny with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2548,7 +2468,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Scope-Guard with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2564,7 +2484,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-sgmls with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2580,7 +2500,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Socket6 with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2596,7 +2516,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Sort-Versions with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2612,7 +2532,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Spiffy with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2628,7 +2548,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Sub-Exporter-Progressive with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2644,7 +2564,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Sub-Install with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2660,7 +2580,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-TermReadKey with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2676,7 +2596,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Test-Needs with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2692,7 +2612,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Test-NoWarnings with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2708,7 +2628,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Test-Pod with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2724,7 +2644,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Test-Requires with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2740,7 +2660,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Test-Requiresinternet with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2756,7 +2676,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Test-Warnings with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2772,7 +2692,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Text-CharWidth with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2788,7 +2708,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-TimeDate with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2804,7 +2724,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Try-Tiny with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2820,7 +2740,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Unicode-LineBreak with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2836,7 +2756,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-WWW-RobotRules with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2852,7 +2772,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-XML-LibXML with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2868,7 +2788,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-XML-NamespaceSupport with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2884,7 +2804,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-XML-Parser with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2900,7 +2820,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-XML-SAX-Base with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2916,7 +2836,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-YAML-Syck with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2932,7 +2852,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-YAML-Tiny with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2948,7 +2868,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: pinentry with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2964,7 +2884,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: swig with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2980,7 +2900,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: texinfo with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -2996,7 +2916,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: wcd with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3012,7 +2932,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: zsh with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3028,7 +2948,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: ack with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3044,7 +2964,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: automake1.17 with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3060,7 +2980,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: automake1.18 with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3076,7 +2996,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: docbook-xsl with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3092,7 +3012,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: docbook-xsl-ns with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3108,7 +3028,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: gperf with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3124,7 +3044,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: grep with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3140,7 +3060,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: lcov with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3156,7 +3076,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: nasm with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3172,7 +3092,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Data-OptList with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3188,7 +3108,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-ExtUtils-InstallPaths with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3204,7 +3124,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-HTTP-Message with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3220,7 +3140,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-MailTools with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3236,7 +3156,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-PadWalker with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3252,7 +3172,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Parallel-ForkManager with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3268,7 +3188,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Return-MultiLevel with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3284,7 +3204,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Sub-Info with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3300,7 +3220,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Test-Deep with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3316,7 +3236,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Test-Fatal with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3332,7 +3252,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Test-Script with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3348,7 +3268,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Text-Diff with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3364,7 +3284,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Text-WrapI18N with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3380,7 +3300,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-XML-SAX with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3396,7 +3316,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-XML-Simple with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3412,7 +3332,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: cloc with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3428,7 +3348,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: global with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3444,7 +3364,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: moreutils with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3460,7 +3380,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: openssl with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3476,7 +3396,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: p7zip with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3492,7 +3412,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Class-Method-Modifiers with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3508,7 +3428,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-HTTP-Cookies with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3524,7 +3444,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-HTTP-Negotiate with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3540,7 +3460,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-MIME-tools with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3556,7 +3476,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Module-Build-Tiny with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3572,7 +3492,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Sub-Exporter with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3588,7 +3508,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Test-Base with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3604,7 +3524,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Test-Exit with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3620,7 +3540,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Test2-Suite with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3636,7 +3556,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: po4a with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3652,7 +3572,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: rebase with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3668,7 +3588,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: xmlto with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3684,7 +3604,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: axel with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3700,7 +3620,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: git-crypt with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3716,7 +3636,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: iperf3 with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3732,7 +3652,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: libevent with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3748,7 +3668,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: libfido2 with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3764,7 +3684,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: libpcap with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3780,7 +3700,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: libpipeline with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3796,7 +3716,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: libssh2 with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3812,7 +3732,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: mosh with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3828,7 +3748,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: mosquitto with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3844,7 +3764,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: neon with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3860,7 +3780,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: ngtcp2 with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3876,7 +3796,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: opensp with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3892,7 +3812,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: patchutils with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3908,7 +3828,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Alien-Build with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3924,7 +3844,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-alien-build-plugin-download-gitlab with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3940,7 +3860,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Devel-GlobalDestruction with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3956,7 +3876,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-HTTP-Daemon with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3972,7 +3892,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Net-SSLeay with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -3988,7 +3908,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Test-YAML with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4004,7 +3924,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: rhash with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4020,7 +3940,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: rsync with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4036,7 +3956,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: ruby with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4052,7 +3972,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: socat with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4068,7 +3988,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: w3m with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4084,7 +4004,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: xz with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4100,7 +4020,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: yasm with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4116,7 +4036,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: colordiff with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4132,7 +4052,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: libarchive with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4148,7 +4068,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: man-db with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4164,7 +4084,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: nghttp2 with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4180,7 +4100,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-IO-Socket-SSL with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4196,7 +4116,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-libwww with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4212,7 +4132,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4228,7 +4148,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: squashfs-tools with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4244,7 +4164,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: tmux with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4260,7 +4180,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: xdelta3 with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4276,7 +4196,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: file with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4292,7 +4212,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: git-filter-repo with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4308,7 +4228,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: gtest with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4324,7 +4244,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: heimdal with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4340,7 +4260,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: libssh with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4356,7 +4276,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: man2html with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4372,7 +4292,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-LWP-Protocol-https with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4388,7 +4308,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Net-SMTP-SSL with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4404,7 +4324,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-flit-core with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4420,7 +4340,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-setuptools with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4436,7 +4356,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: re2c with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4452,7 +4372,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: vim with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4468,7 +4388,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: cvs with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4484,7 +4404,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: editorconfig-vim with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4500,7 +4420,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: libtirpc with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4516,7 +4436,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: ninja with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4532,7 +4452,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: openssh with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4548,7 +4468,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-installer with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4564,7 +4484,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: tmate with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4580,7 +4500,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-build with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4596,7 +4516,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-packaging with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4612,7 +4532,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-pyparsing with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4628,7 +4548,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-pyproject-hooks with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4644,7 +4564,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: ansible with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4660,7 +4580,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: ansible-core with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4676,7 +4596,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: asciidoc with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4692,7 +4612,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: cython with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4708,7 +4628,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: gi-docgen with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4724,7 +4644,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: gyp with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4740,7 +4660,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: meson with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4756,7 +4676,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: namcap with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4772,7 +4692,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-appdirs with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4788,7 +4708,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-babel with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4804,7 +4724,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-beaker with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4820,7 +4740,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-brotli with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4836,7 +4756,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-calver with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4852,7 +4772,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-certifi with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4868,7 +4788,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-cffi with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4884,7 +4804,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-charset-normalizer with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4900,7 +4820,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-configobj with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4916,7 +4836,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-docutils with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4932,7 +4852,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-editables with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4948,7 +4868,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-fastimport with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4964,7 +4884,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-hatch-fancy-pypi-readme with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4980,7 +4900,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-hatch-vcs with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -4996,7 +4916,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-hatchling with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5012,7 +4932,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-idna with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5028,7 +4948,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-imagesize with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5044,7 +4964,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-jinja with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5060,7 +4980,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-mako with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5076,7 +4996,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-mallard-ducktype with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5092,7 +5012,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-markdown with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5108,7 +5028,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-markupsafe with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5124,7 +5044,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-more-itertools with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5140,7 +5060,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-pathspec with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5156,7 +5076,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-patiencediff with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5172,7 +5092,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-pip with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5188,7 +5108,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-poetry-core with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5204,7 +5124,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-py3c with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5220,7 +5140,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-pycparser with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5236,7 +5156,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-requests with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5252,7 +5172,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-resolvelib with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5268,7 +5188,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-roman-numerals with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5284,7 +5204,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-semantic-version with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5300,7 +5220,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-setuptools-scm with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5316,7 +5236,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-six with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5332,7 +5252,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-smartypants with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5348,7 +5268,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-snowballstemmer with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5364,7 +5284,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-sphinx with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5380,7 +5300,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-sphinx-alabaster-theme with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5396,7 +5316,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-sphinxcontrib-applehelp with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5412,7 +5332,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-sphinxcontrib-devhelp with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5428,7 +5348,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-sphinxcontrib-htmlhelp with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5444,7 +5364,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-sphinxcontrib-jsmath with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5460,7 +5380,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-sphinxcontrib-qthelp with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5476,7 +5396,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-sphinxcontrib-serializinghtml with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5492,7 +5412,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-typing_extensions with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5508,7 +5428,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-wcwidth with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5524,7 +5444,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-zstandard with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5540,7 +5460,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: scons with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5556,7 +5476,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: txt2tags with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5572,7 +5492,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: breezy with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5588,7 +5508,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: ca-certificates with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5604,7 +5524,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: grml-zsh-config with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5620,7 +5540,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: mercurial with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5636,7 +5556,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: mm-common with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5652,7 +5572,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: pkgconf with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5668,7 +5588,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-attrs with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5684,7 +5604,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-colorama with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5700,7 +5620,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-iniconfig with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5716,7 +5636,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-pacdb with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5732,7 +5652,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-pkgconfig with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5748,7 +5668,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-pluggy with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5764,7 +5684,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-pygments with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5780,7 +5700,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-pytest with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5796,7 +5716,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-setuptools-rust with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5812,7 +5732,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-trove-classifiers with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5828,7 +5748,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-typogrify with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5844,7 +5764,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-urllib3 with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5860,7 +5780,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-yaml with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5876,7 +5796,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: serf with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5892,7 +5812,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: tig with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5908,7 +5828,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: xorgproto with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5924,7 +5844,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: yelp-tools with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5940,7 +5860,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: yelp-xsl with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5956,7 +5876,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: ccache with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5972,7 +5892,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: cyrus-sasl with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -5988,7 +5908,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: dtc with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6004,7 +5924,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: glib2 with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6020,7 +5940,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: guile with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6036,7 +5956,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: jsoncpp with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6052,7 +5972,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: libgit2 with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6068,7 +5988,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: libinih with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6084,7 +6004,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: llvm with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6100,7 +6020,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: lndir with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6116,7 +6036,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: maturin with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6132,7 +6052,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: nnn with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6148,7 +6068,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: openbsd-netcat with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6164,7 +6084,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: perl-Alien-Libxml2 with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6180,7 +6100,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-fastbencode with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6196,7 +6116,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-lxml with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6212,7 +6132,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: autogen with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6228,7 +6148,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: cppdap with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6244,7 +6164,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: gdb with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6260,7 +6180,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: gtk-doc with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6276,7 +6196,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: guile-mqtt with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6292,7 +6212,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: mc with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6308,7 +6228,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: mingw-w64-cross-gcc with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6324,7 +6244,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: subversion with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6340,7 +6260,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: tio with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6356,7 +6276,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: znc with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6372,7 +6292,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: libidn with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6388,7 +6308,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: libidn2 with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6404,7 +6324,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: libtasn1 with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6420,7 +6340,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: mingw-w64-cross-compiler-rt with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6436,7 +6356,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: msys2-launcher with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6452,7 +6372,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: msys2-w32api-headers with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6468,7 +6388,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: msys2-w32api-runtime with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6484,7 +6404,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: util-linux with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6500,7 +6420,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: winpty with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6516,7 +6436,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: git-flow with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6532,7 +6452,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: libpsl with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6548,7 +6468,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: lynx with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6564,7 +6484,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: neomutt with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6580,7 +6500,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: p11-kit with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6596,7 +6516,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: whois with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6612,7 +6532,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: curl with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6628,7 +6548,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: gnutls with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6644,7 +6564,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: cargo-c with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6660,7 +6580,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: elinks with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6676,7 +6596,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: emacs with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6692,7 +6612,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: gnupg with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6708,7 +6628,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: lftp with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6724,7 +6644,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: pacman with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6740,7 +6660,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: pacman-contrib with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6756,7 +6676,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: pacutils with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6772,7 +6692,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: pkgfile with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6788,7 +6708,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: rust with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6804,7 +6724,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: task with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6820,7 +6740,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: u-boot-tools with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6836,7 +6756,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: wget with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6852,7 +6772,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: base with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6868,7 +6788,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: cargo-edit with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6884,7 +6804,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: cmake with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6900,7 +6820,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: crosstool-ng with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6916,7 +6836,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: fish with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6932,7 +6852,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: irssi with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6948,7 +6868,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: just with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6964,7 +6884,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: mutt with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6980,7 +6900,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-cryptography with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -6996,7 +6916,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-dulwich with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -7012,7 +6932,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: python-pyalpm with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -7028,7 +6948,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: remake with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -7044,7 +6964,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: uutils-coreutils with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -7060,7 +6980,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: uv with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -7076,7 +6996,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: base-devel with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
@@ -7092,7 +7012,7 @@ makepkg --cleanbuild --syncdeps --force --noconfirm --nocheck
 retVal=$?
 if [ $retVal -ne 0 ]; then
     echo "Error for pkgbase: fisher with retcode:$retVal "
-    exit $retVal
+    # exit $retVal
 fi
 echo "All packages:"
 find -name "*.pkg.tar.zst"
