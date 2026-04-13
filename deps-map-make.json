@@ -40,6 +40,7 @@
     "libxslt",
     "docbook-xsl"
   ],
+  "asciidoctor": [],
   "aspell": [
     "gettext",
     "libiconv",
@@ -556,6 +557,12 @@
   "editorconfig-vim": [
     "vim"
   ],
+  "efitools": [
+    "make",
+    "help2man",
+    "openssl",
+    "util-linux"
+  ],
   "elinks": [
     "gettext",
     "bzip2",
@@ -762,6 +769,9 @@
     "libtool"
   ],
   "gmp": [],
+  "gnu-efi": [
+    "make"
+  ],
   "gnu-netcat": [
     "texinfo",
     "gettext"
@@ -820,6 +830,7 @@
   ],
   "grml-zsh-config": [
     "txt2tags",
+    "asciidoctor",
     "zsh",
     "coreutils",
     "grep",
@@ -2979,6 +2990,7 @@
   ],
   "unzip": [
     "bzip2",
+    "libiconv",
     "make",
     "bash"
   ],

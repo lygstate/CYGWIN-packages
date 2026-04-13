@@ -1,5 +1,6 @@
 sh build-single.sh texinfo
 sh build-single.sh libxml2
+sh build-single.sh asciidoctor
 sh build-single.sh bash-preexec
 sh build-single.sh btyacc
 sh build-single.sh cjson
@@ -64,6 +65,7 @@ sh build-single.sh docbook-sgml31
 sh build-single.sh etc-update
 sh build-single.sh fcode-utils
 sh build-single.sh fzy
+sh build-single.sh gnu-efi
 sh build-single.sh gnulib-l10n
 sh build-single.sh joe
 sh build-single.sh libbobcat
@@ -210,6 +212,7 @@ sh build-single.sh tmux
 sh build-single.sh winpty
 sh build-single.sh apr
 sh build-single.sh cloc
+sh build-single.sh efitools
 sh build-single.sh git-flow
 sh build-single.sh libmicrohttpd
 sh build-single.sh man-pages-posix
