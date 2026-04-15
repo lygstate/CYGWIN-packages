@@ -1,12 +1,12 @@
-import * as fs from "fs/promises";
 import * as path from "path";
 import { fileURLToPath } from "url";
+import process from "node:process";
 import {
+  ci_tools_msys64_parent_basic,
   spawnProcessAsyncCapture,
   archiveFull,
-  installMsys2BasePackages,
+  installMsys2AllPackages,
   installMsys2ExtractScript,
-  executePacmanInstall,
 } from "./utils.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -18,35 +18,22 @@ process.on("SIGINT", function () {
 });
 
 async function main() {
-  const ci_tools_msys64_parent = "D:/CI-Tools/msys64-stage2";
+  const ci_tools_msys64_parent = ci_tools_msys64_parent_basic;
   const msys_root = path.join(ci_tools_msys64_parent, "msys64");
   const pkg_root = __dirname;
-  const has_msys64 = await installMsys2BasePackages(
+
+  const has_msys64 = await installMsys2AllPackages(
     ci_tools_msys64_parent,
-    msys_root,
+    pkg_root,
     true,
   );
 
-  const install_commands = [
-    "pacman -U --noconfirm --overwrite \\* `ls | tr '\n' ' '`",
-    "pacman -U --noconfirm --overwrite \\* `ls | tr '\n' ' '`",
-    "pacman -S --needed --noconfirm --overwrite \\* mingw-w64-x86_64-python mingw-w64-x86_64-llvm mingw-w64-x86_64-clang",
-  ];
-  for (let i = 0; i < install_commands.length; i += 1) {
-    console.log(`===Execute: "${install_commands[i]}"`);
-    // reset the pacman cache folder
-    await executePacmanInstall(
-      msys_root,
-      install_commands[i],
-      path.join(pkg_root, "dist", "stage1"),
-    );
-  }
-  console.log("===Switch to cygwin finished");
   const ci_tools_msys64_parent_cygwin = (
     await spawnProcessAsyncCapture(`${msys_root}/usr/bin/cygpath.exe`, [
       ci_tools_msys64_parent,
     ])
   ).stdout.trim();
+
   const msys2_base_filename = await archiveFull(
     ci_tools_msys64_parent,
     msys_root,
@@ -56,7 +43,7 @@ async function main() {
     `===stage2: Archive finished as: ${msys2_base_filename} with has_msys64:${has_msys64}`,
   );
   await installMsys2ExtractScript(ci_tools_msys64_parent, msys2_base_filename);
-  console.log(`===stage2: Install extract script finished`);
+  console.log(`===stage0: Install extract script finished`);
 }
 
 main();
