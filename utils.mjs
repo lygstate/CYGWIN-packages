@@ -323,6 +323,7 @@ export async function installMsys2AllPackages(
 export async function installMsys2ExtractScript(
   ci_tools_msys64_parent,
   msys2_base_filename,
+  bat_filename,
 ) {
   const pacman_cache_pash = "msys64\\var\\cache\\pacman\\pkg";
   const msys_64_home = `msys64\\home`;
@@ -351,7 +352,7 @@ if defined CI_TOOLS_DISABLE_PAUSE ( goto :eof )
 pause
 `;
   await fs.writeFile(
-    path.join(ci_tools_msys64_parent, "extract.bat"),
+    path.join(ci_tools_msys64_parent, bat_filename || "extract.bat"),
     extract_bat_content,
     "utf-8",
   );

@@ -7,6 +7,7 @@ import {
   removeDirectory,
   archiveFull,
   executePacmanInstall,
+  installMsys2ExtractScript,
   getYYYYMMDD,
 } from "./utils.mjs";
 
@@ -175,6 +176,8 @@ async function install_mingw(MINGW_PACKAGE_PREFIX) {
     msys_root,
     `msys2-mingw-x86_64-${getYYYYMMDD(new Date())}-full.tar`
   );
+  await installMsys2ExtractScript(ci_tools_msys64_parent, msys2_base_filename, "extract-mingw.bat");
+
   console.log(
     `===stage3: Archive finished as: ${msys2_base_filename} for mingw64`,
   );
