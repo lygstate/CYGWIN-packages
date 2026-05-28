@@ -1371,6 +1371,7 @@
     "mingw-w64-cross-gcc",
     "mingw-w64-cross-zlib",
     "zlib",
+    "zstd",
     "gettext",
     "libiconv",
     "xmlto",
@@ -2058,7 +2059,7 @@
   "perl-Test-Requires": [
     "perl"
   ],
-  "perl-Test-Requiresinternet": [
+  "perl-Test-RequiresInternet": [
     "perl"
   ],
   "perl-Test-Script": [
