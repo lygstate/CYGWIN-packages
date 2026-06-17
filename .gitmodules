@@ -1,3 +1,6 @@
 [submodule "ports"]
 	path = ports
 	url = https://github.com/lygstate/MSYS2-packages
+[submodule "ports-mingw"]
+	path = ports-mingw
+	url = https://github.com/msys2/MINGW-packages.git
