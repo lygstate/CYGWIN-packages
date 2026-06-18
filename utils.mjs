@@ -393,6 +393,13 @@ export async function installMsys2ExtractScript(
 ) {
   const pacman_cache_pash = "msys64\\var\\cache\\pacman\\pkg";
   const msys_64_home = `msys64\\home`;
+  const bat_safe_unlink_dir = `
+:safe_unlink_dir
+if not exist "%~1" exit /B 0
+rmdir "%~1" 2>nul
+if exist "%~1" rd /s /q "%~1"
+exit /B 0
+`.trim();
   const extract_bat_content = `
 pushd "%~dp0"\..
 set __CI_TOOLS_DIR=%CD%
@@ -405,12 +412,10 @@ if not exist msys64 (
   tar xf ${msys2_base_filename}
 )
 
-del /F /Q ${msys_64_home}
-rd /s /q ${msys_64_home}
+call :safe_unlink_dir ${msys_64_home}
 mklink /D ${msys_64_home} %_MSYS64_CACHES%\\${msys_64_home}
 
-del /F /Q ${pacman_cache_pash}
-rd /s /q ${pacman_cache_pash}
+call :safe_unlink_dir ${pacman_cache_pash}
 mklink /D ${pacman_cache_pash} %_MSYS64_CACHES%\\${pacman_cache_pash}
 
 popd
@@ -418,10 +423,55 @@ popd
 if defined CI_TOOLS_DISABLE_PAUSE ( goto :eof )
 
 pause
+
+${bat_safe_unlink_dir}
 `;
   await fs.writeFile(
     path.join(ci_tools_msys64_parent, bat_filename || "extract.bat"),
     extract_bat_content,
+    "utf-8",
+  );
+  await installMsys2DeleteScript(ci_tools_msys64_parent);
+}
+
+export async function installMsys2DeleteScript(ci_tools_msys64_parent) {
+  const bat_safe_unlink_dir = `
+:safe_unlink_dir
+if not exist "%~1" exit /B 0
+rmdir "%~1" 2>nul
+if exist "%~1" rd /s /q "%~1"
+exit /B 0
+`.trim();
+  const delete_bat_content = `
+pushd "%~dp0"
+
+if exist msys64-to-delete (
+  call :safe_unlink_dir msys64-to-delete\\var\\cache\\pacman\\pkg
+  call :safe_unlink_dir msys64-to-delete\\home
+  rd /s /q msys64-to-delete
+)
+if exist msys64 (rename msys64 msys64-to-delete)
+if exist msys64 (
+  echo "Delete msys64 failed"
+)
+if exist msys64-to-delete (
+  call :safe_unlink_dir msys64-to-delete\\var\\cache\\pacman\\pkg
+  call :safe_unlink_dir msys64-to-delete\\home
+  rd /s /q msys64-to-delete
+)
+
+popd
+
+if defined CI_TOOLS_DISABLE_PAUSE ( goto :eof )
+pause
+
+:eof
+
+${bat_safe_unlink_dir}
+`;
+  await fs.writeFile(
+    path.join(ci_tools_msys64_parent, "delete-msys64.bat"),
+    delete_bat_content,
     "utf-8",
   );
 }

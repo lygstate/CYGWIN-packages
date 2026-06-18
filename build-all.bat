@@ -165,7 +165,7 @@ exit /B 0
 
 :extract_msys64
 set CI_TOOLS_DISABLE_PAUSE=true
-pushd
+pushd "%MSYS64_STAGE_DIR%"
 call delete-msys64.bat
 call extract.bat
 popd
@@ -189,16 +189,19 @@ bash --login -c "source build-check-bootstrap.sh; pacman -U --noconfirm --overwr
 exit /B 0
 
 :init_msys64_stage0
+set "MSYS64_STAGE_DIR=%CI_TOOLS_ROOT%\msys64-stage0"
 set "PATH=%CI_TOOLS_ROOT%\msys64-stage0;%CI_TOOLS_ROOT%\msys64-stage0\msys64\usr\bin;%PATH_OLD%"
 @echo "The stage0 PATH is:%PATH%"
 exit /B 0
 
 :init_msys64_stage2
+set "MSYS64_STAGE_DIR=%CI_TOOLS_ROOT%\msys64-stage2"
 set "PATH=%CI_TOOLS_ROOT%\msys64-stage2;%CI_TOOLS_ROOT%\msys64-stage2\msys64\usr\bin;%PATH_OLD%"
 @echo "The stage2 PATH is:%PATH%"
 exit /B 0
 
 :init_msys64_stage3
+set "MSYS64_STAGE_DIR=%CI_TOOLS_ROOT%\msys64-stage3"
 set "PATH=%CI_TOOLS_ROOT%\msys64-stage3;%CI_TOOLS_ROOT%\msys64-stage3\msys64\usr\bin;%PATH_OLD%"
 @echo "The stage3 PATH is:%PATH%"
 exit /B 0
