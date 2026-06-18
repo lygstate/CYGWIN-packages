@@ -1,13 +1,12 @@
-import * as fs from "fs/promises";
 import * as path from "path";
 import { fileURLToPath } from "url";
 import {
-  spawnProcessAsyncCapture,
   archiveFull,
   ci_tools_msys64_stage2,
   installMsys2BasePackages,
   installMsys2StageBatchScripts,
   executePacmanInstall,
+  dedupeDistPackageDir,
 } from "./utils.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -21,9 +20,16 @@ process.on("SIGINT", function () {
 async function main() {
   const msys_root = path.join(ci_tools_msys64_stage2, "msys64");
   const pkg_root = __dirname;
+  const stage1_dist = path.join(pkg_root, "dist", "stage1");
+
   const has_msys64 = await installMsys2BasePackages(
     ci_tools_msys64_stage2,
     true,
+  );
+
+  const removed = await dedupeDistPackageDir(stage1_dist);
+  console.log(
+    `===Removed ${removed.length} duplicate package(s) from dist/stage1`,
   );
 
   const install_commands = [
@@ -33,11 +39,10 @@ async function main() {
   ];
   for (let i = 0; i < install_commands.length; i += 1) {
     console.log(`===Execute: "${install_commands[i]}"`);
-    // reset the pacman cache folder
     await executePacmanInstall(
       msys_root,
       install_commands[i],
-      path.join(pkg_root, "dist", "stage1"),
+      stage1_dist,
     );
   }
   console.log("===Switch to cygwin finished");

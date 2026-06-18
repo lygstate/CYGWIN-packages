@@ -1,9 +1,12 @@
 import assert from "node:assert/strict";
+import path from "node:path";
 import { mock, test } from "node:test";
 import {
   Msys2Installer,
   bash_bootstrap_core_upgrade,
   bash_detach_pacman_pkg_cache,
+  parsePkgArchiveFilename,
+  dedupeDistPackageDir,
 } from "../utils.mjs";
 
 function makeInstaller(overrides = {}) {
@@ -329,6 +332,80 @@ test("archiveFull", async () => {
           },
         },
       ],
+    },
+  );
+});
+
+test("parsePkgArchiveFilename parses msys2 package filenames", () => {
+  assert.deepEqual(
+    parsePkgArchiveFilename("binutils-2.46.1-6-x86_64.pkg.tar.zst"),
+    {
+      pkgname: "binutils",
+      pkgver: "2.46.1",
+      pkgrel: "6",
+      arch: "x86_64",
+      filename: "binutils-2.46.1-6-x86_64.pkg.tar.zst",
+    },
+  );
+  assert.deepEqual(
+    parsePkgArchiveFilename("mingw-w64-x86_64-clang-21.1.7-1-any.pkg.tar.zst"),
+    {
+      pkgname: "mingw-w64-x86_64-clang",
+      pkgver: "21.1.7",
+      pkgrel: "1",
+      arch: "any",
+      filename: "mingw-w64-x86_64-clang-21.1.7-1-any.pkg.tar.zst",
+    },
+  );
+});
+
+test("dedupeDistPackageDir keeps newest duplicate package file", async () => {
+  const dist_dir = "D:\\work\\xemu\\CYGWIN-packages\\dist\\stage1";
+  const files = new Map([
+    [
+      "binutils-2.46-6-x86_64.pkg.tar.zst",
+      { mtimeMs: 1000 },
+    ],
+    [
+      "binutils-2.46.1-6-x86_64.pkg.tar.zst",
+      { mtimeMs: 2000 },
+    ],
+    [
+      "gcc-15.3.0-6-x86_64.pkg.tar.zst",
+      { mtimeMs: 3000 },
+    ],
+  ]);
+  const removed_paths = [];
+  const fsImpl = {
+    async readdir() {
+      return [...files.keys()];
+    },
+    async stat(target) {
+      const entry = files.get(path.basename(target));
+      return { mtimeMs: entry.mtimeMs };
+    },
+    async rm(target) {
+      const filename = path.basename(target);
+      files.delete(filename);
+      removed_paths.push(filename);
+    },
+  };
+
+  const removed = await dedupeDistPackageDir(dist_dir, fsImpl);
+
+  assert.deepEqual(
+    {
+      removed,
+      remaining: [...files.keys()],
+      removed_paths,
+    },
+    {
+      removed: ["binutils-2.46-6-x86_64.pkg.tar.zst"],
+      remaining: [
+        "binutils-2.46.1-6-x86_64.pkg.tar.zst",
+        "gcc-15.3.0-6-x86_64.pkg.tar.zst",
+      ],
+      removed_paths: ["binutils-2.46-6-x86_64.pkg.tar.zst"],
     },
   );
 });

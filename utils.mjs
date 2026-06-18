@@ -184,6 +184,82 @@ export const bash_bootstrap_core_upgrade = [
   `rm -rf /var/lib/pacman/db.lck`,
 ].join("; ");
 
+export function parsePkgArchiveFilename(filename) {
+  const suffix = ".pkg.tar.zst";
+  if (!filename.endsWith(suffix)) {
+    return null;
+  }
+  const base = filename.slice(0, -suffix.length);
+  const archSep = base.lastIndexOf("-");
+  if (archSep <= 0) {
+    return null;
+  }
+  const arch = base.slice(archSep + 1);
+  if (!["any", "x86_64", "i686"].includes(arch)) {
+    return null;
+  }
+  const rest = base.slice(0, archSep);
+  const relSep = rest.lastIndexOf("-");
+  if (relSep <= 0) {
+    return null;
+  }
+  const pkgrel = rest.slice(relSep + 1);
+  if (!/^\d+$/.test(pkgrel)) {
+    return null;
+  }
+  const nameVer = rest.slice(0, relSep);
+  const verSep = nameVer.lastIndexOf("-");
+  if (verSep <= 0) {
+    return null;
+  }
+  return {
+    pkgname: nameVer.slice(0, verSep),
+    pkgver: nameVer.slice(verSep + 1),
+    pkgrel,
+    arch,
+    filename,
+  };
+}
+
+export async function dedupeDistPackageDir(dist_dir, fsImpl = fs) {
+  let names;
+  try {
+    names = await fsImpl.readdir(dist_dir);
+  } catch (e) {
+    return [];
+  }
+
+  const groups = new Map();
+  for (const filename of names) {
+    const parsed = parsePkgArchiveFilename(filename);
+    if (!parsed) {
+      continue;
+    }
+    const key = `${parsed.pkgname}-${parsed.arch}`;
+    const full_path = path.join(dist_dir, filename);
+    const stat = await fsImpl.stat(full_path);
+    if (!groups.has(key)) {
+      groups.set(key, []);
+    }
+    groups.get(key).push({ ...parsed, mtimeMs: stat.mtimeMs, full_path });
+  }
+
+  const removed = [];
+  for (const files of groups.values()) {
+    if (files.length <= 1) {
+      continue;
+    }
+    files.sort((a, b) => b.mtimeMs - a.mtimeMs);
+    const [, ...dupes] = files;
+    for (const dupe of dupes) {
+      await fsImpl.rm(dupe.full_path);
+      removed.push(dupe.filename);
+      console.log(`===Removed duplicate package ${dupe.filename}`);
+    }
+  }
+  return removed;
+}
+
 export function spawnProcessAsyncCapture(command, args = [], options = {}) {
   return new Promise((resolve, reject) => {
     // Collect stdout and stderr data
@@ -282,7 +358,7 @@ ${tail}`.trim();
   ) {
     console.log(`===Execute: "${install_command}" at ${msys_root} at ${cwd}`);
     await this.linkPacmanCache(msys_root, bootstrap);
-    await this.spawnProcessAsync(
+    const code = await this.spawnProcessAsync(
       msysBashExe(msys_root),
       ["--login", "-c", install_command],
       {
@@ -290,6 +366,11 @@ ${tail}`.trim();
         env: msysBashEnv(),
       },
     );
+    if (code !== 0) {
+      throw new Error(
+        `executePacmanInstall failed (${code}): ${install_command}`,
+      );
+    }
     await this.linkPacmanCache(msys_root);
   }
 

@@ -28,7 +28,6 @@ set "MSYS_STAGE2_BASIC_EXPORTS=export MSYS_BOOTSTRAP_STAGE=stage2"
 
 goto :build_stage_all_with_prepare
 
-goto :build_stage_all_with_prepare
 goto :build_stage_all_with_extract
 goto :build_stage_all
 goto :build_stage0_with_extract
@@ -43,7 +42,8 @@ goto :build_stage3
 
 :build_stage_all_with_prepare
 echo "Preparing msys64 for stage0 by install all packages msys repo"
-node install-for-stage0.mjs > install-for-stage0.txt 2>&1
+call :run_node_install install-for-stage0.mjs install-for-stage0.txt
+if errorlevel 1 exit /B 1
 goto :build_stage_all_with_extract_direct
 
 :build_stage_all_with_extract
@@ -100,11 +100,8 @@ goto :build_stage2_with_prepare
 :build_stage2_with_prepare
 call :init_msys64_stage2
 echo "Preparing msys64 for stage2 by install packages built by stage1"
-node install-for-stage2.mjs > install-for-stage2.txt 2>&1
-if errorlevel 1 (
-  echo "install-for-stage2.mjs failed, see install-for-stage2.txt"
-  exit /B 1
-)
+call :run_node_install install-for-stage2.mjs install-for-stage2.txt
+if errorlevel 1 exit /B 1
 goto :build_stage2_direct
 
 :build_stage2_with_extract
@@ -156,9 +153,11 @@ goto :build_stage3
 :build_stage3
 echo "Preparing msys64 for stage3 by install packages built by stage1 and stage2"
 call :init_msys64_stage3
-node install-for-stage3.mjs > install-for-stage3.txt 2>&1
+call :run_node_install install-for-stage3.mjs install-for-stage3.txt
+if errorlevel 1 exit /B 1
 call :extract_msys64
-node install-mingw-for-stage3.mjs > install-mingw-for-stage3.mjs.txt 2>&1
+call :run_node_install install-mingw-for-stage3.mjs install-mingw-for-stage3.txt
+if errorlevel 1 exit /B 1
 
 goto :build_finished
 
@@ -230,4 +229,21 @@ set CHERE_INVOKING=
 "%MSYS_DASH%" /usr/bin/rebaseall -p
 "%MSYS_BASH%" --login -c "rm -rf /etc/rebase.db.x86_64"
 endlocal
+exit /B 0
+
+:run_node_install
+set "INSTALL_SCRIPT=%~1"
+set "INSTALL_LOG=%~2"
+echo === Running %INSTALL_SCRIPT% ...
+node %INSTALL_SCRIPT% 1>%INSTALL_LOG% 2>&1
+set "INSTALL_EXIT=%ERRORLEVEL%"
+if not "%INSTALL_EXIT%"=="0" (
+  echo.
+  echo ERROR: %INSTALL_SCRIPT% failed with exit code %INSTALL_EXIT%
+  echo Log file: %CD%\%INSTALL_LOG%
+  echo --- last 30 lines of %INSTALL_LOG% ---
+  powershell -NoProfile -Command "Get-Content -LiteralPath '%CD%\%INSTALL_LOG%' -Tail 30"
+  echo ---
+  exit /B %INSTALL_EXIT%
+)
 exit /B 0

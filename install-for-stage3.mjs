@@ -1,12 +1,12 @@
 import * as path from "path";
 import { fileURLToPath } from "url";
 import {
-  spawnProcessAsyncCapture,
   archiveFull,
   installMsys2BasePackages,
   installMsys2StageBatchScripts,
   executePacmanInstall,
   ci_tools_msys64_stage3,
+  dedupeDistPackageDir,
 } from "./utils.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -20,9 +20,21 @@ process.on("SIGINT", function () {
 async function main() {
   const msys_root = path.join(ci_tools_msys64_stage3, "msys64");
   const pkg_root = __dirname;
+  const stage1_dist = path.join(pkg_root, "dist", "stage1");
+  const stage2_dist = path.join(pkg_root, "dist", "stage2");
+
   const has_msys64 = await installMsys2BasePackages(
     ci_tools_msys64_stage3,
     true,
+  );
+
+  const removed_stage1 = await dedupeDistPackageDir(stage1_dist);
+  console.log(
+    `===Removed ${removed_stage1.length} duplicate package(s) from dist/stage1`,
+  );
+  const removed_stage2 = await dedupeDistPackageDir(stage2_dist);
+  console.log(
+    `===Removed ${removed_stage2.length} duplicate package(s) from dist/stage2`,
   );
 
   const install_commands = [
@@ -30,17 +42,16 @@ async function main() {
     "pacman -U --noconfirm --overwrite \\* `ls | tr '\n' ' '`",
   ];
   for (let i = 0; i < install_commands.length; i += 1) {
-    // reset the pacman cache folder
     await executePacmanInstall(
       msys_root,
       install_commands[i],
-      path.join(pkg_root, "dist", "stage1"),
+      stage1_dist,
     );
   }
   await executePacmanInstall(
     msys_root,
     "pacman -U --noconfirm --overwrite \\* `ls | tr '\n' ' '`",
-    path.join(pkg_root, "dist", "stage2"),
+    stage2_dist,
   );
   console.log("===stage3: Switch to cygwin finished");
   const msys2_base_filename = await archiveFull(

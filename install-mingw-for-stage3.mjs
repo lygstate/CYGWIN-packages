@@ -188,4 +188,7 @@ async function install_mingw(MINGW_PACKAGE_PREFIX) {
   );
 }
 
-install_mingw("mingw-w64-x86_64");
+install_mingw("mingw-w64-x86_64").catch((error) => {
+  console.error(error);
+  process.exit(1);
+});
