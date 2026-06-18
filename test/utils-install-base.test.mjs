@@ -96,25 +96,36 @@ test("installMsys2AllPackages", async () => {
   const spawns = [];
   const linkPacmanCache = mock.fn(async () => {});
   const writeFile = mock.fn(async () => {});
+  const installMsys2BasePackages = mock.fn(async () => true);
   const installer = makeInstaller({
-    installMsys2BasePackages: mock.fn(async () => true),
+    installMsys2BasePackages,
     linkPacmanCache,
-    spawnProcessAsyncCapture: mock.fn(async (command) => {
-      if (command.endsWith("cygpath.exe")) {
+    spawnProcessAsyncCapture: mock.fn(async (command, args) => {
+      if (
+        command ===
+          "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\cygpath.exe" &&
+        args[0] === pkg_root_win
+      ) {
         return {
           stdout: `${pkg_root_cygwin}\n`,
           stderr: "",
           code: 0,
         };
       }
-      if (command.endsWith("pacman.exe")) {
+      if (
+        command ===
+          "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\pacman.exe" &&
+        args[0] === "-Sl" &&
+        args[1] === "msys"
+      ) {
         return {
-          stdout: "msys foo 1.0-1\nmsys bar 2.0-1\n",
+          stdout:
+            "msys foo 1.0-1\n\nmsys uutils-coreutils 0.2.0-1\nmsys bar 2.0-1\n",
           stderr: "",
           code: 0,
         };
       }
-      return { stdout: "", stderr: "", code: 0 };
+      throw new Error(`Unexpected capture call: ${command} ${args.join(" ")}`);
     }),
     spawnProcessAsync: mock.fn(async (command, args, options) => {
       spawns.push({ command, args, options });
@@ -132,8 +143,9 @@ test("installMsys2AllPackages", async () => {
   assert.deepEqual(
     {
       has_msys64,
-      cygpathCalls: mockArguments(installer.spawnProcessAsyncCapture).filter(
-        (call) => call[0].endsWith("cygpath.exe"),
+      installMsys2BasePackagesCalls: mockArguments(installMsys2BasePackages),
+      spawnProcessAsyncCaptureCalls: mockArguments(
+        installer.spawnProcessAsyncCapture,
       ),
       msysTxtWrite: mockArguments(writeFile),
       linkPacmanCacheCalls: mockArguments(linkPacmanCache),
@@ -141,10 +153,17 @@ test("installMsys2AllPackages", async () => {
     },
     {
       has_msys64: true,
-      cygpathCalls: [
+      installMsys2BasePackagesCalls: [
+        ["D:\\CI-Tools\\msys64-stage0", false],
+      ],
+      spawnProcessAsyncCaptureCalls: [
         [
           "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\cygpath.exe",
           ["D:\\work\\xemu\\CYGWIN-packages"],
+        ],
+        [
+          "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\pacman.exe",
+          ["-Sl", "msys"],
         ],
       ],
       msysTxtWrite: [
@@ -190,15 +209,19 @@ test("archiveFull", async () => {
   const installer = makeInstaller({
     linkPacmanCache,
     fs: { rm },
-    spawnProcessAsyncCapture: mock.fn(async (command) => {
-      if (command.endsWith("cygpath.exe")) {
+    spawnProcessAsyncCapture: mock.fn(async (command, args) => {
+      if (
+        command ===
+          "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\cygpath.exe" &&
+        args[0] === ci_tools_msys64_parent
+      ) {
         return {
           stdout: `${ci_tools_msys64_parent_cygwin}\n`,
           stderr: "",
           code: 0,
         };
       }
-      return { stdout: "", stderr: "", code: 0 };
+      throw new Error(`Unexpected capture call: ${command} ${args.join(" ")}`);
     }),
     spawnProcessAsync: mock.fn(async (command, args, options) => {
       spawns.push({ command, args, options });
@@ -215,14 +238,16 @@ test("archiveFull", async () => {
   assert.deepEqual(
     {
       result,
-      cygpathCalls: mockArguments(installer.spawnProcessAsyncCapture),
+      spawnProcessAsyncCaptureCalls: mockArguments(
+        installer.spawnProcessAsyncCapture,
+      ),
       rmCalls: mockArguments(rm),
       linkPacmanCacheCalls: mockArguments(linkPacmanCache),
       spawnProcessAsyncCalls: spawnCalls(spawns),
     },
     {
       result: "msys2-base-x86_64-20251213-full.tar",
-      cygpathCalls: [
+      spawnProcessAsyncCaptureCalls: [
         [
           "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\cygpath.exe",
           ["D:\\CI-Tools\\msys64-stage0"],

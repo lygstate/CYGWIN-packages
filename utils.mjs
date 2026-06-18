@@ -378,7 +378,8 @@ ${tail}`.trim();
     const packages = [];
 
     for (let pkg of msys_list_content.split("\n")) {
-      const pkg_name = pkg.split(" ")[1];
+      const pkg_name = pkg.trim().split(/\s+/)[1];
+      if (!pkg_name) continue;
       if (black_list.has(pkg_name)) continue;
       packages.push(pkg_name);
     }
