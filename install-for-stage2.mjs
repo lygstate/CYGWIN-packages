@@ -6,7 +6,7 @@ import {
   archiveFull,
   ci_tools_msys64_stage2,
   installMsys2BasePackages,
-  installMsys2ExtractScript,
+  installMsys2StageBatchScripts,
   executePacmanInstall,
 } from "./utils.mjs";
 
@@ -23,7 +23,6 @@ async function main() {
   const pkg_root = __dirname;
   const has_msys64 = await installMsys2BasePackages(
     ci_tools_msys64_stage2,
-    msys_root,
     true,
   );
 
@@ -49,8 +48,11 @@ async function main() {
   console.log(
     `===stage2: Archive finished as: ${msys2_base_filename} with has_msys64:${has_msys64}`,
   );
-  await installMsys2ExtractScript(ci_tools_msys64_stage2, msys2_base_filename);
-  console.log(`===stage2: Install extract script finished`);
+  await installMsys2StageBatchScripts(
+    ci_tools_msys64_stage2,
+    msys2_base_filename,
+  );
+  console.log(`===stage2: Wrote extract.bat and delete-msys64.bat`);
 }
 
 main();

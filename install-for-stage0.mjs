@@ -6,7 +6,7 @@ import {
   spawnProcessAsyncCapture,
   archiveFull,
   installMsys2AllPackages,
-  installMsys2ExtractScript,
+  installMsys2StageBatchScripts,
 } from "./utils.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -34,8 +34,11 @@ async function main() {
   console.log(
     `===stage0: Archive finished as: ${msys2_base_filename} with has_msys64:${has_msys64}`,
   );
-  await installMsys2ExtractScript(ci_tools_msys64_stage0, msys2_base_filename);
-  console.log(`===stage0: Install extract script finished`);
+  await installMsys2StageBatchScripts(
+    ci_tools_msys64_stage0,
+    msys2_base_filename,
+  );
+  console.log(`===stage0: Wrote extract.bat and delete-msys64.bat`);
 }
 
 main();
