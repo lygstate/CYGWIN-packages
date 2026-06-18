@@ -62,7 +62,7 @@ goto :build_stage_all_direct
 echo "Building original and hook patched msys2-runtime"
 call :install_msys2_original_runtime
 powershell -NoProfile -Command "echo '' > build-stage-hook.txt; (Get-Item 'build-stage-hook.txt').CreationTime = Get-Date"
-bash --login -c "source build-stage-hook.sh >build-stage-hook.txt 2>&1"
+"%MSYS_BASH%" --login -c "source build-stage-hook.sh >build-stage-hook.txt 2>&1"
 goto :build_stage0_direct
 
 :build_stage0_with_extract
@@ -78,7 +78,7 @@ goto :build_stage0_direct
 call :init_msys64_stage0
 call :install_msys2_hook_runtime
 powershell -NoProfile -Command "echo '' > build-stage0.txt; (Get-Item 'build-stage0.txt').CreationTime = Get-Date"
-bash --login -c "source build-stage0.sh >build-stage0.txt 2>&1"
+"%MSYS_BASH%" --login -c "source build-stage0.sh >build-stage0.txt 2>&1"
 goto :build_stage1_direct
 
 :build_stage1_with_extract
@@ -94,13 +94,17 @@ goto :build_stage1_direct
 
 :build_stage1_direct
 powershell -NoProfile -Command "echo '' > build-stage1.txt; (Get-Item 'build-stage1.txt').CreationTime = Get-Date"
-bash --login -c "source build-stage1.sh >build-stage1.txt 2>&1"
+"%MSYS_BASH%" --login -c "source build-stage1.sh >build-stage1.txt 2>&1"
 goto :build_stage2_with_prepare
 
 :build_stage2_with_prepare
 call :init_msys64_stage2
 echo "Preparing msys64 for stage2 by install packages built by stage1"
 node install-for-stage2.mjs > install-for-stage2.txt 2>&1
+if errorlevel 1 (
+  echo "install-for-stage2.mjs failed, see install-for-stage2.txt"
+  exit /B 1
+)
 goto :build_stage2_direct
 
 :build_stage2_with_extract
@@ -117,13 +121,13 @@ goto :build_stage2_gcc
 
 :build_stage2_gcc
 echo "Building gcc bootstrap for stage2"
-bash --login -c "%MSYS_STAGE2_BASIC_EXPORTS%; source build-check-bootstrap.sh; sh build-single.sh gcc >build-stage2-gcc.txt 2>&1"
+"%MSYS_BASH%" --login -c "%MSYS_STAGE2_BASIC_EXPORTS%; source build-check-bootstrap.sh; sh build-single.sh gcc >build-stage2-gcc.txt 2>&1"
 goto :build_stage2_rust_cross
 
 :build_stage2_rust_cross
 echo "Building rust cross for stage2"
 set "BUILD_RUST_CROSS_BOOOTSTRAP_ENVS=export MSYS_BOOTSTRAP_RUST=enabled; export MSYS_BOOTSTRAP_DISABLE_COPY_PACKAGES=enabled; export MSYS_BOOTSTRAP_PACKAGE_NAME_SUFFIX=cross; %MSYS_STAGE2_BASIC_EXPORTS%"
-bash --login -c "%BUILD_RUST_CROSS_BOOOTSTRAP_ENVS%; source build-check-bootstrap.sh; sh build-single.sh rust >build-stage2-rust-cross.txt 2>&1"
+"%MSYS_BASH%" --login -c "%BUILD_RUST_CROSS_BOOOTSTRAP_ENVS%; source build-check-bootstrap.sh; sh build-single.sh rust >build-stage2-rust-cross.txt 2>&1"
 goto :build_stage2_rust_native_direct
 
 :build_stage2_rust_native
@@ -133,20 +137,20 @@ goto :build_stage2_rust_native_direct
 :build_stage2_rust_native_direct
 call :rebaseall_msys64_stage2_p
 echo "Building rust native before rebaseall list for stage2"
-bash --login -c "%MSYS_STAGE2_BASIC_EXPORTS%; source build-check-bootstrap.sh; sh build-single.sh rust >build-stage2-rust-native.txt 2>&1"
+"%MSYS_BASH%" --login -c "%MSYS_STAGE2_BASIC_EXPORTS%; source build-check-bootstrap.sh; sh build-single.sh rust >build-stage2-rust-native.txt 2>&1"
 call :rebaseall_msys64_stage2_p
 goto :build_stage_cargo
 
 :build_stage_cargo
 echo "Building the cargo by native"
-bash --login -c "%MSYS_STAGE2_BASIC_EXPORTS%; source build-check-bootstrap.sh; sh build-single.sh cargo-c >build-stage2-cargo-native.txt 2>&1"
+"%MSYS_BASH%" --login -c "%MSYS_STAGE2_BASIC_EXPORTS%; source build-check-bootstrap.sh; sh build-single.sh cargo-c >build-stage2-cargo-native.txt 2>&1"
 goto :build_stage2_rest
 
 :build_stage2_rest
 echo "Building the rest packages"
 powershell -NoProfile -Command "echo '' > build-stage2.txt; (Get-Item 'build-stage2.txt').CreationTime = Get-Date"
-bash --login -c "%MSYS_STAGE2_BASIC_EXPORTS%; source build-check-bootstrap.sh; sh build-stage2-list.sh >build-stage2.txt 2>&1"
-bash --login -c "%MSYS_STAGE2_BASIC_EXPORTS%; source build-check-bootstrap.sh; sh build-stage2-list-extra.sh >build-stage2-list-extra.txt 2>&1"
+"%MSYS_BASH%" --login -c "%MSYS_STAGE2_BASIC_EXPORTS%; source build-check-bootstrap.sh; sh build-stage2-list.sh >build-stage2.txt 2>&1"
+"%MSYS_BASH%" --login -c "%MSYS_STAGE2_BASIC_EXPORTS%; source build-check-bootstrap.sh; sh build-stage2-list-extra.sh >build-stage2-list-extra.txt 2>&1"
 goto :build_stage3
 
 :build_stage3
@@ -175,8 +179,8 @@ exit /B 0
 set "MSYS_RUNTIME_PACKAGES="
 set "MSYS_RUNTIME_PACKAGES=%MSYS_RUNTIME_PACKAGES% ./dist-pkg/msys2-runtime-$MSYS_RUNTIME_PKGVER-$MSYS_RUNTIME_PKGREL-x86_64.pkg.tar.zst"
 set "MSYS_RUNTIME_PACKAGES=%MSYS_RUNTIME_PACKAGES% ./dist-pkg/msys2-runtime-devel-$MSYS_RUNTIME_PKGVER-$MSYS_RUNTIME_PKGREL-x86_64.pkg.tar.zst"
-bash --login -c "source build-check-bootstrap.sh; pacman -U --noconfirm --overwrite \* %MSYS_RUNTIME_PACKAGES%"
-bash --login -c "source build-check-bootstrap.sh; pacman -U --noconfirm --overwrite \* %MSYS_RUNTIME_PACKAGES_INIT%"
+"%MSYS_BASH%" --login -c "source build-check-bootstrap.sh; pacman -U --noconfirm --overwrite \* %MSYS_RUNTIME_PACKAGES%"
+"%MSYS_BASH%" --login -c "source build-check-bootstrap.sh; pacman -U --noconfirm --overwrite \* %MSYS_RUNTIME_PACKAGES_INIT%"
 exit /B 0
 
 :install_msys2_hook_runtime
@@ -184,24 +188,30 @@ exit /B 0
 set "MSYS_RUNTIME_PACKAGES="
 set "MSYS_RUNTIME_PACKAGES=%MSYS_RUNTIME_PACKAGES% ./dist/init/msys2-runtime-$MSYS_RUNTIME_PKGVER-5-x86_64.pkg.tar.zst"
 set "MSYS_RUNTIME_PACKAGES=%MSYS_RUNTIME_PACKAGES% ./dist/init/msys2-runtime-devel-$MSYS_RUNTIME_PKGVER-5-x86_64.pkg.tar.zst"
-bash --login -c "source build-check-bootstrap.sh; pacman -U --noconfirm --overwrite \* %MSYS_RUNTIME_PACKAGES%"
-bash --login -c "source build-check-bootstrap.sh; pacman -U --noconfirm --overwrite \* %MSYS_RUNTIME_PACKAGES_INIT%"
+"%MSYS_BASH%" --login -c "source build-check-bootstrap.sh; pacman -U --noconfirm --overwrite \* %MSYS_RUNTIME_PACKAGES%"
+"%MSYS_BASH%" --login -c "source build-check-bootstrap.sh; pacman -U --noconfirm --overwrite \* %MSYS_RUNTIME_PACKAGES_INIT%"
 exit /B 0
 
 :init_msys64_stage0
 set "MSYS64_STAGE_DIR=%CI_TOOLS_ROOT%\msys64-stage0"
+set "MSYS_BASH=%MSYS64_STAGE_DIR%\msys64\usr\bin\bash.exe"
+set "MSYS_DASH=%MSYS64_STAGE_DIR%\msys64\usr\bin\dash.exe"
 set "PATH=%CI_TOOLS_ROOT%\msys64-stage0;%CI_TOOLS_ROOT%\msys64-stage0\msys64\usr\bin;%PATH_OLD%"
 @echo "The stage0 PATH is:%PATH%"
 exit /B 0
 
 :init_msys64_stage2
 set "MSYS64_STAGE_DIR=%CI_TOOLS_ROOT%\msys64-stage2"
+set "MSYS_BASH=%MSYS64_STAGE_DIR%\msys64\usr\bin\bash.exe"
+set "MSYS_DASH=%MSYS64_STAGE_DIR%\msys64\usr\bin\dash.exe"
 set "PATH=%CI_TOOLS_ROOT%\msys64-stage2;%CI_TOOLS_ROOT%\msys64-stage2\msys64\usr\bin;%PATH_OLD%"
 @echo "The stage2 PATH is:%PATH%"
 exit /B 0
 
 :init_msys64_stage3
 set "MSYS64_STAGE_DIR=%CI_TOOLS_ROOT%\msys64-stage3"
+set "MSYS_BASH=%MSYS64_STAGE_DIR%\msys64\usr\bin\bash.exe"
+set "MSYS_DASH=%MSYS64_STAGE_DIR%\msys64\usr\bin\dash.exe"
 set "PATH=%CI_TOOLS_ROOT%\msys64-stage3;%CI_TOOLS_ROOT%\msys64-stage3\msys64\usr\bin;%PATH_OLD%"
 @echo "The stage3 PATH is:%PATH%"
 exit /B 0
@@ -217,7 +227,7 @@ setlocal
 set MSYS=
 set MSYSTEM=
 set CHERE_INVOKING=
-dash /usr/bin/rebaseall -p
-bash --login -c "rm -rf /etc/rebase.db.x86_64"
+"%MSYS_DASH%" /usr/bin/rebaseall -p
+"%MSYS_BASH%" --login -c "rm -rf /etc/rebase.db.x86_64"
 endlocal
 exit /B 0

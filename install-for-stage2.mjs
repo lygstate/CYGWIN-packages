@@ -55,4 +55,7 @@ async function main() {
   console.log(`===stage2: Wrote extract.bat and delete-msys64.bat`);
 }
 
-main();
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

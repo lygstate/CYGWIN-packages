@@ -298,9 +298,14 @@ ${tail}`.trim();
     if (!(await this.fsExistsAsync(msys_root))) {
       return;
     }
-    console.log(`===Merge pacman cache before removing ${msys_root}`);
-    await this.linkPacmanCache(msys_root);
-    await this.runMsysBash(msys_root, bash_detach_pacman_pkg_cache);
+    const bash_exe = msysBashExe(msys_root);
+    if (await this.fsExistsAsync(bash_exe)) {
+      console.log(`===Merge pacman cache before removing ${msys_root}`);
+      await this.linkPacmanCache(msys_root);
+      await this.runMsysBash(msys_root, bash_detach_pacman_pkg_cache);
+    } else {
+      console.log(`===Skip cache merge, bash missing at ${bash_exe}`);
+    }
     try {
       await this.fs.rm(msys_root, { recursive: true, force: true });
     } catch (e) {
@@ -320,6 +325,13 @@ ${tail}`.trim();
 
     console.log(`===Init env at ${msys_root}`);
     let has_msys64 = await this.fsExistsAsync(msys_root);
+    const has_bash =
+      has_msys64 && (await this.fsExistsAsync(msysBashExe(msys_root)));
+    if (has_msys64 && !has_bash) {
+      console.log(`===Broken msys64 at ${msys_root}, removing before extract`);
+      await this.fs.rm(msys_root, { recursive: true, force: true });
+      has_msys64 = false;
+    }
     if (!has_msys64) {
       console.log(`===Extracting base`);
       await this.spawnProcessAsync(

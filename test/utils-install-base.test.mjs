@@ -88,6 +88,39 @@ test("installMsys2BasePackages", async () => {
   );
 });
 
+test("clearMsys64 skips cache merge when bash is missing", async () => {
+  const msys_root = "D:\\CI-Tools\\msys64-stage2\\msys64";
+
+  const linkPacmanCache = mock.fn(async () => {});
+  const rm = mock.fn(async () => {});
+  const installer = makeInstaller({
+    linkPacmanCache,
+    fs: { rm },
+    fsExistsAsync: mock.fn(async (target) => {
+      if (target === msys_root) {
+        return true;
+      }
+      if (target.endsWith("bash.exe")) {
+        return false;
+      }
+      return false;
+    }),
+  });
+
+  await installer.clearMsys64(msys_root);
+
+  assert.deepEqual(
+    {
+      linkPacmanCacheCalls: mockArguments(linkPacmanCache),
+      rmCalls: mockArguments(rm),
+    },
+    {
+      linkPacmanCacheCalls: [],
+      rmCalls: [[msys_root, { recursive: true, force: true }]],
+    },
+  );
+});
+
 test("installMsys2AllPackages", async () => {
   const ci_tools_msys64_parent = "D:\\CI-Tools\\msys64-stage0";
   const pkg_root_win = "D:\\work\\xemu\\CYGWIN-packages";
