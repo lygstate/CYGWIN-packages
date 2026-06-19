@@ -16,3 +16,16 @@ alwaysApply: true
 - Set `MSYS=winsymlinks:native`, `MSYSTEM=CYGWIN`, and `CHERE_INVOKING=1`.
 - Do not use bare `bash` or `sh` from the Windows `PATH` for this repo; it may
   resolve to WSL instead of the configured MSYS2/CYGWIN environment.
+
+## Do not use bare `cmd`
+
+When MSYS `usr\bin` is on `PATH` (as in `build-all.bat`), bare `cmd` resolves
+to `msys64/usr/bin/cmd`, a bash script with no `.exe` extension. Windows cannot
+run it as a console app and may open an "unknown file" / Open With dialog.
+
+- Do not run `cmd` or `cmd /c ...` from agent shells or scripts in this repo.
+- Use `cmd.exe`, `%COMSPEC%`, or `C:\Windows\System32\cmd.exe` if Command
+  Prompt is truly needed.
+- Prefer calling MSYS `bash.exe` directly instead of wrapping commands in
+  `cmd.exe`.
+
