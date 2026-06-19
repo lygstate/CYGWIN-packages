@@ -17,6 +17,7 @@ process.on("SIGINT", function () {
 
 async function main() {
   const portsDir = repoPath("ports");
+  const generatedDir = repoPath("scripts", "generated");
   const packages_list = await fs.readdir(portsDir);
   let script = "";
   for (let pkg_name of packages_list) {
@@ -46,7 +47,7 @@ async function main() {
   console.log(`All path checked`);
   console.log(pkg_info.stdout);
 
-  const msys_packages = repoPath("msys.txt");
+  const msys_packages = repoPath("scripts", "generated", "msys.txt");
   const packages = await fs.readFile(msys_packages, "utf-8");
 
   const deps_map = {};
@@ -65,8 +66,9 @@ async function main() {
     console.log(`Deps for ${pkg_name} is :[\n${deps.stdout}\n]`);
     deps_map[pkg_name] = deps.stdout.trim().split("\n").slice(1);
   }
+  await fs.mkdir(generatedDir, { recursive: true });
   await fs.writeFile(
-    "deps.json",
+    repoPath("scripts", "generated", "deps.json"),
     JSON.stringify(
       {
         pkg_info: JSON.parse(

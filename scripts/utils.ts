@@ -500,7 +500,8 @@ ${tail}`.trim();
       if (black_list.has(pkg_name)) continue;
       packages.push(pkg_name);
     }
-    const msys_txt_path = path.join(pkg_root, "msys.txt");
+    const msys_txt_path = path.join(pkg_root, "scripts", "generated", "msys.txt");
+    await this.fs.mkdir(path.dirname(msys_txt_path), { recursive: true });
     await this.fs.writeFile(msys_txt_path, packages.join("\n"), "utf-8");
 
     console.log(`===Installing all packages`);
@@ -508,7 +509,7 @@ ${tail}`.trim();
     const bash_commands_for_install_all = [
       `sed -i 's/^SigLevel.*$/SigLevel=Never/g' /etc/pacman.conf`,
       `cat /etc/pacman.conf | grep ^SigLevel`,
-      `pacman -S --noconfirm --needed $(cat msys.txt)`,
+      `pacman -S --noconfirm --needed $(cat scripts/generated/msys.txt)`,
     ];
 
     await this.executePacmanInstall(

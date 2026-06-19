@@ -131,6 +131,7 @@ test("installMsys2AllPackages", async () => {
 
   const spawns = [];
   const linkPacmanCache = mock.fn(async () => {});
+  const mkdir = mock.fn(async () => {});
   const writeFile = mock.fn(async () => {});
   const installMsys2BasePackages = mock.fn(async () => true);
   const installer = makeInstaller({
@@ -167,7 +168,7 @@ test("installMsys2AllPackages", async () => {
       spawns.push({ command, args, options });
       return 0;
     }),
-    fs: { writeFile },
+    fs: { mkdir, writeFile },
   });
 
   const has_msys64 = await installer.installMsys2AllPackages(
@@ -183,6 +184,7 @@ test("installMsys2AllPackages", async () => {
       spawnProcessAsyncCaptureCalls: mockArguments(
         installer.spawnProcessAsyncCapture,
       ),
+      msysTxtMkdir: mockArguments(mkdir),
       msysTxtWrite: mockArguments(writeFile),
       linkPacmanCacheCalls: mockArguments(linkPacmanCache),
       spawnProcessAsyncCalls: spawnCalls(spawns),
@@ -202,9 +204,15 @@ test("installMsys2AllPackages", async () => {
           ["-Sl", "msys"],
         ],
       ],
+      msysTxtMkdir: [
+        [
+          "D:\\work\\xemu\\CYGWIN-packages\\scripts\\generated",
+          { recursive: true },
+        ],
+      ],
       msysTxtWrite: [
         [
-          "D:\\work\\xemu\\CYGWIN-packages\\msys.txt",
+          "D:\\work\\xemu\\CYGWIN-packages\\scripts\\generated\\msys.txt",
           "foo\nbar",
           "utf-8",
         ],
@@ -220,7 +228,7 @@ test("installMsys2AllPackages", async () => {
           args: [
             "--login",
             "-c",
-            "cd /d/work/xemu/CYGWIN-packages/; sed -i 's/^SigLevel.*$/SigLevel=Never/g' /etc/pacman.conf; cat /etc/pacman.conf | grep ^SigLevel; pacman -S --noconfirm --needed $(cat msys.txt)",
+            "cd /d/work/xemu/CYGWIN-packages/; sed -i 's/^SigLevel.*$/SigLevel=Never/g' /etc/pacman.conf; cat /etc/pacman.conf | grep ^SigLevel; pacman -S --noconfirm --needed $(cat scripts/generated/msys.txt)",
           ],
           cwd: "D:\\work\\xemu\\CYGWIN-packages",
           env: {

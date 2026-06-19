@@ -10,7 +10,7 @@ source scripts/sh/check-bootstrap.sh
 if [[ "$MSYS_CLEAN_TYPE" == "only" ]]; then
     echo "Do cleanup only, do not init"
 else
-    sh bootstrap-init-stage1.sh
+    sh scripts/sh/bootstrap-init-stage1.sh
 fi
 
 pushd build-install
@@ -46,7 +46,7 @@ do_other() {
     pacman -S ca-certificates --noconfirm --needed
     update-ca-trust
 
-    pacman -Qq >msys.txt
+    pacman -Qq >scripts/generated/msys.txt
     updpkgsums
     Do not extract source
     makepkg  -e -f

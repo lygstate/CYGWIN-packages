@@ -159,7 +159,7 @@ async function write_script(
 }
 
 async function get_deps_map_make() {
-  const deps_json_filepath = repoPath("deps.json");
+  const deps_json_filepath = repoPath("scripts", "generated", "deps.json");
   const deps_json = JSON.parse(await fs.readFile(deps_json_filepath, "utf-8"));
   const deps_map_make_pkg = {};
   const dir_for_package = {};
@@ -249,8 +249,9 @@ async function get_deps_map_make() {
 
 async function main() {
   let deps_map_make = await get_deps_map_make();
+  await fs.mkdir(repoPath("scripts", "generated"), { recursive: true });
   await fs.writeFile(
-    repoPath("deps-map-make.json"),
+    repoPath("scripts", "generated", "deps-map-make.json"),
     JSON.stringify(deps_map_make, null, 2),
   );
   console.log("deps_map_make update finished");

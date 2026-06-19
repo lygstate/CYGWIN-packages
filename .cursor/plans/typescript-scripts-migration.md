@@ -67,9 +67,10 @@ Vite will be added for build/check tooling, not as the runtime path.
   carefully. `scripts/sh/check-bootstrap.sh` is the key risk because callers
   expect it to set shell variables.
 - Preserve generated output locations at repo root:
-  - `deps.json`
+  - `scripts/generated/deps.json`
+  - `scripts/generated/msys.txt`
   - `pkg_info.sh`
-  - `deps-map-make.json`
+  - `scripts/generated/deps-map-make.json`
   - `scripts/sh/stage1-list.sh`
   - `scripts/sh/stage2-list.sh`
 
