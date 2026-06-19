@@ -167,10 +167,10 @@ async function install_mingw(MINGW_PACKAGE_PREFIX) {
   const msys_root = path.join(ci_tools_msys64_parent, "msys64");
   const pkg_root = __dirname;
 
-  const msys_txt_path = path.join(pkg_root, "install-mingw-for-stage3.txt");
+  const msys_txt_path = path.join(pkg_root, "install-mingw-for-stage3-packages.txt");
   await fs.writeFile(msys_txt_path, packages.join("\n"), "utf-8");
 
-  await executePacmanInstall(msys_root, `pacman -S --noconfirm --needed $(cat install-mingw-for-stage3.txt)`, pkg_root);
+  await executePacmanInstall(msys_root, `pacman -S --noconfirm --needed $(cat install-mingw-for-stage3-packages.txt)`, pkg_root);
   console.log("===stage3: Install mingw packages finished");
   const msys2_base_filename = await archiveFull(
     ci_tools_msys64_parent,
