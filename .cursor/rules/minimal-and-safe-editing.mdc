@@ -1,16 +1,17 @@
 ---
-description: Minimal and safe editing; only requested changes, stable style, preserve interfaces, contracts, encoding, and text fidelity
+description: Minimal and safe editing
 alwaysApply: true
 ---
 
 # Minimal and Safe Editing
 
-Apply this every time you edit code, reply, commit, or open a PR.
+Apply this every time you edit code, reply, commit, or open a PR. It covers
+scope, style, interfaces, contracts, encoding, and text fidelity.
 
 ## Core principle
 
-Make only the changes the user explicitly requested in the current message.
-Leave everything else byte-for-byte unchanged.
+Make only the changes the user explicitly requested in the current message;
+keep style stable and leave everything else byte-for-byte unchanged.
 
 ## Procedure for every edit
 
@@ -81,10 +82,13 @@ Applies to all text you write or edit: code, comments, docs, chat, commits, PRs.
 
 - Stage only files that belong to the requested change; do not bundle unrelated
   work.
-- Read recent `git log` and match this repo's commit message style.
-- Commit message: 1-2 complete sentences on why, not a list of what changed.
-- Use accurate verbs: add, fix, update, remove (not refactor or cleanup unless
-  that is the real goal).
+- Commit title: read recent `git log` and match this repo's title style only
+  (short summary; accurate verbs: add, fix, update, remove).
+- Commit body: always include a detailed `- ` bullet list of what changed.
+  Wrap body lines at 80 columns.
+- When amending, keep the title format; update the title only if the change
+  scope warrants it. Always rewrite the body as a fresh detailed `- ` bullet
+  list of what is in the commit, wrapped at 80 columns.
 - PR title: short summary. PR body: `- ` bullets for Summary and Test plan;
   complete sentences; ASCII punctuation only.
 
