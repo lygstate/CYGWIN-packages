@@ -20,24 +20,6 @@ export default defineConfig({
       external: (id) => external.has(id),
       input: {
         "build-all": resolve(rootDir, "scripts/build-all.ts"),
-        "build-check-bootstrap": resolve(
-          rootDir,
-          "scripts/build-check-bootstrap.ts",
-        ),
-        "build-check-deps": resolve(rootDir, "scripts/build-check-deps.ts"),
-        "build-check-msys-stage": resolve(
-          rootDir,
-          "scripts/build-check-msys-stage.ts",
-        ),
-        "build-single": resolve(rootDir, "scripts/build-single.ts"),
-        "build-single-stage2": resolve(
-          rootDir,
-          "scripts/build-single-stage2.ts",
-        ),
-        "build-single-sums": resolve(rootDir, "scripts/build-single-sums.ts"),
-        "build-stage-hook": resolve(rootDir, "scripts/build-stage-hook.ts"),
-        "build-stage0": resolve(rootDir, "scripts/build-stage0.ts"),
-        "build-stage1": resolve(rootDir, "scripts/build-stage1.ts"),
         check: resolve(rootDir, "scripts/check.ts"),
         deps: resolve(rootDir, "scripts/deps.ts"),
         "gen-build-all": resolve(rootDir, "scripts/gen-build-all.ts"),

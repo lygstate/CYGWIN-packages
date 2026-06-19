@@ -8,12 +8,12 @@
 
 ### Running `node scripts/deps.ts` to generate deps.json
 
-### Running `node scripts/gen-build-all.ts` to generate `build-stage1-list.sh` and `build-stage2-list.sh`
+### Running `node scripts/gen-build-all.ts` to generate stage package lists
 
 ### Building all packages
 
 Open MSYS2-CYGWIN-CMD, then:
 
 ```bat
-build-all.bat
+node scripts/build-all.ts
 ```

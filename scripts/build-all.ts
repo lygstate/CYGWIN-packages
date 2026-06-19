@@ -28,6 +28,8 @@ const runtimePackagesInit = [
 
 const msysStage2BasicExports = "export MSYS_BOOTSTRAP_STAGE=stage2";
 const cmdExe = process.env.COMSPEC || "C:\\Windows\\System32\\cmd.exe";
+const checkBootstrap = "source scripts/sh/check-bootstrap.sh";
+const buildSingle = "sh scripts/sh/single.sh";
 
 let msys64StageDir = "";
 let msysBash = "";
@@ -92,14 +94,14 @@ async function installMsys2OriginalRuntime() {
   exitWith(
     await runMsysCommand(
       msysBash,
-      `source build-check-bootstrap.sh; pacman -U --noconfirm --overwrite \\* ${packages}`,
+      `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${packages}`,
       env,
     ),
   );
   exitWith(
     await runMsysCommand(
       msysBash,
-      `source build-check-bootstrap.sh; pacman -U --noconfirm --overwrite \\* ${runtimePackagesInit}`,
+      `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${runtimePackagesInit}`,
       env,
     ),
   );
@@ -113,14 +115,14 @@ async function installMsys2HookRuntime() {
   exitWith(
     await runMsysCommand(
       msysBash,
-      `source build-check-bootstrap.sh; pacman -U --noconfirm --overwrite \\* ${packages}`,
+      `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${packages}`,
       env,
     ),
   );
   exitWith(
     await runMsysCommand(
       msysBash,
-      `source build-check-bootstrap.sh; pacman -U --noconfirm --overwrite \\* ${runtimePackagesInit}`,
+      `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${runtimePackagesInit}`,
       env,
     ),
   );
@@ -146,7 +148,7 @@ async function main() {
   exitWith(
     await runMsysCommandToLog(
       msysBash,
-      "source build-stage-hook.sh",
+      "source scripts/sh/stage-hook.sh",
       "build-stage-hook.txt",
       env,
     ),
@@ -157,7 +159,7 @@ async function main() {
   exitWith(
     await runMsysCommandToLog(
       msysBash,
-      "source build-stage0.sh",
+      "source scripts/sh/stage0.sh",
       "build-stage0.txt",
       env,
     ),
@@ -166,7 +168,7 @@ async function main() {
   exitWith(
     await runMsysCommandToLog(
       msysBash,
-      "source build-stage1.sh",
+      "source scripts/sh/stage1.sh",
       "build-stage1.txt",
       env,
     ),
@@ -180,7 +182,7 @@ async function main() {
   exitWith(
     await runMsysCommand(
       msysBash,
-      `${msysStage2BasicExports}; source build-check-bootstrap.sh; sh build-single.sh gcc >build-stage2-gcc.txt 2>&1`,
+      `${msysStage2BasicExports}; ${checkBootstrap}; ${buildSingle} gcc >build-stage2-gcc.txt 2>&1`,
       env,
     ),
   );
@@ -191,7 +193,7 @@ async function main() {
   exitWith(
     await runMsysCommand(
       msysBash,
-      `${rustCrossEnvs}; source build-check-bootstrap.sh; sh build-single.sh rust >build-stage2-rust-cross.txt 2>&1`,
+      `${rustCrossEnvs}; ${checkBootstrap}; ${buildSingle} rust >build-stage2-rust-cross.txt 2>&1`,
       env,
     ),
   );
@@ -201,7 +203,7 @@ async function main() {
   exitWith(
     await runMsysCommand(
       msysBash,
-      `${msysStage2BasicExports}; source build-check-bootstrap.sh; sh build-single.sh rust >build-stage2-rust-native.txt 2>&1`,
+      `${msysStage2BasicExports}; ${checkBootstrap}; ${buildSingle} rust >build-stage2-rust-native.txt 2>&1`,
       env,
     ),
   );
@@ -211,7 +213,7 @@ async function main() {
   exitWith(
     await runMsysCommand(
       msysBash,
-      `${msysStage2BasicExports}; source build-check-bootstrap.sh; sh build-single.sh cargo-c >build-stage2-cargo-native.txt 2>&1`,
+      `${msysStage2BasicExports}; ${checkBootstrap}; ${buildSingle} cargo-c >build-stage2-cargo-native.txt 2>&1`,
       env,
     ),
   );
@@ -220,7 +222,7 @@ async function main() {
   exitWith(
     await runMsysCommandToLog(
       msysBash,
-      `${msysStage2BasicExports}; source build-check-bootstrap.sh; sh build-stage2-list.sh`,
+      `${msysStage2BasicExports}; ${checkBootstrap}; sh scripts/sh/stage2-list.sh`,
       "build-stage2.txt",
       env,
     ),
@@ -228,7 +230,7 @@ async function main() {
   exitWith(
     await runMsysCommandToLog(
       msysBash,
-      `${msysStage2BasicExports}; source build-check-bootstrap.sh; sh build-stage2-list-extra.sh`,
+      `${msysStage2BasicExports}; ${checkBootstrap}; sh scripts/sh/stage2-list-extra.sh`,
       "build-stage2-list-extra.txt",
       env,
     ),

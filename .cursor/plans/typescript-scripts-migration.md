@@ -13,12 +13,9 @@ Vite will be added for build/check tooling, not as the runtime path.
   TypeScript.
 - Move all current `.mjs` code into `scripts/` as TypeScript, including tests
   under `scripts/test/` or `test/` with updated imports.
-- Keep root compatibility stubs for existing contracts: `build-all.bat`,
-  `build-single.sh`, `build-single-sums.sh`, `build-single-stage2.sh`,
-  `build-stage-hook.sh`, `build-stage0.sh`, `build-stage1.sh`,
-  `build-check-bootstrap.sh`, `build-check-deps.sh`, and generated
-  `build-stage1-list.sh` / `build-stage2-list.sh` if callers still expect
-  those names.
+- Keep `scripts/build-all.ts` as the single build entrypoint and remove root
+  `build-all.bat` / `build*.sh` compatibility stubs.
+- Keep generated stage package lists under `scripts/sh/`.
 - Do not migrate `build-install/*.sh`, docs such as `BUILD.md`, log files, or
   patch files containing `build` in their names.
 
@@ -59,33 +56,26 @@ Vite will be added for build/check tooling, not as the runtime path.
 
 - Convert shell/batch implementations into TypeScript orchestration where
   practical, preserving behavior and log names.
-- Keep root stubs minimal and stable:
-  - `build-all.bat` delegates to `node scripts/build-all.ts`.
-  - shell stubs delegate to `node scripts/<same-name>.ts "$@"` or
-    source-compatible wrappers where `source` is required.
+- Keep `scripts/build-all.ts` as the single build entrypoint.
 - Preserve existing CLI/environment contracts, especially:
-  - `build-single.sh <pkg>`
+  - internal single-package builds use `scripts/sh/single.sh <pkg>`
   - `MSYS_BOOTSTRAP_STAGE`, `MSYS_BUILD_PKGSUMS`, `MSYS_CLEAN_TYPE`,
     `MSYS_BUILD_NO_EXTRACT`, `MSYS_BOOTSTRAP_EXIT_ON_ERROR`
   - output logs like `build-stage0.txt`, `build-stage1.txt`,
     `build-stage2.txt`
 - For scripts that are currently sourced, handle exported environment
-  carefully. `build-check-bootstrap.sh` is the key risk because callers expect
-  it to set shell variables. The compatible path is to keep a root shell stub
-  that sources `ports/msys2-runtime/check-bootstrap.sh` and/or asks TypeScript
-  to print shell assignments for `eval`, rather than pretending a child Node
-  process can export to the parent shell.
+  carefully. `scripts/sh/check-bootstrap.sh` is the key risk because callers
+  expect it to set shell variables.
 - Preserve generated output locations at repo root:
   - `deps.json`
   - `pkg_info.sh`
   - `deps-map-make.json`
-  - `build-stage1-list.sh`
-  - `build-stage2-list.sh`
+  - `scripts/sh/stage1-list.sh`
+  - `scripts/sh/stage2-list.sh`
 
 ## Reference Updates
 
-- Update `build-all.bat` node invocations to use `scripts/*.ts` through the new
-  runner behavior.
+- Update bootstrap documentation to use `node scripts/build-all.ts`.
 - Update `README-bootstrap.md` references from `.mjs` and root build
   implementation details to the new TypeScript commands while keeping old root
   entry points documented as compatibility commands.
