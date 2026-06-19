@@ -24,7 +24,8 @@ Vite will be added for build/check tooling, not as the runtime path.
 
 ## Tooling Shape
 
-- Add `typescript`, `vite`, and `@types/node` as dev dependencies.
+- Use Yarn for package management.
+- Add `typescript`, `vite`, and `@types/node` as dev dependencies with Yarn.
 - Add `tsconfig.json` for Node-native TypeScript with ESM imports and strict
   enough checks to catch migration mistakes.
 - Add `vite.config.ts` with script entry points for validation/build artifacts
@@ -95,9 +96,9 @@ Vite will be added for build/check tooling, not as the runtime path.
 
 ## Validation
 
-- Run the focused Node test suite after conversion.
-- Run TypeScript checking.
-- Run Vite build/check script.
+- Run the focused Node test suite after conversion with Yarn.
+- Run TypeScript checking with Yarn.
+- Run Vite build/check script with Yarn.
 - Smoke-test non-destructive entry points where possible, such as
   `node scripts/check.ts` and generated-list creation if inputs are present.
 - Do not run the full bootstrap build unless explicitly requested.
@@ -106,7 +107,7 @@ Vite will be added for build/check tooling, not as the runtime path.
 
 - Confirm every root build entry point and generated output contract before
   moving code.
-- Add TypeScript, Vite, Node type tooling, and package scripts.
+- Add TypeScript, Vite, Node type tooling, and package scripts with Yarn.
 - Convert all `.mjs` files to TypeScript under `scripts/` and update
   imports/tests.
 - Move build orchestration implementations into `scripts/` and leave root
