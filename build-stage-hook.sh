@@ -1,17 +1,5 @@
-export MSYS_BUILD_PKGSUMS=disabled
-# export MSYS_CLEAN_TYPE=enabled
-export MSYS_BOOTSTRAP_STAGE=
-source build-check-bootstrap.sh
-
-sh build-single.sh msys2-runtime
-
-export MSYS_BUILD_PKGSUMS=disabled
-# export MSYS_CLEAN_TYPE=enabled
-export MSYS_BOOTSTRAP_STAGE=stage_origin_hook
-source build-check-bootstrap.sh
-
-sh build-single.sh msys2-runtime
-
-do_build() {
-  sh ./build-stage-hook.sh >build-stage-hook.txt 2>&1
-}
+currnent_script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+cd "$currnent_script_dir"
+node scripts/build-stage-hook.ts "$@"
+ret=$?
+return $ret 2>/dev/null || exit $ret

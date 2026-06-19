@@ -12,6 +12,7 @@
 *.asc
 *.log
 *.log.[0-9]*
+/node_modules/
 /ports/*/src/
 /ports/*/pkg/
 *~

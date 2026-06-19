@@ -1,6 +1,15 @@
 import { spawn } from "child_process";
 import * as fs from "fs/promises";
 import * as path from "path";
+import { fileURLToPath } from "url";
+
+const scriptDir = path.dirname(fileURLToPath(import.meta.url));
+
+export const repoRoot = path.resolve(scriptDir, "..");
+
+export function repoPath(...parts: string[]) {
+  return path.join(repoRoot, ...parts);
+}
 
 export const black_list = new Set([
   // "ca-certificates",
@@ -221,7 +230,7 @@ export function parsePkgArchiveFilename(filename) {
   };
 }
 
-export async function dedupeDistPackageDir(dist_dir, fsImpl = fs) {
+export async function dedupeDistPackageDir(dist_dir, fsImpl: any = fs) {
   let names;
   try {
     names = await fsImpl.readdir(dist_dir);
@@ -260,7 +269,17 @@ export async function dedupeDistPackageDir(dist_dir, fsImpl = fs) {
   return removed;
 }
 
-export function spawnProcessAsyncCapture(command, args = [], options = {}) {
+type ProcessCapture = {
+  stdout: string;
+  stderr: string;
+  code: number;
+};
+
+export function spawnProcessAsyncCapture(
+  command: string,
+  args: string[] = [],
+  options = {},
+): Promise<ProcessCapture> {
   return new Promise((resolve, reject) => {
     // Collect stdout and stderr data
     let stdoutOutput = "";
@@ -309,7 +328,12 @@ function msysBashEnv() {
 }
 
 export class Msys2Installer {
-  constructor(overrides = {}) {
+  spawnProcessAsync: typeof spawnProcessAsync;
+  spawnProcessAsyncCapture: typeof spawnProcessAsyncCapture;
+  fs: any;
+  baseTarball: string;
+
+  constructor(overrides: Record<string, any> = {}) {
     this.spawnProcessAsync = spawnProcessAsync;
     this.spawnProcessAsyncCapture = spawnProcessAsyncCapture;
     this.fs = fs;
@@ -554,7 +578,11 @@ ${tail}`.trim();
   }
 }
 
-export function spawnProcessAsync(command, args = [], options = {}) {
+export function spawnProcessAsync(
+  command: string,
+  args: string[] = [],
+  options = {},
+): Promise<number> {
   return new Promise((resolve, reject) => {
     const p = spawn(command, args, options);
     p.stdout?.pipe(process.stdout);
@@ -601,7 +629,7 @@ export async function linkPacmanCache(msys_root, bootstrap = false) {
 export async function archiveFull(
   ci_tools_msys64_parent,
   msys_root,
-  msys2_base_filename,
+  msys2_base_filename = "",
 ) {
   return defaultMsys2Installer.archiveFull(
     ci_tools_msys64_parent,

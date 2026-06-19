@@ -1,16 +1,13 @@
 import * as fs from "fs/promises";
 import * as fsSync from "fs";
 import * as path from "path";
-import { fileURLToPath } from "url";
 import process from "node:process";
 import {
   black_list,
   ci_tools_msys64_stage0,
+  repoPath,
   spawnProcessAsyncCapture,
-} from "./utils.mjs";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+} from "./utils.ts";
 
 let need_exit = false;
 process.on("SIGINT", function () {
@@ -19,7 +16,7 @@ process.on("SIGINT", function () {
 });
 
 async function main() {
-  const portsDir = path.join(__dirname, "ports");
+  const portsDir = repoPath("ports");
   const packages_list = await fs.readdir(portsDir);
   let script = "";
   for (let pkg_name of packages_list) {
@@ -49,7 +46,7 @@ async function main() {
   console.log(`All path checked`);
   console.log(pkg_info.stdout);
 
-  const msys_packages = path.join(__dirname, "msys.txt");
+  const msys_packages = repoPath("msys.txt");
   const packages = await fs.readFile(msys_packages, "utf-8");
 
   const deps_map = {};

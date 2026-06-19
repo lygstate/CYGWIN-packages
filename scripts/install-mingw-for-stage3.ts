@@ -1,18 +1,12 @@
 import * as path from "path";
 import * as fs from "fs/promises";
-import { fileURLToPath } from "url";
 import {
-  spawnProcessAsync,
-  spawnProcessAsyncCapture,
-  removeDirectory,
+  repoRoot,
   archiveFull,
   executePacmanInstall,
   writeExtractBat,
   getYYYYMMDD,
-} from "./utils.mjs";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+} from "./utils.ts";
 
 async function install_mingw(MINGW_PACKAGE_PREFIX) {
   const packages_extra = [
@@ -165,7 +159,7 @@ async function install_mingw(MINGW_PACKAGE_PREFIX) {
 
   const ci_tools_msys64_parent = "D:/CI-Tools/msys64-stage3";
   const msys_root = path.join(ci_tools_msys64_parent, "msys64");
-  const pkg_root = __dirname;
+  const pkg_root = repoRoot;
 
   const msys_txt_path = path.join(pkg_root, "install-mingw-for-stage3-packages.txt");
   await fs.writeFile(msys_txt_path, packages.join("\n"), "utf-8");

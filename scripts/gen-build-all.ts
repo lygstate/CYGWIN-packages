@@ -1,10 +1,6 @@
 import * as fs from "fs/promises";
-import * as path from "path";
-import { fileURLToPath } from "url";
 import process from "node:process";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { repoPath } from "./utils.ts";
 
 let need_exit = false;
 process.on("SIGINT", function () {
@@ -163,7 +159,7 @@ async function write_script(
 }
 
 async function get_deps_map_make() {
-  const deps_json_filepath = path.join(__dirname, "deps.json");
+  const deps_json_filepath = repoPath("deps.json");
   const deps_json = JSON.parse(await fs.readFile(deps_json_filepath, "utf-8"));
   const deps_map_make_pkg = {};
   const dir_for_package = {};
@@ -254,7 +250,7 @@ async function get_deps_map_make() {
 async function main() {
   let deps_map_make = await get_deps_map_make();
   await fs.writeFile(
-    "deps-map-make.json",
+    repoPath("deps-map-make.json"),
     JSON.stringify(deps_map_make, null, 2),
   );
   console.log("deps_map_make update finished");
@@ -275,7 +271,7 @@ async function main() {
   const packages_will_build = await write_script(
     "",
     packages_base_devel,
-    "build-stage1-list.sh",
+    repoPath("build-stage1-list.sh"),
     new Set(packages_deferred_to_stage2),
   );
 
@@ -290,7 +286,7 @@ async function main() {
 sh build-single.sh libxml2
 `,
     packages_other,
-    "build-stage2-list.sh",
+    repoPath("build-stage2-list.sh"),
     new Set([
       // :: cmake-bootstrap-4.2.1-1 and cmake-4.2.1-2 are in conflict. Remove cmake? [Y/n]
       "cmake-bootstrap",

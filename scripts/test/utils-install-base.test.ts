@@ -7,7 +7,7 @@ import {
   bash_detach_pacman_pkg_cache,
   parsePkgArchiveFilename,
   dedupeDistPackageDir,
-} from "../utils.mjs";
+} from "../utils.ts";
 
 function makeInstaller(overrides = {}) {
   return new Msys2Installer(overrides);

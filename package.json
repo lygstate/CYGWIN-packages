@@ -12,9 +12,18 @@
   },
   "license": "ISC",
   "author": "",
-  "type": "commonjs",
-  "main": "check.js",
+  "type": "module",
+  "packageManager": "yarn@1.22.22",
+  "main": "scripts/check.ts",
   "scripts": {
-    "test": "node --test test/utils-install-base.test.mjs"
+    "test": "node --test scripts/test/*.test.ts",
+    "check": "tsc --noEmit",
+    "build": "vite build",
+    "lint": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.0",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.16"
   }
 }

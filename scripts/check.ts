@@ -1,13 +1,10 @@
 import * as fs from 'fs/promises'
 import * as fsSync from 'fs'
 import * as path from 'path'
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { repoPath } from './utils.ts';
 
 async function main() {
-    const portsDir = path.join(__dirname, 'ports');
+    const portsDir = repoPath('ports');
     const dirs = await fs.readdir(portsDir);
     for (let dir of dirs) {
         const fullUrl = path.join(portsDir, dir, 'PKGBUILD');

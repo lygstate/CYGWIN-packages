@@ -1,16 +1,12 @@
 import * as path from "path";
-import { fileURLToPath } from "url";
 import process from "node:process";
 import {
   ci_tools_msys64_stage0,
-  spawnProcessAsyncCapture,
+  repoRoot,
   archiveFull,
   installMsys2AllPackages,
   installMsys2StageBatchScripts,
-} from "./utils.mjs";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+} from "./utils.ts";
 
 process.on("SIGINT", function () {
   console.log("Caught interrupt signal");
@@ -19,7 +15,7 @@ process.on("SIGINT", function () {
 
 async function main() {
   const msys_root = path.join(ci_tools_msys64_stage0, "msys64");
-  const pkg_root = __dirname;
+  const pkg_root = repoRoot;
 
   const has_msys64 = await installMsys2AllPackages(
     ci_tools_msys64_stage0,

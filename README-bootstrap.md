@@ -2,13 +2,13 @@
 
 ## Steps
 
-### Config `ci_tools_base` in utils.mjs properly
+### Config `ci_tools_base` in scripts/utils.ts properly
 
-### Running `install-for-stage0.mjs` for generate initial stage0 msys64 properly
+### Running `node scripts/install-for-stage0.ts` for generate initial stage0 msys64 properly
 
-### Running `deps.mjs` to generate deps.json
+### Running `node scripts/deps.ts` to generate deps.json
 
-### Running `gen-build-all.mjs` to generate `build-stage1-list.sh` and `build-stage2-list.sh`
+### Running `node scripts/gen-build-all.ts` to generate `build-stage1-list.sh` and `build-stage2-list.sh`
 
 ### Building all packages
 
