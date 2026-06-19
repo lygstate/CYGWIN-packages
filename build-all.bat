@@ -232,18 +232,20 @@ endlocal
 exit /B 0
 
 :run_node_install
-set "INSTALL_SCRIPT=%~1"
-set "INSTALL_LOG=%~2"
-echo === Running %INSTALL_SCRIPT% ...
-node %INSTALL_SCRIPT% 1>%INSTALL_LOG% 2>&1
-set "INSTALL_EXIT=%ERRORLEVEL%"
-if not "%INSTALL_EXIT%"=="0" (
+setlocal
+set "NODE_INSTALL_SCRIPT=%~1"
+set "NODE_INSTALL_LOG=%~2"
+echo === Running %NODE_INSTALL_SCRIPT% ...
+node %NODE_INSTALL_SCRIPT% 1>%NODE_INSTALL_LOG% 2>&1
+set "NODE_INSTALL_EXIT=%ERRORLEVEL%"
+if not "%NODE_INSTALL_EXIT%"=="0" (
   echo.
-  echo ERROR: %INSTALL_SCRIPT% failed with exit code %INSTALL_EXIT%
-  echo Log file: %CD%\%INSTALL_LOG%
-  echo --- last 30 lines of %INSTALL_LOG% ---
-  powershell -NoProfile -Command "Get-Content -LiteralPath '%CD%\%INSTALL_LOG%' -Tail 30"
+  echo ERROR: %NODE_INSTALL_SCRIPT% failed with exit code %NODE_INSTALL_EXIT%
+  echo Log file: %CD%\%NODE_INSTALL_LOG%
+  echo --- last 30 lines of %NODE_INSTALL_LOG% ---
+  powershell -NoProfile -Command "Get-Content -LiteralPath '%CD%\%NODE_INSTALL_LOG%' -Tail 30"
   echo ---
-  exit /B %INSTALL_EXIT%
+  endlocal & exit /B %NODE_INSTALL_EXIT%
 )
+endlocal
 exit /B 0
