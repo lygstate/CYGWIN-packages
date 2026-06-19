@@ -1,0 +1,18 @@
+---
+description: Use the project MSYS2 Cygwin stage3 shell for POSIX commands
+alwaysApply: true
+---
+
+# Project Shell
+
+- For Bash, sh, makepkg, pacman, and other POSIX/MSYS package commands in this
+  workspace, use the `MSYS2-CYGWIN-STAGE3` terminal profile from
+  `.vscode/settings.json`.
+- The shell executable is
+  `D:/CI-Tools/msys64-stage3/msys64/usr/bin/bash.exe` with `--login -i`.
+- Before invoking `bash` from another terminal, mirror `build-all.bat` and
+  prepend `D:\CI-Tools\msys64-stage3` and
+  `D:\CI-Tools\msys64-stage3\msys64\usr\bin` to `PATH`.
+- Set `MSYS=winsymlinks:native`, `MSYSTEM=CYGWIN`, and `CHERE_INVOKING=1`.
+- Do not use bare `bash` or `sh` from the Windows `PATH` for this repo; it may
+  resolve to WSL instead of the configured MSYS2/CYGWIN environment.
