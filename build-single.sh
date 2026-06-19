@@ -13,6 +13,15 @@ source "${currnent_script_dir}/ports/msys2-runtime/check-bootstrap.sh"
 
 export pkg_root_dir=$currnent_script_dir
 
+if [ -d "${pkg_root_dir}/ports/${new_dir}" ]; then
+  pkg_source_dir="${pkg_root_dir}/ports/${new_dir}"
+elif [ -d "${pkg_root_dir}/ports-mingw/${new_dir}" ]; then
+  pkg_source_dir="${pkg_root_dir}/ports-mingw/${new_dir}"
+else
+  echo "Unknown package: ${new_dir}"
+  exit -1
+fi
+
 if [[ "$MSYS_BOOTSTRAP_STAGE" == "stage_origin" ]]; then
   DIST_TARGET_DIR_NAME=origin
 elif [[ "$MSYS_BOOTSTRAP_STAGE" == "stage_origin_hook" ]]; then
@@ -114,6 +123,7 @@ do_build() {
     if [ -n "$MSYS_BOOTSTRAP_EXIT_ON_ERROR" ]; then
       exit $retVal
     fi
+    return
   elif [[ "$need_makepkg" == "0" ]]; then
     echo "The packages in '$package_cache_dir' already present, no need cache it."
   else
@@ -191,6 +201,6 @@ do_build() {
   echo ""
 }
 
-pushd ./ports/${new_dir}
+pushd "$pkg_source_dir"
 do_build
 popd
