@@ -13,6 +13,7 @@
 *.log
 *.log.[0-9]*
 /node_modules/
+/.yarn/
 /ports/*/src/
 /ports/*/pkg/
 *~
