@@ -15,7 +15,7 @@ Vite will be added for build/check tooling, not as the runtime path.
   under `scripts/test/` or `test/` with updated imports.
 - Keep `scripts/build-all.ts` as the single build entrypoint and remove root
   `build-all.bat` / `build*.sh` compatibility stubs.
-- Keep generated stage package lists under `scripts/sh/`.
+- Keep generated stage package lists under `scripts/generated/`.
 - Do not migrate `build-install/*.sh`, docs such as `BUILD.md`, log files, or
   patch files containing `build` in their names.
 
@@ -61,8 +61,8 @@ Vite will be added for build/check tooling, not as the runtime path.
   - internal single-package builds use `scripts/sh/single.sh <pkg>`
   - `MSYS_BOOTSTRAP_STAGE`, `MSYS_BUILD_PKGSUMS`, `MSYS_CLEAN_TYPE`,
     `MSYS_BUILD_NO_EXTRACT`, `MSYS_BOOTSTRAP_EXIT_ON_ERROR`
-  - output logs like `build-stage0.txt`, `build-stage1.txt`,
-    `build-stage2.txt`
+  - output logs under `scripts/logs/` (e.g. `build-stage0.txt`,
+    `build-stage1.txt`, `build-stage2.txt`)
 - For scripts that are currently sourced, handle exported environment
   carefully. `scripts/sh/check-bootstrap.sh` is the key risk because callers
   expect it to set shell variables.
@@ -71,8 +71,91 @@ Vite will be added for build/check tooling, not as the runtime path.
   - `scripts/generated/msys.txt`
   - `pkg_info.sh`
   - `scripts/generated/deps-map-make.json`
-  - `scripts/sh/stage1-list.sh`
-  - `scripts/sh/stage2-list.sh`
+  - `scripts/generated/stage1-list.sh`
+  - `scripts/generated/stage2-list.sh`
+
+## Consolidation plan (single entrypoint)
+
+Runtime entry is already `start.bat` -> `scripts/build-all.ts`. Remaining
+work is to fold duplicate scripts into that pipeline and drop manual pre-steps.
+
+### Target pipeline order
+
+`deps.ts` and `gen-build-all.ts` belong **in the pipeline immediately after
+stage0 install**, not as a manual pre-build. Rationale:
+
+- `install-for-stage0.ts` creates `msys64-stage0` and writes
+  `scripts/generated/msys.txt` via `installMsys2AllPackages`.
+- `deps.ts` needs that tree (`pactree`, `bash` under `msys64-stage0`) and
+  `scripts/generated/msys.txt`.
+- `gen-build-all.ts` reads `scripts/generated/deps.json` and writes
+  `stage1-list.sh` / `stage2-list.sh`, which `stage1.sh` and stage2 list
+  steps require.
+
+Proposed step sequence (new step ids in **bold**):
+
+1. `stage0-install` -- `install-for-stage0.ts` (install MSYS packages, archive,
+   write `extract.bat`; leave `msys64-stage0` on disk)
+2. **`stage0-generate`** -- `deps.ts` then `gen-build-all.ts`
+3. `stage0-extract` -- extract `msys64-stage0` from archive (same as today)
+4. `hook-runtime` -- runtime hook + `stage0.sh`
+5. `stage1` -- `stage1.sh` (uses `scripts/generated/stage1-list.sh`)
+6. `stage2-prep` .. `stage3-mingw` -- unchanged
+
+Logs for the new step: `scripts/logs/deps.txt`, `scripts/logs/gen-build-all.txt`.
+
+Resume: `--from stage1` and later assume `scripts/generated/deps.json` and
+stage list scripts already exist. Re-run `--from stage0-generate` after port
+dependency changes.
+
+### Merge into `build-all.ts` (or `scripts/install-stages.ts`)
+
+| Current file | Action |
+|--------------|--------|
+| `install-for-stage0.ts` | Export `installStage0()`; call from pipeline |
+| `install-for-stage2.ts` | Export `installStage2()` |
+| `install-for-stage3.ts` | Export `installStage3()` |
+| `install-mingw-for-stage3.ts` | Export `installMingwStage3()`; fix hardcoded `D:/CI-Tools` |
+| `deps.ts` | Export `runDeps()`; call from `stage0-generate` |
+| `gen-build-all.ts` | Export `runGenBuildAll()`; call from `stage0-generate` |
+
+Keep `deps.ts` and `gen-build-all.ts` as modules; drop standalone `main()`
+spawn from `build-all.ts` once folded.
+
+### Remove or trim
+
+| Item | Action |
+|------|--------|
+| `scripts/sh/stage2-list-extra.sh` | Empty today; remove pipeline step or populate |
+| Dead `do_build()` / `do_other()` in `stage0.sh`, `stage-hook.sh`, `stage1.sh` | Delete or move to BUILD-START manual recipes |
+| `runShellFile` in `build-common.ts` | Remove if unused |
+| `scripts/check.ts` | Restore or remove from `vite.config.ts` / `package.json` main |
+
+### Keep at makepkg boundary
+
+- `scripts/sh/single.sh`, `check-bootstrap.sh`, `stage0.sh`, `stage-hook.sh`,
+  `bootstrap-init-stage1.sh`, `stage1.sh`
+- `utils.ts`, `build-common.ts`, pre-build module code for deps/gen (invoked
+  from pipeline, not run by hand)
+
+### Implementation phases
+
+1. Add `stage0-generate` pipeline step (wire `deps.ts` + `gen-build-all.ts`).
+2. Split `stage0-prep` into install / generate / extract; update `--from` help
+   and BUILD-START.md.
+3. Merge four install scripts into `install-stages.ts`; import from
+   `build-all.ts`.
+4. Clean empty extra list step and dead shell blocks.
+5. Optional: export `runDeps` / `runGenBuildAll` for `node scripts/deps.ts`
+   CLI wrappers during transition.
+
+### Risks
+
+- `deps.ts` is slow (one `pactree` per package); running every full bootstrap
+  is expected; cache `deps.json` when resuming from later steps.
+- Log paths under `scripts/logs/` and generated paths under `scripts/generated/`
+  are documented contracts; preserve names when folding scripts.
+- `CI_TOOLS_ROOT` must match between `build-all.ts` and install/deps paths.
 
 ## Reference Updates
 
@@ -105,6 +188,9 @@ Vite will be added for build/check tooling, not as the runtime path.
   compatibility stubs.
 - Replace script-directory-as-root assumptions with an explicit repo root
   helper.
+- Add `stage0-generate` pipeline step: run `deps.ts` + `gen-build-all.ts`
+  after `install-for-stage0.ts`.
+- Merge install scripts into `install-stages.ts` and call from `build-all.ts`.
 - Update README/package references to the new TypeScript commands and
   compatibility wrappers.
 - Run focused tests, type checks, Vite build, and lightweight smoke checks.

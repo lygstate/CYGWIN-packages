@@ -22,16 +22,24 @@ Use `start.bat --from <step>` to resume from any pipeline step. Run
 
 3. Check `ci_tools_base` in [scripts/utils.ts](scripts/utils.ts).
 
-4. Generate dependency data and stage lists:
+4. Run the bootstrap (dependency data and stage lists are generated
+   automatically after stage0 install):
+
+   ```bat
+   start.bat
+   ```
+
+   The pipeline runs `deps.ts` and `gen-build-all.ts` immediately after
+   `install-for-stage0.ts`. Manual re-run when ports change:
 
    ```bat
    node scripts/deps.ts
    node scripts/gen-build-all.ts
    ```
 
-   Outputs:
+   Generated outputs:
 
-   - `scripts/generated/msys.txt`
+   - `scripts/generated/msys.txt` (from stage0 install)
    - `scripts/generated/deps.json`
    - `scripts/generated/deps-map-make.json`
    - `scripts/generated/stage1-list.sh`
@@ -60,6 +68,8 @@ start.bat --from stage2-gcc
 Logs are written under `scripts/logs/`:
 
 - `scripts/logs/install-for-stage0.txt`
+- `scripts/logs/deps.txt`
+- `scripts/logs/gen-build-all.txt`
 - `scripts/logs/install-for-stage2.txt`
 - `scripts/logs/install-for-stage3.txt`
 - `scripts/logs/install-mingw-for-stage3.txt`
@@ -77,15 +87,17 @@ Logs are written under `scripts/logs/`:
 Order of operations:
 
 1. `node scripts/install-for-stage0.ts`
-2. Extract `msys64-stage0`, install runtime packages, run stage hook / stage0 / stage1
-3. `node scripts/install-for-stage2.ts`
-4. Build stage2 `gcc`, `rust` cross, `rebaseall -p`, `rust` native, `rebaseall -p`, `cargo-c`
-5. Run `scripts/generated/stage2-list.sh` and `scripts/sh/stage2-list-extra.sh`
-6. `node scripts/install-for-stage3.ts`, then `stage3-mingw` (extract + mingw install)
+2. `node scripts/deps.ts` and `node scripts/gen-build-all.ts` (stage lists)
+3. Extract `msys64-stage0`, install runtime packages, run stage hook / stage0 / stage1
+4. `node scripts/install-for-stage2.ts`
+5. Build stage2 `gcc`, `rust` cross, `rebaseall -p`, `rust` native, `rebaseall -p`, `cargo-c`
+6. Run `scripts/generated/stage2-list.sh` and `scripts/sh/stage2-list-extra.sh`
+7. `node scripts/install-for-stage3.ts`, then `stage3-mingw` (extract + mingw install)
 
 ## Resume with `--from`
 
 ```bat
+start.bat --from stage0-generate
 start.bat --from stage2-prep
 start.bat --from stage2-gcc
 start.bat --from stage2-rust-native
