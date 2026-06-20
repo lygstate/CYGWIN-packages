@@ -57,16 +57,20 @@ start.bat --from 4
 start.bat --from stage2-gcc
 ```
 
-Logs are written to repo-root files such as:
+Logs are written under `scripts/logs/`:
 
-- `install-for-stage0.txt`
-- `install-for-stage2.txt`
-- `build-stage0.txt`
-- `build-stage1.txt`
-- `build-stage2-gcc.txt`
-- `build-stage2-rust-cross.txt`
-- `build-stage2-rust-native.txt`
-- `build-stage2.txt`
+- `scripts/logs/install-for-stage0.txt`
+- `scripts/logs/install-for-stage2.txt`
+- `scripts/logs/install-for-stage3.txt`
+- `scripts/logs/install-mingw-for-stage3.txt`
+- `scripts/logs/build-stage0.txt`
+- `scripts/logs/build-stage1.txt`
+- `scripts/logs/build-stage2-gcc.txt`
+- `scripts/logs/build-stage2-rust-cross.txt`
+- `scripts/logs/build-stage2-rust-native.txt`
+- `scripts/logs/build-stage2-cargo-native.txt`
+- `scripts/logs/build-stage2.txt`
+- `scripts/logs/build-stage2-list-extra.txt`
 
 ## What `build-all.ts` runs
 
@@ -121,7 +125,7 @@ Use stage0 MSYS bash from `%CI_TOOLS_ROOT%\msys64-stage0\msys64\usr\bin\bash.exe
 set MSYS=winsymlinks:native
 set MSYSTEM=CYGWIN
 set CHERE_INVOKING=1
-"%CI_TOOLS_ROOT%\msys64-stage0\msys64\usr\bin\bash.exe" --login -c "source scripts/sh/stage1.sh >build-stage1.txt 2>&1"
+"%CI_TOOLS_ROOT%\msys64-stage0\msys64\usr\bin\bash.exe" --login -c "source scripts/sh/stage1.sh >scripts/logs/build-stage1.txt 2>&1"
 ```
 
 ### Stage2 prep only
@@ -130,7 +134,7 @@ set CHERE_INVOKING=1
 node scripts/install-for-stage2.ts
 ```
 
-Check `install-for-stage2.txt` for pacman errors before continuing.
+Check `scripts/logs/install-for-stage2.txt` for pacman errors before continuing.
 
 ### Stage2 gcc / rust / cargo only
 
@@ -147,13 +151,13 @@ set MSYS_DASH=%CI_TOOLS_ROOT%\msys64-stage2\msys64\usr\bin\dash.exe
 Gcc:
 
 ```bat
-"%MSYS_BASH%" --login -c "export MSYS_BOOTSTRAP_STAGE=stage2; source scripts/sh/check-bootstrap.sh; sh scripts/sh/single.sh gcc >build-stage2-gcc.txt 2>&1"
+"%MSYS_BASH%" --login -c "export MSYS_BOOTSTRAP_STAGE=stage2; source scripts/sh/check-bootstrap.sh; sh scripts/sh/single.sh gcc >scripts/logs/build-stage2-gcc.txt 2>&1"
 ```
 
 Rust cross:
 
 ```bat
-"%MSYS_BASH%" --login -c "export MSYS_BOOTSTRAP_RUST=enabled; export MSYS_BOOTSTRAP_DISABLE_COPY_PACKAGES=enabled; export MSYS_BOOTSTRAP_PACKAGE_NAME_SUFFIX=cross; export MSYS_BOOTSTRAP_STAGE=stage2; source scripts/sh/check-bootstrap.sh; sh scripts/sh/single.sh rust >build-stage2-rust-cross.txt 2>&1"
+"%MSYS_BASH%" --login -c "export MSYS_BOOTSTRAP_RUST=enabled; export MSYS_BOOTSTRAP_DISABLE_COPY_PACKAGES=enabled; export MSYS_BOOTSTRAP_PACKAGE_NAME_SUFFIX=cross; export MSYS_BOOTSTRAP_STAGE=stage2; source scripts/sh/check-bootstrap.sh; sh scripts/sh/single.sh rust >scripts/logs/build-stage2-rust-cross.txt 2>&1"
 ```
 
 Rebaseall:
@@ -170,16 +174,16 @@ set CHERE_INVOKING=
 Rust native:
 
 ```bat
-"%MSYS_BASH%" --login -c "export MSYS_BOOTSTRAP_STAGE=stage2; source scripts/sh/check-bootstrap.sh; sh scripts/sh/single.sh rust >build-stage2-rust-native.txt 2>&1"
+"%MSYS_BASH%" --login -c "export MSYS_BOOTSTRAP_STAGE=stage2; source scripts/sh/check-bootstrap.sh; sh scripts/sh/single.sh rust >scripts/logs/build-stage2-rust-native.txt 2>&1"
 ```
 
 Run rebaseall again, then build `cargo-c`.
 
-### Stage2 rest packages
+### Stage2 package lists
 
 ```bat
-"%MSYS_BASH%" --login -c "export MSYS_BOOTSTRAP_STAGE=stage2; source scripts/sh/check-bootstrap.sh; sh scripts/sh/stage2-list.sh >build-stage2.txt 2>&1"
-"%MSYS_BASH%" --login -c "export MSYS_BOOTSTRAP_STAGE=stage2; source scripts/sh/check-bootstrap.sh; sh scripts/sh/stage2-list-extra.sh >build-stage2-list-extra.txt 2>&1"
+"%MSYS_BASH%" --login -c "export MSYS_BOOTSTRAP_STAGE=stage2; source scripts/sh/check-bootstrap.sh; sh scripts/sh/stage2-list.sh >scripts/logs/build-stage2.txt 2>&1"
+"%MSYS_BASH%" --login -c "export MSYS_BOOTSTRAP_STAGE=stage2; source scripts/sh/check-bootstrap.sh; sh scripts/sh/stage2-list-extra.sh >scripts/logs/build-stage2-list-extra.txt 2>&1"
 ```
 
 ### Stage3 prep only

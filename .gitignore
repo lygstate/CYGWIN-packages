@@ -29,5 +29,6 @@
 /pkg_info.sh
 /tmp
 /build-cache
+/scripts/logs/
 /install-*.txt
 /build-*.txt

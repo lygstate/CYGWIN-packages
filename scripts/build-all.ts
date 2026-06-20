@@ -1,11 +1,11 @@
 import * as path from "node:path";
-import { createWriteStream } from "node:fs";
-import { repoRoot } from "./utils.ts";
 import {
+  buildLogPath,
   exitWith,
   runCommand,
   runMsysCommand,
   runMsysCommandToLog,
+  runNodeInstallToLog,
 } from "./build-common.ts";
 
 const ciToolsRoot = process.env.CI_TOOLS_ROOT || "D:\\CI-Tools";
@@ -74,25 +74,20 @@ async function extractMsys64() {
 }
 
 async function runNodeInstall(scriptName: string, logName: string) {
-  console.log(`=== Running ${scriptName} ...`);
-  const logStream = createWriteStream(path.join(repoRoot, logName));
-  const code = await runCommand(
-    process.execPath,
-    [path.join("scripts", scriptName)],
-    {
-      cwd: repoRoot,
-      env,
-      stdout: logStream,
-      stderr: logStream,
-    },
-  );
-  logStream.close();
+  const code = await runNodeInstallToLog(scriptName, logName, env);
   if (code !== 0) {
     console.log("");
-    console.log(`ERROR: ${scriptName} failed with exit code ${code}`);
-    console.log(`Log file: ${path.join(repoRoot, logName)}`);
+    console.log(`ERROR: scripts/${scriptName} failed with exit code ${code}`);
+    console.log(`Log file: ${buildLogPath(logName)}`);
     process.exit(code);
   }
+}
+
+async function runMsysBuild(
+  logName: string,
+  command: string,
+) {
+  exitWith(await runMsysCommandToLog(msysBash, command, logName, env));
 }
 
 async function installMsys2OriginalRuntime() {
@@ -138,7 +133,7 @@ async function installMsys2HookRuntime() {
 }
 
 async function rebaseallMsys64Stage2() {
-  console.log("stage2: Do rebaseall -p for rust native");
+  console.log("Run rebaseall -p (rebase DLLs for stage2)");
   // Stage2 rebaseall must match the old :rebaseall_msys64_stage2_p intent, but
   // the old batch always "exit /B 0" and never checked rebaseall errorlevel, so
   // failures were silent on rebase 4.5+ (Invalid Baseaddress 0x70000000).
@@ -172,9 +167,10 @@ const pipeline: PipelineStep[] = [
     group: 1,
     label: "stage0 prep",
     run: async () => {
-      console.log("Preparing msys64 for stage0 by install all packages msys repo");
+      console.log("Install MSYS base packages into msys64-stage0");
       await runNodeInstall("install-for-stage0.ts", "install-for-stage0.txt");
       initMsys64Stage("stage0");
+      console.log("Extract msys64-stage0 from archive");
       await extractMsys64();
     },
   },
@@ -184,26 +180,18 @@ const pipeline: PipelineStep[] = [
     label: "hook/runtime builds",
     run: async () => {
       initMsys64Stage("stage0");
-      console.log("Building original and hook patched msys2-runtime");
+      console.log("Install original msys2-runtime packages");
       await installMsys2OriginalRuntime();
-      exitWith(
-        await runMsysCommandToLog(
-          msysBash,
-          "source scripts/sh/stage-hook.sh",
-          "build-stage-hook.txt",
-          env,
-        ),
+      console.log("Build hook-patched msys2-runtime (stage-hook.sh)");
+      await runMsysBuild(
+        "build-stage-hook.txt",
+        "source scripts/sh/stage-hook.sh",
       );
       initMsys64Stage("stage0");
+      console.log("Install hook-patched msys2-runtime packages");
       await installMsys2HookRuntime();
-      exitWith(
-        await runMsysCommandToLog(
-          msysBash,
-          "source scripts/sh/stage0.sh",
-          "build-stage0.txt",
-          env,
-        ),
-      );
+      console.log("Build stage0 bootstrap packages (stage0.sh)");
+      await runMsysBuild("build-stage0.txt", "source scripts/sh/stage0.sh");
     },
   },
   {
@@ -212,14 +200,8 @@ const pipeline: PipelineStep[] = [
     label: "stage1",
     run: async () => {
       initMsys64Stage("stage0");
-      exitWith(
-        await runMsysCommandToLog(
-          msysBash,
-          "source scripts/sh/stage1.sh",
-          "build-stage1.txt",
-          env,
-        ),
-      );
+      console.log("Build stage1 packages (stage1.sh)");
+      await runMsysBuild("build-stage1.txt", "source scripts/sh/stage1.sh");
     },
   },
   {
@@ -228,7 +210,7 @@ const pipeline: PipelineStep[] = [
     label: "stage2 prep",
     run: async () => {
       initMsys64Stage("stage2");
-      console.log("Preparing msys64 for stage2 by install packages built by stage1");
+      console.log("Install stage1-built packages into msys64-stage2");
       await runNodeInstall("install-for-stage2.ts", "install-for-stage2.txt");
     },
   },
@@ -238,13 +220,10 @@ const pipeline: PipelineStep[] = [
     label: "stage2 gcc",
     run: async () => {
       initMsys64Stage("stage2");
-      console.log("Building gcc bootstrap for stage2");
-      exitWith(
-        await runMsysCommand(
-          msysBash,
-          `${msysStage2BasicExports}; ${checkBootstrap}; ${buildSingle} gcc >build-stage2-gcc.txt 2>&1`,
-          env,
-        ),
+      console.log("Build gcc for stage2 (single.sh gcc)");
+      await runMsysBuild(
+        "build-stage2-gcc.txt",
+        `${msysStage2BasicExports}; ${checkBootstrap}; ${buildSingle} gcc`,
       );
     },
   },
@@ -254,13 +233,10 @@ const pipeline: PipelineStep[] = [
     label: "stage2 rust cross",
     run: async () => {
       initMsys64Stage("stage2");
-      console.log("Building rust cross for stage2");
-      exitWith(
-        await runMsysCommand(
-          msysBash,
-          `${rustCrossEnvs}; ${checkBootstrap}; ${buildSingle} rust >build-stage2-rust-cross.txt 2>&1`,
-          env,
-        ),
+      console.log("Build rust cross toolchain for stage2 (single.sh rust)");
+      await runMsysBuild(
+        "build-stage2-rust-cross.txt",
+        `${rustCrossEnvs}; ${checkBootstrap}; ${buildSingle} rust`,
       );
     },
   },
@@ -279,13 +255,10 @@ const pipeline: PipelineStep[] = [
     label: "stage2 rust native",
     run: async () => {
       initMsys64Stage("stage2");
-      console.log("Building rust native before rebaseall list for stage2");
-      exitWith(
-        await runMsysCommand(
-          msysBash,
-          `${msysStage2BasicExports}; ${checkBootstrap}; ${buildSingle} rust >build-stage2-rust-native.txt 2>&1`,
-          env,
-        ),
+      console.log("Build rust native for stage2 (single.sh rust)");
+      await runMsysBuild(
+        "build-stage2-rust-native.txt",
+        `${msysStage2BasicExports}; ${checkBootstrap}; ${buildSingle} rust`,
       );
     },
   },
@@ -304,13 +277,10 @@ const pipeline: PipelineStep[] = [
     label: "stage2 cargo-c",
     run: async () => {
       initMsys64Stage("stage2");
-      console.log("Building the cargo by native");
-      exitWith(
-        await runMsysCommand(
-          msysBash,
-          `${msysStage2BasicExports}; ${checkBootstrap}; ${buildSingle} cargo-c >build-stage2-cargo-native.txt 2>&1`,
-          env,
-        ),
+      console.log("Build cargo-c for stage2 (single.sh cargo-c)");
+      await runMsysBuild(
+        "build-stage2-cargo-native.txt",
+        `${msysStage2BasicExports}; ${checkBootstrap}; ${buildSingle} cargo-c`,
       );
     },
   },
@@ -320,14 +290,10 @@ const pipeline: PipelineStep[] = [
     label: "stage2 package lists",
     run: async () => {
       initMsys64Stage("stage2");
-      console.log("Building the rest packages");
-      exitWith(
-        await runMsysCommandToLog(
-          msysBash,
-          `${msysStage2BasicExports}; ${checkBootstrap}; sh scripts/sh/stage2-list.sh`,
-          "build-stage2.txt",
-          env,
-        ),
+      console.log("Build stage2 MSYS packages (stage2-list.sh)");
+      await runMsysBuild(
+        "build-stage2.txt",
+        `${msysStage2BasicExports}; ${checkBootstrap}; sh scripts/sh/stage2-list.sh`,
       );
     },
   },
@@ -337,13 +303,10 @@ const pipeline: PipelineStep[] = [
     label: "stage2 package list extra",
     run: async () => {
       initMsys64Stage("stage2");
-      exitWith(
-        await runMsysCommandToLog(
-          msysBash,
-          `${msysStage2BasicExports}; ${checkBootstrap}; sh scripts/sh/stage2-list-extra.sh`,
-          "build-stage2-list-extra.txt",
-          env,
-        ),
+      console.log("Build stage2 extra packages (stage2-list-extra.sh)");
+      await runMsysBuild(
+        "build-stage2-list-extra.txt",
+        `${msysStage2BasicExports}; ${checkBootstrap}; sh scripts/sh/stage2-list-extra.sh`,
       );
     },
   },
@@ -352,7 +315,9 @@ const pipeline: PipelineStep[] = [
     group: 7,
     label: "stage3 prep (cygwin packages + archive)",
     run: async () => {
-      console.log("Preparing msys64 for stage3 by install packages built by stage1 and stage2");
+      console.log(
+        "Install stage1/stage2 packages into msys64-stage3 and create archive",
+      );
       initMsys64Stage("stage3");
       await runNodeInstall("install-for-stage3.ts", "install-for-stage3.txt");
     },
@@ -363,8 +328,9 @@ const pipeline: PipelineStep[] = [
     label: "stage3 extract + mingw packages",
     run: async () => {
       initMsys64Stage("stage3");
-      console.log("Extracting stage3 MSYS2 from archive before mingw install");
+      console.log("Extract msys64-stage3 from archive");
       await extractMsys64();
+      console.log("Install mingw-w64 packages for stage3");
       await runNodeInstall(
         "install-mingw-for-stage3.ts",
         "install-mingw-for-stage3.txt",
@@ -473,13 +439,14 @@ async function main() {
       process.exit(1);
     }
     console.log(
-      `Starting pipeline at step ${startIndex + 1}/${pipeline.length}: ${pipeline[startIndex].id}`,
+      `Starting pipeline at step ${startIndex + 1}/${pipeline.length}: ${pipeline[startIndex].label} (${pipeline[startIndex].id})`,
     );
   }
 
   for (let i = startIndex; i < pipeline.length; i += 1) {
     const step = pipeline[i];
-    console.log(`=== Pipeline step ${i + 1}/${pipeline.length}: ${step.id}`);
+    console.log("");
+    console.log(`=== ${i + 1}/${pipeline.length}: ${step.label} (${step.id}) ===`);
     await step.run();
   }
 }
