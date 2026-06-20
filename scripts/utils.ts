@@ -95,7 +95,6 @@ export async function touchLog(logName: string) {
 }
 
 export type RunProcessOptions = SpawnOptions & {
-  logName?: string;
   capture?: boolean;
   tee?: boolean;
   exitOnNonZero?: boolean;
@@ -110,41 +109,18 @@ export async function runProcess(
   options: RunProcessOptions = {},
 ): Promise<ProcessCapture> {
   const {
-    logName,
     capture: captureOption,
     tee: teeOption,
     exitOnNonZero,
     stdout,
     stderr,
-    logStream: providedLogStream,
+    logStream,
     ...spawnOptions
   } = options;
   const cwd = spawnOptions.cwd ?? repoRoot;
   const env = spawnOptions.env ?? process.env;
-  const capture = captureOption ?? !logName;
-  const tee = teeOption ?? !!logName;
-
-  let logStream: NodeJS.WritableStream | null = providedLogStream ?? null;
-  let closeLogStream = false;
-  try {
-    if (logName) {
-      await touchLog(logName);
-      const logPath = buildLogPath(logName);
-      console.log(`Log: ${logPath}`);
-      logStream = createWriteStream(logPath, { flags: "w" });
-      closeLogStream = true;
-    }
-  } catch (error) {
-    const result = {
-      stdout: "",
-      stderr: String(error),
-      code: 1,
-    };
-    if (exitOnNonZero) {
-      process.exit(result.code);
-    }
-    return result;
-  }
+  const capture = captureOption ?? true;
+  const tee = teeOption ?? false;
 
   let stdoutOutput = "";
   let stderrOutput = "";
@@ -164,11 +140,7 @@ export async function runProcess(
         }
         resolve(result);
       };
-      if (logStream && closeLogStream) {
-        logStream.end(finishResolve);
-      } else {
-        finishResolve();
-      }
+      finishResolve();
     };
 
     try {

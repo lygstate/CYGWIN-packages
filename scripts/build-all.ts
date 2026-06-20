@@ -89,13 +89,14 @@ async function runMsysBuild(
   // Piped stdio is not a TTY, so bash/make block-buffer unless we force line
   // buffering (stdbuf) and tee each chunk to the log and terminal as it arrives.
   const lineBufferedCommand = `exec stdbuf -oL -eL sh -c ${JSON.stringify(command)}`;
-  await runProcess(msysBash, ["--login", "-c", lineBufferedCommand], {
-    ...exitOpts,
-    logName,
-    env: {
-      ...env,
-      PYTHONUNBUFFERED: "1",
-    },
+  await new LoggedStep(logName, command).run(async (step) => {
+    await step.runProcess(msysBash, ["--login", "-c", lineBufferedCommand], {
+      ...exitOpts,
+      env: {
+        ...env,
+        PYTHONUNBUFFERED: "1",
+      },
+    });
   });
 }
 
