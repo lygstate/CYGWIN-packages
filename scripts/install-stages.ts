@@ -23,23 +23,22 @@ import {
   repoRoot,
 } from "./utils.ts";
 
-export async function installStage0(step?: LoggedStep) {
+export async function installStage0(step: LoggedStep) {
   const msys_root = path.join(ci_tools_msys64_stage0, MSYS64_DIR_NAME);
   const pkg_root = repoRoot;
-  const logStream = step?.logStream ?? undefined;
 
   const has_msys64 = await installMsys2AllPackages(
     ci_tools_msys64_stage0,
     pkg_root,
     true,
-    logStream,
+    step,
   );
 
   const msys2_base_filename = await archiveFull(
     ci_tools_msys64_stage0,
     msys_root,
     "",
-    logStream,
+    step,
   );
   console.log(
     `===stage0: Archive finished as: ${msys2_base_filename} with has_msys64:${has_msys64}`,
@@ -51,16 +50,15 @@ export async function installStage0(step?: LoggedStep) {
   console.log(`===stage0: Wrote extract.bat and delete-msys64.bat`);
 }
 
-export async function installStage2(step?: LoggedStep) {
+export async function installStage2(step: LoggedStep) {
   const msys_root = path.join(ci_tools_msys64_stage2, MSYS64_DIR_NAME);
   const pkg_root = repoRoot;
   const stage1_dist = path.join(pkg_root, "dist", "stage1");
-  const logStream = step?.logStream ?? undefined;
 
   const has_msys64 = await installMsys2BasePackages(
     ci_tools_msys64_stage2,
     true,
-    logStream,
+    step,
   );
 
   const removed = await dedupeDistPackageDir(stage1_dist);
@@ -80,7 +78,7 @@ export async function installStage2(step?: LoggedStep) {
       install_commands[i],
       stage1_dist,
       false,
-      logStream,
+      step,
     );
   }
   console.log("===Switch to cygwin finished");
@@ -88,7 +86,7 @@ export async function installStage2(step?: LoggedStep) {
     ci_tools_msys64_stage2,
     msys_root,
     "",
-    logStream,
+    step,
   );
   console.log(
     `===stage2: Archive finished as: ${msys2_base_filename} with has_msys64:${has_msys64}`,
@@ -100,17 +98,16 @@ export async function installStage2(step?: LoggedStep) {
   console.log(`===stage2: Wrote extract.bat and delete-msys64.bat`);
 }
 
-export async function installStage3(step?: LoggedStep) {
+export async function installStage3(step: LoggedStep) {
   const msys_root = path.join(ci_tools_msys64_stage3, MSYS64_DIR_NAME);
   const pkg_root = repoRoot;
   const stage1_dist = path.join(pkg_root, "dist", "stage1");
   const stage2_dist = path.join(pkg_root, "dist", "stage2");
-  const logStream = step?.logStream ?? undefined;
 
   const has_msys64 = await installMsys2BasePackages(
     ci_tools_msys64_stage3,
     true,
-    logStream,
+    step,
   );
 
   const removed_stage1 = await dedupeDistPackageDir(stage1_dist);
@@ -132,7 +129,7 @@ export async function installStage3(step?: LoggedStep) {
       install_commands[i],
       stage1_dist,
       false,
-      logStream,
+      step,
     );
   }
   await executePacmanInstall(
@@ -140,14 +137,14 @@ export async function installStage3(step?: LoggedStep) {
     "pacman -U --noconfirm --overwrite \\* `ls | tr '\n' ' '`",
     stage2_dist,
     false,
-    logStream,
+    step,
   );
   console.log("===stage3: Switch to cygwin finished");
   const msys2_base_filename = await archiveFull(
     ci_tools_msys64_stage3,
     msys_root,
     "",
-    logStream,
+    step,
   );
   console.log(
     `===stage3: Archive finished as: ${msys2_base_filename} with has_msys64:${has_msys64}`,
@@ -159,8 +156,7 @@ export async function installStage3(step?: LoggedStep) {
   console.log(`===stage3: Wrote extract.bat and delete-msys64.bat`);
 }
 
-export async function installMingwStage3(step?: LoggedStep) {
-  const logStream = step?.logStream ?? undefined;
+export async function installMingwStage3(step: LoggedStep) {
   const MINGW_PACKAGE_PREFIX = "mingw-w64-x86_64";
   const packages_extra = [
     `${MINGW_PACKAGE_PREFIX}-cmake`,
@@ -308,14 +304,14 @@ export async function installMingwStage3(step?: LoggedStep) {
     `pacman -S --noconfirm --needed $(cat ${GENERATED_MINGW_STAGE3_PACKAGES_TXT})`,
     pkg_root,
     false,
-    logStream,
+    step,
   );
   console.log("===stage3: Install mingw packages finished");
   const msys2_base_filename = await archiveFull(
     ci_tools_msys64_parent,
     msys_root,
     `msys2-mingw-x86_64-${getYYYYMMDD(new Date())}-full.tar`,
-    logStream,
+    step,
   );
   await writeExtractBat(
     ci_tools_msys64_parent,

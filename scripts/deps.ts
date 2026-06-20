@@ -2,16 +2,14 @@ import * as fs from "fs/promises";
 import * as fsSync from "fs";
 import * as path from "path";
 import process from "node:process";
-import { fileURLToPath } from "node:url";
 import {
   black_list,
   ci_tools_msys64_stage0,
 } from "./build-config.ts";
 import {
-  type LoggedStep,
+  LoggedStep,
   repoPath,
   repoRoot,
-  runProcess,
 } from "./utils.ts";
 
 let need_exit = false;
@@ -20,8 +18,8 @@ process.on("SIGINT", function () {
   need_exit = true;
 });
 
-export async function runDeps(step?: LoggedStep) {
-  const run = step ? step.runProcess.bind(step) : runProcess;
+export async function runDeps(step: LoggedStep) {
+  const run = step.runProcess.bind(step);
   const portsDir = repoPath("ports");
   const generatedDir = repoPath("scripts", "generated");
   const packages_list = await fs.readdir(portsDir);
@@ -86,11 +84,4 @@ export async function runDeps(step?: LoggedStep) {
       2,
     ),
   );
-}
-
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  runDeps().catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
 }

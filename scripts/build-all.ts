@@ -9,7 +9,6 @@ import {
 } from "./install-stages.ts";
 import {
   LoggedStep,
-  runProcess,
   type RunProcessOptions,
 } from "./utils.ts";
 
@@ -70,13 +69,13 @@ function initMsys64Stage(stage: "stage0" | "stage2" | "stage3") {
   console.log(`The ${stage} PATH is:${env.PATH}`);
 }
 
-async function extractMsys64() {
+async function extractMsys64(step: LoggedStep) {
   env.CI_TOOLS_DISABLE_PAUSE = "true";
-  await runProcess(cmdExe, ["/c", "delete-msys64.bat"], {
+  await step.runProcess(cmdExe, ["/c", "delete-msys64.bat"], {
     ...exitOpts,
     cwd: msys64StageDir,
   });
-  await runProcess(cmdExe, ["/c", "extract.bat"], {
+  await step.runProcess(cmdExe, ["/c", "extract.bat"], {
     ...exitOpts,
     cwd: msys64StageDir,
   });
@@ -100,41 +99,41 @@ async function runMsysBuild(
   });
 }
 
-async function installMsys2OriginalRuntime() {
+async function installMsys2OriginalRuntime(step: LoggedStep) {
   const packages = [
     "./dist-pkg/msys2-runtime-$MSYS_RUNTIME_PKGVER-$MSYS_RUNTIME_PKGREL-x86_64.pkg.tar.zst",
     "./dist-pkg/msys2-runtime-devel-$MSYS_RUNTIME_PKGVER-$MSYS_RUNTIME_PKGREL-x86_64.pkg.tar.zst",
   ].join(" ");
-  await runProcess(
+  await step.runProcess(
     msysBash,
     ["--login", "-c", `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${packages}`],
     exitOpts,
   );
-  await runProcess(
+  await step.runProcess(
     msysBash,
     ["--login", "-c", `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${runtimePackagesInit}`],
     exitOpts,
   );
 }
 
-async function installMsys2HookRuntime() {
+async function installMsys2HookRuntime(step: LoggedStep) {
   const packages = [
     "./dist/init/msys2-runtime-$MSYS_RUNTIME_PKGVER-5-x86_64.pkg.tar.zst",
     "./dist/init/msys2-runtime-devel-$MSYS_RUNTIME_PKGVER-5-x86_64.pkg.tar.zst",
   ].join(" ");
-  await runProcess(
+  await step.runProcess(
     msysBash,
     ["--login", "-c", `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${packages}`],
     exitOpts,
   );
-  await runProcess(
+  await step.runProcess(
     msysBash,
     ["--login", "-c", `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${runtimePackagesInit}`],
     exitOpts,
   );
 }
 
-async function rebaseallMsys64Stage2() {
+async function rebaseallMsys64Stage2(step: LoggedStep) {
   console.log("Run rebaseall -p (rebase DLLs for stage2)");
   // Stage2 rebaseall must match the old :rebaseall_msys64_stage2_p intent, but
   // the old batch always "exit /B 0" and never checked rebaseall errorlevel, so
@@ -153,13 +152,13 @@ async function rebaseallMsys64Stage2() {
   //
   // Remove /etc/rebase.db.x86_64 before and after (before avoids stale-db merge
   // errors; after matches the old batch). -p skips the dash-only process check.
-  await runProcess(msysBash, ["--login", "-c", "rm -rf /etc/rebase.db.x86_64"], exitOpts);
+  await step.runProcess(msysBash, ["--login", "-c", "rm -rf /etc/rebase.db.x86_64"], exitOpts);
   const rebaseEnv = { ...env, MSYS: "", MSYSTEM: "", CHERE_INVOKING: "" };
-  await runProcess(msysDash, ["/usr/bin/rebaseall", "-p", "-b", "0x400000000"], {
+  await step.runProcess(msysDash, ["/usr/bin/rebaseall", "-p", "-b", "0x400000000"], {
     ...exitOpts,
     env: rebaseEnv,
   });
-  await runProcess(msysBash, ["--login", "-c", "rm -rf /etc/rebase.db.x86_64"], exitOpts);
+  await step.runProcess(msysBash, ["--login", "-c", "rm -rf /etc/rebase.db.x86_64"], exitOpts);
 }
 
 const pipeline: PipelineStep[] = [
@@ -196,8 +195,10 @@ const pipeline: PipelineStep[] = [
     label: "stage0 extract archive",
     run: async () => {
       initMsys64Stage("stage0");
-      console.log("Extract msys64-stage0 from archive");
-      await extractMsys64();
+      await new LoggedStep(
+        "extract-stage0.txt",
+        "Extract msys64-stage0 from archive",
+      ).run(extractMsys64);
     },
   },
   {
@@ -206,16 +207,20 @@ const pipeline: PipelineStep[] = [
     label: "hook/runtime builds",
     run: async () => {
       initMsys64Stage("stage0");
-      console.log("Install original msys2-runtime packages");
-      await installMsys2OriginalRuntime();
+      await new LoggedStep(
+        "install-original-runtime.txt",
+        "Install original msys2-runtime packages",
+      ).run(installMsys2OriginalRuntime);
       console.log("Build hook-patched msys2-runtime (stage-hook.sh)");
       await runMsysBuild(
         "build-stage-hook.txt",
         "source scripts/sh/stage-hook.sh",
       );
       initMsys64Stage("stage0");
-      console.log("Install hook-patched msys2-runtime packages");
-      await installMsys2HookRuntime();
+      await new LoggedStep(
+        "install-hook-runtime.txt",
+        "Install hook-patched msys2-runtime packages",
+      ).run(installMsys2HookRuntime);
       console.log("Build stage0 bootstrap packages (stage0.sh)");
       await runMsysBuild("build-stage0.txt", "source scripts/sh/stage0.sh");
     },
@@ -274,7 +279,10 @@ const pipeline: PipelineStep[] = [
     label: "stage2 rebaseall (before rust native)",
     run: async () => {
       initMsys64Stage("stage2");
-      await rebaseallMsys64Stage2();
+      await new LoggedStep(
+        "rebaseall-stage2-before-rust-native.txt",
+        "Run rebaseall -p before rust native",
+      ).run(rebaseallMsys64Stage2);
     },
   },
   {
@@ -296,7 +304,10 @@ const pipeline: PipelineStep[] = [
     label: "stage2 rebaseall (after rust native)",
     run: async () => {
       initMsys64Stage("stage2");
-      await rebaseallMsys64Stage2();
+      await new LoggedStep(
+        "rebaseall-stage2-after-rust-native.txt",
+        "Run rebaseall -p after rust native",
+      ).run(rebaseallMsys64Stage2);
     },
   },
   {
@@ -343,8 +354,10 @@ const pipeline: PipelineStep[] = [
     label: "stage3 extract + mingw packages",
     run: async () => {
       initMsys64Stage("stage3");
-      console.log("Extract msys64-stage3 from archive");
-      await extractMsys64();
+      await new LoggedStep(
+        "extract-stage3.txt",
+        "Extract msys64-stage3 from archive",
+      ).run(extractMsys64);
       await new LoggedStep(
         "install-mingw-for-stage3.txt",
         "Install mingw-w64 packages for stage3",

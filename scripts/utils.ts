@@ -26,11 +26,13 @@ export function buildLogPath(logName: string) {
 
 export class LoggedStep {
   logStream: NodeJS.WritableStream | null = null;
+  logName: string;
+  label: string;
 
-  constructor(
-    readonly logName: string,
-    readonly label: string,
-  ) {}
+  constructor(logName: string, label: string) {
+    this.logName = logName;
+    this.label = label;
+  }
 
   async run(fn: (step: LoggedStep) => Promise<void>) {
     await touchLog(this.logName);
@@ -73,10 +75,7 @@ export class LoggedStep {
     args: string[] = [],
     options: RunProcessOptions = {},
   ) {
-    return runProcess(command, args, {
-      ...options,
-      logStream: this.logStream ?? options.logStream,
-    });
+    return runProcess(command, args, options, { logStream: this.logStream });
   }
 }
 
@@ -100,13 +99,17 @@ export type RunProcessOptions = SpawnOptions & {
   exitOnNonZero?: boolean;
   stdout?: NodeJS.WritableStream;
   stderr?: NodeJS.WritableStream;
-  logStream?: NodeJS.WritableStream;
 };
 
-export async function runProcess(
+type RunProcessLogOptions = {
+  logStream?: NodeJS.WritableStream | null;
+};
+
+async function runProcess(
   command: string,
   args: string[] = [],
   options: RunProcessOptions = {},
+  logOptions: RunProcessLogOptions = {},
 ): Promise<ProcessCapture> {
   const {
     capture: captureOption,
@@ -114,9 +117,9 @@ export async function runProcess(
     exitOnNonZero,
     stdout,
     stderr,
-    logStream,
     ...spawnOptions
   } = options;
+  const { logStream } = logOptions;
   const cwd = spawnOptions.cwd ?? repoRoot;
   const env = spawnOptions.env ?? process.env;
   const capture = captureOption ?? true;
