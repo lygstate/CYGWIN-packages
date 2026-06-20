@@ -157,7 +157,7 @@ export class Msys2Installer {
     Object.assign(this, overrides);
   }
 
-  async runMsysBash(msys_root, script) {
+  async runMsysBash(msys_root, script, logStream?: NodeJS.WritableStream) {
     const prelude = `mkdir -p /tmp\n${script}`;
     await this.runProcess(
       msysBashExe(msys_root),
@@ -166,11 +166,17 @@ export class Msys2Installer {
         env: msysBashEnv(),
         capture: false,
         tee: true,
+        logStream,
       },
     );
   }
 
-  async runMsysBashPacmanStep(msys_root, install_command, cwd) {
+  async runMsysBashPacmanStep(
+    msys_root,
+    install_command,
+    cwd,
+    logStream?: NodeJS.WritableStream,
+  ) {
     const wrapped_command = wrapPacmanNonInteractiveCommand(install_command);
     console.log(`===Execute: "${install_command}" at ${msys_root} at ${cwd}`);
     const { code } = await this.runProcess(
@@ -181,6 +187,7 @@ export class Msys2Installer {
         env: msysBashEnv(),
         capture: false,
         tee: true,
+        logStream,
       },
     );
     if (code !== 0) {
@@ -190,13 +197,13 @@ export class Msys2Installer {
     }
   }
 
-  async bootstrapCoreUpgrade(msys_root, cwd) {
+  async bootstrapCoreUpgrade(msys_root, cwd, logStream?: NodeJS.WritableStream) {
     console.log(`===Bootstrap core upgrade at ${msys_root}`);
-    await this.linkPacmanCache(msys_root, true);
+    await this.linkPacmanCache(msys_root, true, logStream);
     for (const step of bash_bootstrap_core_upgrade_steps) {
-      await this.runMsysBashPacmanStep(msys_root, step, cwd);
+      await this.runMsysBashPacmanStep(msys_root, step, cwd, logStream);
     }
-    await this.linkPacmanCache(msys_root);
+    await this.linkPacmanCache(msys_root, false, logStream);
     console.log(`===Bootstrap core upgrade finished at ${msys_root}`);
   }
 
@@ -211,7 +218,11 @@ export class Msys2Installer {
   // Merge tree-local pkg/ into msys64-caches. With bootstrap true, leave an empty
   // local pkg/ for the next pacman run (core self-upgrade). Otherwise symlink pkg/
   // to the shared cache so pacman reads and writes there.
-  async linkPacmanCache(msys_root, bootstrap = false) {
+  async linkPacmanCache(
+    msys_root,
+    bootstrap = false,
+    logStream?: NodeJS.WritableStream,
+  ) {
     const tail = bootstrap
       ? `mkdir -p /var/cache/pacman/pkg
 touch /var/cache/pacman/pkg/gitignore`
@@ -221,7 +232,7 @@ ${tail}`.trim();
     console.log(
       `===linkPacmanCache bootstrap=${bootstrap} at ${msys_root}`,
     );
-    await this.runMsysBash(msys_root, script);
+    await this.runMsysBash(msys_root, script, logStream);
   }
 
   // Run pacman with linkPacmanCache before and after install.
@@ -230,10 +241,11 @@ ${tail}`.trim();
     install_command,
     cwd,
     bootstrap = false,
+    logStream?: NodeJS.WritableStream,
   ) {
     const wrapped_command = wrapPacmanNonInteractiveCommand(install_command);
     console.log(`===Execute: "${install_command}" at ${msys_root} at ${cwd}`);
-    await this.linkPacmanCache(msys_root, bootstrap);
+    await this.linkPacmanCache(msys_root, bootstrap, logStream);
     const { code } = await this.runProcess(
       msysBashExe(msys_root),
       ["--login", "-c", wrapped_command],
@@ -242,6 +254,7 @@ ${tail}`.trim();
         env: msysBashEnv(),
         capture: false,
         tee: true,
+        logStream,
       },
     );
     if (code !== 0) {
@@ -249,10 +262,10 @@ ${tail}`.trim();
         `executePacmanInstall failed (${code}): ${install_command}`,
       );
     }
-    await this.linkPacmanCache(msys_root);
+    await this.linkPacmanCache(msys_root, false, logStream);
   }
 
-  async clearMsys64(msys_root) {
+  async clearMsys64(msys_root, logStream?: NodeJS.WritableStream) {
     console.log(`Remove existing ${msys_root}`);
     if (!(await this.fsExistsAsync(msys_root))) {
       return;
@@ -260,8 +273,8 @@ ${tail}`.trim();
     const bash_exe = msysBashExe(msys_root);
     if (await this.fsExistsAsync(bash_exe)) {
       console.log(`===Merge pacman cache before removing ${msys_root}`);
-      await this.linkPacmanCache(msys_root);
-      await this.runMsysBash(msys_root, bash_detach_pacman_pkg_cache);
+      await this.linkPacmanCache(msys_root, false, logStream);
+      await this.runMsysBash(msys_root, bash_detach_pacman_pkg_cache, logStream);
     } else {
       console.log(`===Skip cache merge, bash missing at ${bash_exe}`);
     }
@@ -276,10 +289,11 @@ ${tail}`.trim();
   async installMsys2BasePackages(
     ci_tools_msys64_parent,
     enable_clear_msys64,
+    logStream?: NodeJS.WritableStream,
   ) {
     const msys_root = path.join(ci_tools_msys64_parent, MSYS64_DIR_NAME);
     if (enable_clear_msys64) {
-      await this.clearMsys64(msys_root);
+      await this.clearMsys64(msys_root, logStream);
     }
 
     console.log(`===Init env at ${msys_root}`);
@@ -303,17 +317,20 @@ ${tail}`.trim();
           cwd: ci_tools_msys64_parent,
           capture: false,
           tee: true,
+          logStream,
         },
       );
       console.log("===Extract base finished\n");
     }
 
-    await this.bootstrapCoreUpgrade(msys_root, msys_root);
+    await this.bootstrapCoreUpgrade(msys_root, msys_root, logStream);
 
     await this.executePacmanInstall(
       msys_root,
       `pacman -Syu --noconfirm`,
       msys_root,
+      false,
+      logStream,
     );
     console.log("===Full pacman -Syu finished");
     return has_msys64;
@@ -323,22 +340,26 @@ ${tail}`.trim();
     ci_tools_msys64_parent,
     pkg_root,
     enable_clear_msys64,
+    logStream?: NodeJS.WritableStream,
   ) {
     const msys_root = path.join(ci_tools_msys64_parent, MSYS64_DIR_NAME);
     const has_msys64 = await this.installMsys2BasePackages(
       ci_tools_msys64_parent,
       enable_clear_msys64,
+      logStream,
     );
     const pkg_root_cygwin = (
       await this.runProcess(
         path.join(msys_root, "usr", "bin", "cygpath.exe"),
         [pkg_root],
+        { logStream },
       )
     ).stdout.trim();
 
     const msys_list_capture = await this.runProcess(
       path.join(msys_root, "usr", "bin", "pacman.exe"),
       ["-Sl", "msys"],
+      { logStream },
     );
     const msys_list_content = msys_list_capture.stdout.trim();
     const packages = [];
@@ -365,6 +386,8 @@ ${tail}`.trim();
       msys_root,
       `cd ${pkg_root_cygwin}/; ${bash_commands_for_install_all.join("; ")}`,
       pkg_root,
+      false,
+      logStream,
     );
 
     console.log(
@@ -378,11 +401,13 @@ ${tail}`.trim();
     ci_tools_msys64_parent,
     msys_root,
     msys2_base_filename,
+    logStream?: NodeJS.WritableStream,
   ) {
     const ci_tools_msys64_parent_cygwin = (
       await this.runProcess(
         path.join(msys_root, "usr", "bin", "cygpath.exe"),
         [ci_tools_msys64_parent],
+        { logStream },
       )
     ).stdout.trim();
     if (!msys2_base_filename) {
@@ -416,6 +441,7 @@ ${tail}`.trim();
         env: msysBashEnv(),
         capture: false,
         tee: true,
+        logStream,
       },
     );
     await this.runProcess(
@@ -426,10 +452,11 @@ ${tail}`.trim();
         env: msysBashEnv(),
         capture: false,
         tee: true,
+        logStream,
       },
     );
 
-    await this.linkPacmanCache(msys_root);
+    await this.linkPacmanCache(msys_root, false, logStream);
     return msys2_base_filename;
   }
 }
@@ -450,19 +477,29 @@ export async function removeDirectory(folder_dir) {
   );
 }
 
-export async function linkPacmanCache(msys_root, bootstrap = false) {
-  return defaultMsys2Installer.linkPacmanCache(msys_root, bootstrap);
+export async function linkPacmanCache(
+  msys_root,
+  bootstrap = false,
+  logStream?: NodeJS.WritableStream,
+) {
+  return defaultMsys2Installer.linkPacmanCache(
+    msys_root,
+    bootstrap,
+    logStream,
+  );
 }
 
 export async function archiveFull(
   ci_tools_msys64_parent,
   msys_root,
   msys2_base_filename = "",
+  logStream?: NodeJS.WritableStream,
 ) {
   return defaultMsys2Installer.archiveFull(
     ci_tools_msys64_parent,
     msys_root,
     msys2_base_filename,
+    logStream,
   );
 }
 
@@ -471,12 +508,14 @@ export async function executePacmanInstall(
   install_command,
   cwd,
   bootstrap = false,
+  logStream?: NodeJS.WritableStream,
 ) {
   return defaultMsys2Installer.executePacmanInstall(
     msys_root,
     install_command,
     cwd,
     bootstrap,
+    logStream,
   );
 }
 
@@ -487,10 +526,12 @@ export async function fsExistsAsync(p) {
 export async function installMsys2BasePackages(
   ci_tools_msys64_parent,
   enable_clear_msys64,
+  logStream?: NodeJS.WritableStream,
 ) {
   return defaultMsys2Installer.installMsys2BasePackages(
     ci_tools_msys64_parent,
     enable_clear_msys64,
+    logStream,
   );
 }
 
@@ -498,11 +539,13 @@ export async function installMsys2AllPackages(
   ci_tools_msys64_parent,
   pkg_root,
   enable_clear_msys64,
+  logStream?: NodeJS.WritableStream,
 ) {
   return defaultMsys2Installer.installMsys2AllPackages(
     ci_tools_msys64_parent,
     pkg_root,
     enable_clear_msys64,
+    logStream,
   );
 }
 

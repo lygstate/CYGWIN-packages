@@ -24,35 +24,59 @@ export function buildLogPath(logName: string) {
   return path.join(buildLogsDir, path.basename(logName));
 }
 
-export async function runStepToLog(
-  logName: string,
-  label: string,
-  fn: () => Promise<void>,
-) {
-  await touchLog(logName);
-  const logPath = buildLogPath(logName);
-  console.log(label);
-  console.log(`Log: ${logPath}`);
-  const logStream = createWriteStream(logPath, { flags: "w" });
-  const origLog = console.log;
-  const origErr = console.error;
-  const teeLine = (line: string) => {
-    logStream.write(line);
-  };
-  console.log = (...args: unknown[]) => {
-    teeLine(`${util.format(...args)}\n`);
-    origLog(...args);
-  };
-  console.error = (...args: unknown[]) => {
-    teeLine(`${util.format(...args)}\n`);
-    origErr(...args);
-  };
-  try {
-    await fn();
-  } finally {
-    console.log = origLog;
-    console.error = origErr;
-    await new Promise<void>((resolve) => logStream.end(() => resolve()));
+export class LoggedStep {
+  logStream: NodeJS.WritableStream | null = null;
+
+  constructor(
+    readonly logName: string,
+    readonly label: string,
+  ) {}
+
+  async run(fn: (step: LoggedStep) => Promise<void>) {
+    await touchLog(this.logName);
+    const logPath = buildLogPath(this.logName);
+    console.log(this.label);
+    console.log(`Log: ${logPath}`);
+    const logStream = createWriteStream(logPath, { flags: "w" });
+    this.logStream = logStream;
+    const origLog = console.log;
+    const origErr = console.error;
+    const teeLine = (line: string) => {
+      logStream.write(line);
+    };
+    console.log = (...args: unknown[]) => {
+      teeLine(`${util.format(...args)}\n`);
+      origLog(...args);
+    };
+    console.error = (...args: unknown[]) => {
+      teeLine(`${util.format(...args)}\n`);
+      origErr(...args);
+    };
+    try {
+      await fn(this);
+    } catch (error) {
+      console.log("");
+      console.log(`ERROR: ${this.label} failed`);
+      console.log(`Log file: ${buildLogPath(this.logName)}`);
+      console.error(error);
+      process.exit(1);
+    } finally {
+      this.logStream = null;
+      console.log = origLog;
+      console.error = origErr;
+      await new Promise<void>((resolve) => logStream.end(() => resolve()));
+    }
+  }
+
+  runProcess(
+    command: string,
+    args: string[] = [],
+    options: RunProcessOptions = {},
+  ) {
+    return runProcess(command, args, {
+      ...options,
+      logStream: this.logStream ?? options.logStream,
+    });
   }
 }
 
@@ -77,6 +101,7 @@ export type RunProcessOptions = SpawnOptions & {
   exitOnNonZero?: boolean;
   stdout?: NodeJS.WritableStream;
   stderr?: NodeJS.WritableStream;
+  logStream?: NodeJS.WritableStream;
 };
 
 export async function runProcess(
@@ -91,6 +116,7 @@ export async function runProcess(
     exitOnNonZero,
     stdout,
     stderr,
+    logStream: providedLogStream,
     ...spawnOptions
   } = options;
   const cwd = spawnOptions.cwd ?? repoRoot;
@@ -98,13 +124,15 @@ export async function runProcess(
   const capture = captureOption ?? !logName;
   const tee = teeOption ?? !!logName;
 
-  let logStream: ReturnType<typeof createWriteStream> | null = null;
+  let logStream: NodeJS.WritableStream | null = providedLogStream ?? null;
+  let closeLogStream = false;
   try {
     if (logName) {
       await touchLog(logName);
       const logPath = buildLogPath(logName);
       console.log(`Log: ${logPath}`);
       logStream = createWriteStream(logPath, { flags: "w" });
+      closeLogStream = true;
     }
   } catch (error) {
     const result = {
@@ -136,7 +164,7 @@ export async function runProcess(
         }
         resolve(result);
       };
-      if (logStream) {
+      if (logStream && closeLogStream) {
         logStream.end(finishResolve);
       } else {
         finishResolve();

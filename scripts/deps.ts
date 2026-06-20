@@ -8,6 +8,7 @@ import {
   ci_tools_msys64_stage0,
 } from "./build-config.ts";
 import {
+  type LoggedStep,
   repoPath,
   repoRoot,
   runProcess,
@@ -19,7 +20,8 @@ process.on("SIGINT", function () {
   need_exit = true;
 });
 
-export async function runDeps() {
+export async function runDeps(step?: LoggedStep) {
+  const run = step ? step.runProcess.bind(step) : runProcess;
   const portsDir = repoPath("ports");
   const generatedDir = repoPath("scripts", "generated");
   const packages_list = await fs.readdir(portsDir);
@@ -38,7 +40,7 @@ export async function runDeps() {
     script += `source ./ports/${pkg_name}/PKGBUILD; echo "{\\\"makedepends\\\": \\\"\${makedepends[*]}\\\", \\\"pkgrel\\\": \\\"\${pkgrel}\\\", \\\"pkgver\\\": \\\"\${pkgver}\\\", \\\"dir\\\": \\\"${pkg_name}\\\", \\\"pkgname\\\": \\\"\${pkgname[*]}\\\", \\\"pkgbase\\\": \\\"\${pkgbase}\\\"}"\n`;
   }
   await fs.writeFile(path.join(repoRoot, "pkg_info.sh"), script);
-  const pkg_info = await runProcess(
+  const pkg_info = await run(
     `${ci_tools_msys64_stage0}/msys64/usr/bin/bash.exe`,
     ["--login", "-c", "source pkg_info.sh"],
     {
@@ -63,7 +65,7 @@ export async function runDeps() {
     if (need_exit) {
       break;
     }
-    const deps = await runProcess(
+    const deps = await run(
       `${ci_tools_msys64_stage0}/msys64/usr/bin/pactree.exe`,
       [pkg_name, "-u", "-d", "1"],
     );

@@ -8,9 +8,8 @@ import {
   installMingwStage3,
 } from "./install-stages.ts";
 import {
-  buildLogPath,
+  LoggedStep,
   runProcess,
-  runStepToLog,
   type RunProcessOptions,
 } from "./utils.ts";
 
@@ -81,22 +80,6 @@ async function extractMsys64() {
     ...exitOpts,
     cwd: msys64StageDir,
   });
-}
-
-async function runLoggedStep(
-  logName: string,
-  label: string,
-  fn: () => Promise<void>,
-) {
-  try {
-    await runStepToLog(logName, label, fn);
-  } catch (error) {
-    console.log("");
-    console.log(`ERROR: ${label} failed`);
-    console.log(`Log file: ${buildLogPath(logName)}`);
-    console.error(error);
-    process.exit(1);
-  }
 }
 
 async function runMsysBuild(
@@ -184,11 +167,10 @@ const pipeline: PipelineStep[] = [
     group: 1,
     label: "stage0 install MSYS packages",
     run: async () => {
-      await runLoggedStep(
+      await new LoggedStep(
         "install-for-stage0.txt",
         "Install MSYS base packages into msys64-stage0",
-        installStage0,
-      );
+      ).run(installStage0);
     },
   },
   {
@@ -197,16 +179,14 @@ const pipeline: PipelineStep[] = [
     label: "stage0 generate deps and package lists",
     run: async () => {
       initMsys64Stage("stage0");
-      await runLoggedStep(
+      await new LoggedStep(
         "deps.txt",
         "Generate scripts/generated/deps.json (deps.ts)",
-        runDeps,
-      );
-      await runLoggedStep(
+      ).run(runDeps);
+      await new LoggedStep(
         "gen-build-all.txt",
         "Generate stage1/stage2 package lists (gen-build-all.ts)",
-        runGenBuildAll,
-      );
+      ).run(runGenBuildAll);
     },
   },
   {
@@ -255,11 +235,10 @@ const pipeline: PipelineStep[] = [
     label: "stage2 prep",
     run: async () => {
       initMsys64Stage("stage2");
-      await runLoggedStep(
+      await new LoggedStep(
         "install-for-stage2.txt",
         "Install stage1-built packages into msys64-stage2",
-        installStage2,
-      );
+      ).run(installStage2);
     },
   },
   {
@@ -351,11 +330,10 @@ const pipeline: PipelineStep[] = [
     label: "stage3 prep (cygwin packages + archive)",
     run: async () => {
       initMsys64Stage("stage3");
-      await runLoggedStep(
+      await new LoggedStep(
         "install-for-stage3.txt",
         "Install stage1/stage2 packages into msys64-stage3 and create archive",
-        installStage3,
-      );
+      ).run(installStage3);
     },
   },
   {
@@ -366,11 +344,10 @@ const pipeline: PipelineStep[] = [
       initMsys64Stage("stage3");
       console.log("Extract msys64-stage3 from archive");
       await extractMsys64();
-      await runLoggedStep(
+      await new LoggedStep(
         "install-mingw-for-stage3.txt",
         "Install mingw-w64 packages for stage3",
-        installMingwStage3,
-      );
+      ).run(installMingwStage3);
     },
   },
 ];
