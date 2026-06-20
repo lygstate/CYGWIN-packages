@@ -12,8 +12,14 @@
 
 ### Building all packages
 
-Open MSYS2-CYGWIN-CMD, then:
+See [BUILD-START.md](BUILD-START.md) for the full quick-start guide, manual
+resume steps, and `rebaseall` troubleshooting.
+
+Open a normal Command Prompt or MSYS2-CYGWIN terminal, not the Cursor
+integrated terminal, then:
 
 ```bat
-node scripts/build-all.ts
+start.bat
+start.bat --help
+start.bat --from stage2-gcc
 ```

@@ -10,7 +10,7 @@ alwaysApply: true
   `.vscode/settings.json`.
 - The shell executable is
   `D:/CI-Tools/msys64-stage3/msys64/usr/bin/bash.exe` with `--login -i`.
-- Before invoking `bash` from another terminal, mirror `build-all.bat` and
+- Before invoking `bash` from another terminal, mirror `start.bat` and
   prepend `D:\CI-Tools\msys64-stage3` and
   `D:\CI-Tools\msys64-stage3\msys64\usr\bin` to `PATH`.
 - Set `MSYS=winsymlinks:native`, `MSYSTEM=CYGWIN`, and `CHERE_INVOKING=1`.
@@ -19,7 +19,7 @@ alwaysApply: true
 
 ## Do not use bare `cmd`
 
-When MSYS `usr\bin` is on `PATH` (as in `build-all.bat`), bare `cmd` resolves
+When MSYS `usr\bin` is on `PATH` (as in `start.bat`), bare `cmd` resolves
 to `msys64/usr/bin/cmd`, a bash script with no `.exe` extension. Windows cannot
 run it as a console app and may open an "unknown file" / Open With dialog.
 
