@@ -3,7 +3,6 @@ import * as fsSync from "fs";
 import * as path from "path";
 import {
   black_list,
-  ci_tools_msys64_stage0,
 } from "./build-config.ts";
 import {
   type RunContext,
@@ -11,10 +10,12 @@ import {
 import {
   repoPath,
   repoRoot,
+  type Msys64Stage,
 } from "./utils.ts";
 
-export async function runDeps(step: RunContext) {
+export async function runDeps(step: RunContext, stage: Msys64Stage) {
   const run = step.run.bind(step);
+  const pactree = path.join(path.dirname(stage.bash), "pactree.exe");
   const portsDir = repoPath("ports");
   const generatedDir = repoPath("scripts", "generated");
   const packages_list = await fs.readdir(portsDir);
@@ -48,13 +49,11 @@ export async function runDeps(step: RunContext) {
   }
   await fs.writeFile(path.join(repoRoot, "pkg_info.sh"), script);
   const pkg_info = await run(
-    `${ci_tools_msys64_stage0}/msys64/usr/bin/bash.exe`,
+    stage.bash,
     ["--login", "-c", "source pkg_info.sh"],
     {
       cwd: repoRoot,
-      env: {
-        CHERE_INVOKING: "1",
-      },
+      env: stage.env,
       capture: true,
     },
   );
@@ -71,9 +70,9 @@ export async function runDeps(step: RunContext) {
       continue;
     }
     const deps = await run(
-      `${ci_tools_msys64_stage0}/msys64/usr/bin/pactree.exe`,
+      pactree,
       [pkg_name, "-u", "-d", "1"],
-      { capture: true },
+      { env: stage.env, capture: true },
     );
     console.log(`Deps for ${pkg_name} is :[\n${deps.stdout}\n]`);
     deps_map[pkg_name] = deps.stdout.trim().split("\n").slice(1);

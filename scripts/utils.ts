@@ -11,6 +11,13 @@ export function repoPath(...parts: string[]) {
   return path.join(repoRoot, ...parts);
 }
 
+export type Msys64Stage = {
+  stageDir: string;
+  bash: string;
+  dash: string;
+  env: NodeJS.ProcessEnv;
+};
+
 export function parsePkgArchiveFilename(filename) {
   if (!filename.endsWith(PKG_ARCHIVE_SUFFIX)) {
     return null;
