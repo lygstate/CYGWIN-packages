@@ -7,7 +7,7 @@ import {
   ci_tools_msys64_stage0,
 } from "./build-config.ts";
 import {
-  LoggedStep,
+  RunContext,
   repoPath,
   repoRoot,
 } from "./utils.ts";
@@ -18,7 +18,7 @@ process.on("SIGINT", function () {
   need_exit = true;
 });
 
-export async function runDeps(step: LoggedStep) {
+export async function runDeps(step: RunContext) {
   const run = step.runProcess.bind(step);
   const portsDir = repoPath("ports");
   const generatedDir = repoPath("scripts", "generated");

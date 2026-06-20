@@ -18,7 +18,7 @@ import {
 } from "./build-config.ts";
 import {
   getYYYYMMDD,
-  type LoggedStep,
+  type RunContext,
 } from "./utils.ts";
 
 export {
@@ -145,7 +145,7 @@ function msysBashEnv() {
   return { ...MSYS_BASH_ENV };
 }
 
-export type ProcessRunner = Pick<LoggedStep, "runProcess">;
+export type ProcessRunner = Pick<RunContext, "runProcess">;
 
 export class Msys2Installer {
   fs: any;

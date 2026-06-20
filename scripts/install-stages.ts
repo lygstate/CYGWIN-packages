@@ -19,11 +19,11 @@ import {
 import {
   dedupeDistPackageDir,
   getYYYYMMDD,
-  type LoggedStep,
+  type RunContext,
   repoRoot,
 } from "./utils.ts";
 
-export async function installStage0(step: LoggedStep) {
+export async function installStage0(step: RunContext) {
   const msys_root = path.join(ci_tools_msys64_stage0, MSYS64_DIR_NAME);
   const pkg_root = repoRoot;
 
@@ -50,7 +50,7 @@ export async function installStage0(step: LoggedStep) {
   console.log(`===stage0: Wrote extract.bat and delete-msys64.bat`);
 }
 
-export async function installStage2(step: LoggedStep) {
+export async function installStage2(step: RunContext) {
   const msys_root = path.join(ci_tools_msys64_stage2, MSYS64_DIR_NAME);
   const pkg_root = repoRoot;
   const stage1_dist = path.join(pkg_root, "dist", "stage1");
@@ -98,7 +98,7 @@ export async function installStage2(step: LoggedStep) {
   console.log(`===stage2: Wrote extract.bat and delete-msys64.bat`);
 }
 
-export async function installStage3(step: LoggedStep) {
+export async function installStage3(step: RunContext) {
   const msys_root = path.join(ci_tools_msys64_stage3, MSYS64_DIR_NAME);
   const pkg_root = repoRoot;
   const stage1_dist = path.join(pkg_root, "dist", "stage1");
@@ -156,7 +156,7 @@ export async function installStage3(step: LoggedStep) {
   console.log(`===stage3: Wrote extract.bat and delete-msys64.bat`);
 }
 
-export async function installMingwStage3(step: LoggedStep) {
+export async function installMingwStage3(step: RunContext) {
   const MINGW_PACKAGE_PREFIX = "mingw-w64-x86_64";
   const packages_extra = [
     `${MINGW_PACKAGE_PREFIX}-cmake`,

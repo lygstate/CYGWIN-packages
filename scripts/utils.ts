@@ -24,7 +24,7 @@ export function buildLogPath(logName: string) {
   return path.join(buildLogsDir, path.basename(logName));
 }
 
-export class LoggedStep {
+export class RunContext {
   logStream: NodeJS.WritableStream | null = null;
   logName: string;
   label: string;
@@ -34,7 +34,7 @@ export class LoggedStep {
     this.label = label;
   }
 
-  async run(fn: (step: LoggedStep) => Promise<void>) {
+  async run(fn: (step: RunContext) => Promise<void>) {
     await touchLog(this.logName);
     const logPath = buildLogPath(this.logName);
     console.log(this.label);
