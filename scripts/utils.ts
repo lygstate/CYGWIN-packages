@@ -7,6 +7,9 @@ const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 
 export const repoRoot = path.resolve(scriptDir, "..");
 
+const ciToolsRoot = process.env.CI_TOOLS_ROOT || "D:\\CI-Tools";
+const pathOld = process.env.PATH || "";
+
 export function repoPath(...parts: string[]) {
   return path.join(repoRoot, ...parts);
 }
@@ -17,6 +20,34 @@ export type Msys64Stage = {
   dash: string;
   env: NodeJS.ProcessEnv;
 };
+
+export function initMsys64Stage(stage: "stage0" | "stage2" | "stage3"): Msys64Stage {
+  const stageDir = path.join(ciToolsRoot, `msys64-${stage}`);
+  const bash = path.join(stageDir, "msys64", "usr", "bin", "bash.exe");
+  const dash = path.join(stageDir, "msys64", "usr", "bin", "dash.exe");
+  const stagePaths = {
+    stageDir,
+    bash,
+    dash,
+    env: {
+      ...process.env,
+      CI_TOOLS_ROOT: ciToolsRoot,
+      MSYS: "winsymlinks:native",
+      MSYSTEM: "CYGWIN",
+      CHERE_INVOKING: "1",
+      MSYS64_STAGE_DIR: stageDir,
+      MSYS_BASH: bash,
+      MSYS_DASH: dash,
+      PATH: [
+        stageDir,
+        path.join(stageDir, "msys64", "usr", "bin"),
+        pathOld,
+      ].join(path.delimiter),
+    },
+  };
+  console.log(`The ${stage} PATH is:${stagePaths.env.PATH}`);
+  return stagePaths;
+}
 
 export function parsePkgArchiveFilename(filename) {
   if (!filename.endsWith(PKG_ARCHIVE_SUFFIX)) {

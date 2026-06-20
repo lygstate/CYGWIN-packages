@@ -12,7 +12,7 @@ import {
   type RunProcessLogOptions,
   type RunProcessOptions,
 } from "./run-context.ts";
-import { repoPath, type Msys64Stage } from "./utils.ts";
+import { initMsys64Stage, repoPath, type Msys64Stage } from "./utils.ts";
 
 process.on("SIGINT", () => {
   console.log("Caught interrupt signal");
@@ -23,32 +23,6 @@ const ciToolsRoot = process.env.CI_TOOLS_ROOT || "D:\\CI-Tools";
 const pathOld = process.env.PATH || "";
 const cmdExe = process.env.COMSPEC || "C:\\Windows\\System32\\cmd.exe";
 const systemRoot = process.env.SystemRoot || "C:\\Windows";
-
-function msys64StageEnv(stage: "stage0" | "stage2" | "stage3"): Msys64Stage {
-  const stageDir = path.join(ciToolsRoot, `msys64-${stage}`);
-  const bash = path.join(stageDir, "msys64", "usr", "bin", "bash.exe");
-  const dash = path.join(stageDir, "msys64", "usr", "bin", "dash.exe");
-  return {
-    stageDir,
-    bash,
-    dash,
-    env: {
-      ...process.env,
-      CI_TOOLS_ROOT: ciToolsRoot,
-      MSYS: "winsymlinks:native",
-      MSYSTEM: "CYGWIN",
-      CHERE_INVOKING: "1",
-      MSYS64_STAGE_DIR: stageDir,
-      MSYS_BASH: bash,
-      MSYS_DASH: dash,
-      PATH: [
-        stageDir,
-        path.join(stageDir, "msys64", "usr", "bin"),
-        pathOld,
-      ].join(path.delimiter),
-    },
-  };
-}
 
 function winBatchEnv(): NodeJS.ProcessEnv {
   const batchEnv: NodeJS.ProcessEnv = {
@@ -65,11 +39,6 @@ function winBatchEnv(): NodeJS.ProcessEnv {
   return batchEnv;
 }
 
-function initMsys64Stage(stage: "stage0" | "stage2" | "stage3"): Msys64Stage {
-  const stagePaths = msys64StageEnv(stage);
-  console.log(`The ${stage} PATH is:${stagePaths.env.PATH}`);
-  return stagePaths;
-}
 const msysStage2BasicExports = "export MSYS_BOOTSTRAP_STAGE=stage2";
 const rustCrossEnvs =
   "export MSYS_BOOTSTRAP_RUST=enabled; export MSYS_BOOTSTRAP_DISABLE_COPY_PACKAGES=enabled; export MSYS_BOOTSTRAP_PACKAGE_NAME_SUFFIX=cross; export MSYS_BOOTSTRAP_STAGE=stage2";
@@ -284,7 +253,6 @@ const pipeline: PipelineStep[] = [
     group: 6,
     label: "Install stage1-built packages into msys64-stage2",
     step: async (step) => {
-      initMsys64Stage("stage2");
       await installStage2(step);
     },
   },
@@ -376,7 +344,6 @@ const pipeline: PipelineStep[] = [
     group: 9,
     label: "Install stage1/stage2 packages into msys64-stage3 and create archive",
     step: async (step) => {
-      initMsys64Stage("stage3");
       await installStage3(step);
     },
   },
