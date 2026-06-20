@@ -19,18 +19,32 @@ export async function runDeps(step: RunContext) {
   const generatedDir = repoPath("scripts", "generated");
   const packages_list = await fs.readdir(portsDir);
   let script = "";
+  const pkgBuildInit = [
+    "pkgrel=",
+    "pkgver=",
+    "pkgname=()",
+    "pkgbase=",
+    "makedepends=()",
+  ];
   for (let pkg_name of packages_list) {
     const fullUrl = path.join(portsDir, pkg_name, "PKGBUILD");
     if (!fsSync.existsSync(fullUrl)) {
       console.log(`Invalid ${fullUrl}`);
       continue;
     }
-    script += `pkgrel=\n`;
-    script += `pkgver=\n`;
-    script += `pkgname=()\n`;
-    script += `pkgbase=\n`;
-    script += `makedepends=()\n`;
-    script += `source ./ports/${pkg_name}/PKGBUILD; echo "{\\\"makedepends\\\": \\\"\${makedepends[*]}\\\", \\\"pkgrel\\\": \\\"\${pkgrel}\\\", \\\"pkgver\\\": \\\"\${pkgver}\\\", \\\"dir\\\": \\\"${pkg_name}\\\", \\\"pkgname\\\": \\\"\${pkgname[*]}\\\", \\\"pkgbase\\\": \\\"\${pkgbase}\\\"}"\n`;
+    for (const line of pkgBuildInit) {
+      script += `${line}\n`;
+    }
+    const pkgJsonFields = [
+      '\\"makedepends\\": \\"' + "${makedepends[*]}" + '\\"',
+      '\\"pkgrel\\": \\"' + "${pkgrel}" + '\\"',
+      '\\"pkgver\\": \\"' + "${pkgver}" + '\\"',
+      `\\"dir\\": \\"${pkg_name}\\"`,
+      '\\"pkgname\\": \\"' + "${pkgname[*]}" + '\\"',
+      '\\"pkgbase\\": \\"' + "${pkgbase}" + '\\"',
+    ].join(", ");
+    script += `source ./ports/${pkg_name}/PKGBUILD\n`;
+    script += `echo "{${pkgJsonFields}}"\n`;
   }
   await fs.writeFile(path.join(repoRoot, "pkg_info.sh"), script);
   const pkg_info = await run(
@@ -41,6 +55,7 @@ export async function runDeps(step: RunContext) {
       env: {
         CHERE_INVOKING: "1",
       },
+      capture: true,
     },
   );
   console.log(`All path checked`);
@@ -58,6 +73,7 @@ export async function runDeps(step: RunContext) {
     const deps = await run(
       `${ci_tools_msys64_stage0}/msys64/usr/bin/pactree.exe`,
       [pkg_name, "-u", "-d", "1"],
+      { capture: true },
     );
     console.log(`Deps for ${pkg_name} is :[\n${deps.stdout}\n]`);
     deps_map[pkg_name] = deps.stdout.trim().split("\n").slice(1);

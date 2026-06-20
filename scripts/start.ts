@@ -192,20 +192,25 @@ const pipeline: PipelineStep[] = [
     },
   },
   {
-    id: "stage0-generate",
+    id: "stage0-deps",
     group: 2,
-    label: "stage0 generate deps and package lists",
+    label: "stage0 generate deps.json",
     run: async () => {
       initMsys64Stage("stage0");
       await runContext(
         "deps.txt",
         "Generate scripts/generated/deps.json (deps.ts)",
-        { teeConsole: true },
       ).step(runDeps);
+    },
+  },
+  {
+    id: "stage0-gen-build-all",
+    group: 2,
+    label: "stage0 generate stage1/stage2 package lists",
+    run: async () => {
       await runContext(
         "gen-build-all.txt",
         "Generate stage1/stage2 package lists (gen-build-all.ts)",
-        { teeConsole: true },
       ).step(runGenBuildAll);
     },
   },
@@ -407,13 +412,14 @@ function findStepIndex(fromId: string) {
 }
 
 function printHelp() {
-  console.log(`Usage: start.bat [--from <step>] [--help]
+  console.log(`Usage: start.bat [--from <step>] [--only] [--help]
 
 Run the MSYS2/Cygwin bootstrap pipeline from the beginning or from a step.
 
 Options:
   -h, --help           Show this help and exit
   --from <step>        Start at <step> and run through the end
+  --only               With --from, run only that step and exit
 
 Environment:
   CI_TOOLS_ROOT        CI tools root (default: D:\\CI-Tools)
@@ -438,7 +444,8 @@ Steps (--from accepts the id or group number 1-10):
   console.log(`
 Examples:
   start.bat
-  start.bat --from stage0-generate
+  start.bat --from stage0-deps
+  start.bat --from stage0-gen-build-all --only
   start.bat --from 6
   start.bat --from stage2-gcc
   start.bat --from stage2-rust-native
@@ -450,12 +457,17 @@ More detail: BUILD-START.md
 
 function parseArgs(argv: string[]) {
   let fromStep: string | null = null;
+  let onlyStep = false;
 
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
     if (arg === "--help" || arg === "-h") {
       printHelp();
       process.exit(0);
+    }
+    if (arg === "--only") {
+      onlyStep = true;
+      continue;
     }
     if (arg === "--from") {
       const value = argv[i + 1];
@@ -473,11 +485,11 @@ function parseArgs(argv: string[]) {
     process.exit(1);
   }
 
-  return { fromStep };
+  return { fromStep, onlyStep };
 }
 
 async function main() {
-  const { fromStep } = parseArgs(process.argv.slice(2));
+  const { fromStep, onlyStep } = parseArgs(process.argv.slice(2));
   console.log(`CI_TOOLS_ROOT is: ${ciToolsRoot}`);
 
   let startIndex = 0;
@@ -493,11 +505,20 @@ async function main() {
     );
   }
 
+  if (onlyStep && !fromStep) {
+    console.error("--only requires --from");
+    console.error("Run start.bat --help for usage.");
+    process.exit(1);
+  }
+
   for (let i = startIndex; i < pipeline.length; i += 1) {
     const step = pipeline[i];
     console.log("");
     console.log(`=== ${i + 1}/${pipeline.length}: ${step.label} (${step.id}) ===`);
     await step.run();
+    if (onlyStep) {
+      break;
+    }
   }
 }
 
