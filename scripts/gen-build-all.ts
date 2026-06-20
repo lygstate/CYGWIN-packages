@@ -272,7 +272,7 @@ async function main() {
   const packages_will_build = await write_script(
     "",
     packages_base_devel,
-    repoPath("scripts", "sh", "stage1-list.sh"),
+    repoPath("scripts", "generated", "stage1-list.sh"),
     new Set(packages_deferred_to_stage2),
   );
 
@@ -287,7 +287,7 @@ async function main() {
 sh scripts/sh/single.sh libxml2
 `,
     packages_other,
-    repoPath("scripts", "sh", "stage2-list.sh"),
+    repoPath("scripts", "generated", "stage2-list.sh"),
     new Set([
       // :: cmake-bootstrap-4.2.1-1 and cmake-4.2.1-2 are in conflict. Remove cmake? [Y/n]
       "cmake-bootstrap",

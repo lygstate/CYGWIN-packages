@@ -16,13 +16,13 @@ fi
 pushd build-install
 sh perl-create-syms-for-pkg.sh
 popd
-sh scripts/sh/stage1-list.sh
+sh scripts/generated/stage1-list.sh
 
 do_other() {
     sh scripts/sh/stage1.sh >build-stage1.txt 2>&1
 
     Clean dll and exe: '.+'
-    sh scripts/sh/stage2-list.sh >build-stage2.txt 2>&1
+    sh scripts/generated/stage2-list.sh >build-stage2.txt 2>&1
 
     sh scripts/sh/single.sh nano
     sh scripts/sh/single.sh gnupg

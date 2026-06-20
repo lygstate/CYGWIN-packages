@@ -290,10 +290,10 @@ const pipeline: PipelineStep[] = [
     label: "stage2 package lists",
     run: async () => {
       initMsys64Stage("stage2");
-      console.log("Build stage2 MSYS packages (stage2-list.sh)");
+      console.log("Build stage2 MSYS packages (scripts/generated/stage2-list.sh)");
       await runMsysBuild(
         "build-stage2.txt",
-        `${msysStage2BasicExports}; ${checkBootstrap}; sh scripts/sh/stage2-list.sh`,
+        `${msysStage2BasicExports}; ${checkBootstrap}; sh scripts/generated/stage2-list.sh`,
       );
     },
   },

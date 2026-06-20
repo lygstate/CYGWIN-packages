@@ -34,8 +34,8 @@ Use `start.bat --from <step>` to resume from any pipeline step. Run
    - `scripts/generated/msys.txt`
    - `scripts/generated/deps.json`
    - `scripts/generated/deps-map-make.json`
-   - `scripts/sh/stage1-list.sh`
-   - `scripts/sh/stage2-list.sh`
+   - `scripts/generated/stage1-list.sh`
+   - `scripts/generated/stage2-list.sh`
 
 ## Run the full bootstrap
 
@@ -80,7 +80,7 @@ Order of operations:
 2. Extract `msys64-stage0`, install runtime packages, run stage hook / stage0 / stage1
 3. `node scripts/install-for-stage2.ts`
 4. Build stage2 `gcc`, `rust` cross, `rebaseall -p`, `rust` native, `rebaseall -p`, `cargo-c`
-5. Run `scripts/sh/stage2-list.sh` and `scripts/sh/stage2-list-extra.sh`
+5. Run `scripts/generated/stage2-list.sh` and `scripts/sh/stage2-list-extra.sh`
 6. `node scripts/install-for-stage3.ts`, then `stage3-mingw` (extract + mingw install)
 
 ## Resume with `--from`
@@ -182,7 +182,7 @@ Run rebaseall again, then build `cargo-c`.
 ### Stage2 package lists
 
 ```bat
-"%MSYS_BASH%" --login -c "export MSYS_BOOTSTRAP_STAGE=stage2; source scripts/sh/check-bootstrap.sh; sh scripts/sh/stage2-list.sh >scripts/logs/build-stage2.txt 2>&1"
+"%MSYS_BASH%" --login -c "export MSYS_BOOTSTRAP_STAGE=stage2; source scripts/sh/check-bootstrap.sh; sh scripts/generated/stage2-list.sh >scripts/logs/build-stage2.txt 2>&1"
 "%MSYS_BASH%" --login -c "export MSYS_BOOTSTRAP_STAGE=stage2; source scripts/sh/check-bootstrap.sh; sh scripts/sh/stage2-list-extra.sh >scripts/logs/build-stage2-list-extra.txt 2>&1"
 ```
 
