@@ -5,13 +5,18 @@ import * as path from "path";
 import util from "node:util";
 
 export class RunContext {
-  logStream: NodeJS.WritableStream | null = null;
   logPath: string;
   label: string;
+  logOptions: RunProcessLogOptions;
 
-  constructor(logPath: string, label: string) {
+  constructor(
+    logPath: string,
+    label: string,
+    logOptions: RunProcessLogOptions = {},
+  ) {
     this.logPath = logPath;
     this.label = label;
+    this.logOptions = { teeConsole: false, logStream: null, ...logOptions };
   }
 
   // Not safe to call step() concurrently: it patches global console.log/error.
@@ -19,21 +24,27 @@ export class RunContext {
   async step(fn: (step: RunContext) => Promise<void>) {
     const origLog = console.log;
     const origErr = console.error;
-    let logStream: ReturnType<typeof createWriteStream> | null = null;
     try {
-      await fs.mkdir(path.dirname(this.logPath), { recursive: true });
-      logStream = createWriteStream(this.logPath, { flags: "w" });
-      this.logStream = logStream;
+      if (!this.logOptions.logStream) {
+        await fs.mkdir(path.dirname(this.logPath), { recursive: true });
+        this.logOptions.logStream = createWriteStream(this.logPath, {
+          flags: "w",
+        });
+      }
       const teeLine = (line: string) => {
-        logStream!.write(line);
+        this.logOptions.logStream!.write(line);
       };
       console.log = (...args: unknown[]) => {
         teeLine(`${util.format(...args)}\n`);
-        origLog(...args);
+        if (this.logOptions.teeConsole) {
+          origLog(...args);
+        }
       };
       console.error = (...args: unknown[]) => {
         teeLine(`${util.format(...args)}\n`);
-        origErr(...args);
+        if (this.logOptions.teeConsole) {
+          origErr(...args);
+        }
       };
       console.log(this.label);
       console.log(`Log: ${this.logPath}`);
@@ -45,11 +56,12 @@ export class RunContext {
       console.error(error);
       process.exit(1);
     } finally {
-      this.logStream = null;
+      const logStream = this.logOptions.logStream;
+      this.logOptions.logStream = null;
       console.log = origLog;
       console.error = origErr;
       if (logStream) {
-        await new Promise<void>((resolve) => logStream!.end(() => resolve()));
+        await new Promise<void>((resolve) => logStream.end(() => resolve()));
       }
     }
   }
@@ -59,7 +71,7 @@ export class RunContext {
     args: string[] = [],
     options: RunProcessOptions = {},
   ) {
-    return runProcess(command, args, options, { logStream: this.logStream });
+    return runProcess(command, args, options, this.logOptions);
   }
 }
 
@@ -81,6 +93,7 @@ export type RunProcessOptions = SpawnOptions & {
 
 type RunProcessLogOptions = {
   logStream?: NodeJS.WritableStream | null;
+  teeConsole?: boolean;
 };
 
 async function runProcess(
@@ -97,11 +110,11 @@ async function runProcess(
     stderr,
     ...spawnOptions
   } = options;
-  const { logStream } = logOptions;
+  const { logStream, teeConsole = false } = logOptions;
   const cwd = spawnOptions.cwd ?? process.cwd();
   const env = spawnOptions.env ?? process.env;
   const capture = captureOption ?? true;
-  const tee = teeOption ?? false;
+  const tee = teeConsole && (teeOption ?? false);
 
   let stdoutOutput = "";
   let stderrOutput = "";

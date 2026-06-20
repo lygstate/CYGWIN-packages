@@ -44,8 +44,12 @@ const exitOpts: RunProcessOptions = {
   tee: true,
 };
 
-function runContext(logName: string, label: string) {
-  return new RunContext(repoPath("scripts", "logs", logName), label);
+function runContext(logName: string, label: string, teeConsole = false) {
+  return new RunContext(
+    repoPath("scripts", "logs", logName),
+    label,
+    { teeConsole },
+  );
 }
 
 type PipelineStep = {
@@ -93,7 +97,7 @@ async function runMsysBuild(
   // Piped stdio is not a TTY, so bash/make block-buffer unless we force line
   // buffering (stdbuf) and tee each chunk to the log and terminal as it arrives.
   const lineBufferedCommand = `exec stdbuf -oL -eL sh -c ${JSON.stringify(command)}`;
-  await runContext(logName, command).step(async (step) => {
+  await runContext(logName, command, true).step(async (step) => {
     await step.run(msysBash, ["--login", "-c", lineBufferedCommand], {
       ...exitOpts,
       env: {
@@ -187,10 +191,12 @@ const pipeline: PipelineStep[] = [
       await runContext(
         "deps.txt",
         "Generate scripts/generated/deps.json (deps.ts)",
+        true,
       ).step(runDeps);
       await runContext(
         "gen-build-all.txt",
         "Generate stage1/stage2 package lists (gen-build-all.ts)",
+        true,
       ).step(runGenBuildAll);
     },
   },
