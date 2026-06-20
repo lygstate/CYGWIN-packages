@@ -275,51 +275,12 @@ export async function dedupeDistPackageDir(dist_dir, fsImpl: any = fs) {
   return removed;
 }
 
-type ProcessCapture = {
-  stdout: string;
-  stderr: string;
-  code: number;
-};
+import {
+  spawnProcessAsyncCapture,
+  type ProcessCapture,
+} from "./build-common.ts";
 
-export function spawnProcessAsyncCapture(
-  command: string,
-  args: string[] = [],
-  options = {},
-): Promise<ProcessCapture> {
-  return new Promise((resolve, reject) => {
-    // Collect stdout and stderr data
-    let stdoutOutput = "";
-    let stderrOutput = "";
-
-    const child = spawn(command, args, options);
-
-    // Capture stdout data chunks
-    child.stdout.on("data", (data) => {
-      stdoutOutput += data.toString();
-    });
-
-    // Capture stderr data chunks
-    child.stderr.on("data", (data) => {
-      stderrOutput += data.toString();
-    });
-
-    // Handle process errors (e.g., command not found)
-    child.on("error", (err) => {
-      reject(err);
-    });
-
-    // Handle process exit
-    child.on("close", (code) => {
-      if (code !== 0) {
-        // Reject the promise if the process fails (non-zero exit code)
-        reject(new Error(`Process exited with code ${code}: ${stderrOutput}`));
-      } else {
-        // Resolve the promise with the captured output
-        resolve({ stdout: stdoutOutput, stderr: stderrOutput, code });
-      }
-    });
-  });
-}
+export { spawnProcessAsyncCapture, type ProcessCapture };
 
 function msysBashExe(msys_root) {
   return path.join(msys_root, "usr", "bin", "bash.exe");

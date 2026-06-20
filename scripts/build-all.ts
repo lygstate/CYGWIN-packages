@@ -9,11 +9,11 @@ import {
 } from "./install-stages.ts";
 import {
   buildLogPath,
-  exitWith,
   runCommand,
   runMsysCommand,
   runMsysCommandToLog,
   runStepToLog,
+  type RunProcessOptions,
 } from "./build-common.ts";
 
 const ciToolsRoot = process.env.CI_TOOLS_ROOT || "D:\\CI-Tools";
@@ -40,6 +40,7 @@ const rustCrossEnvs =
 const cmdExe = process.env.COMSPEC || "C:\\Windows\\System32\\cmd.exe";
 const checkBootstrap = "source scripts/sh/check-bootstrap.sh";
 const buildSingle = "sh scripts/sh/single.sh";
+const exitOpts: RunProcessOptions = { env, exitOnNonZero: true };
 
 type PipelineStep = {
   id: string;
@@ -69,16 +70,16 @@ function initMsys64Stage(stage: "stage0" | "stage2" | "stage3") {
 
 async function extractMsys64() {
   env.CI_TOOLS_DISABLE_PAUSE = "true";
-  let code = await runCommand(cmdExe, ["/c", "delete-msys64.bat"], {
+  await runCommand(cmdExe, ["/c", "delete-msys64.bat"], {
     cwd: msys64StageDir,
     env,
+    exitOnNonZero: true,
   });
-  exitWith(code);
-  code = await runCommand(cmdExe, ["/c", "extract.bat"], {
+  await runCommand(cmdExe, ["/c", "extract.bat"], {
     cwd: msys64StageDir,
     env,
+    exitOnNonZero: true,
   });
-  exitWith(code);
 }
 
 async function runLoggedStep(
@@ -101,7 +102,7 @@ async function runMsysBuild(
   logName: string,
   command: string,
 ) {
-  exitWith(await runMsysCommandToLog(msysBash, command, logName, env));
+  await runMsysCommandToLog(msysBash, command, logName, exitOpts);
 }
 
 async function installMsys2OriginalRuntime() {
@@ -109,19 +110,15 @@ async function installMsys2OriginalRuntime() {
     "./dist-pkg/msys2-runtime-$MSYS_RUNTIME_PKGVER-$MSYS_RUNTIME_PKGREL-x86_64.pkg.tar.zst",
     "./dist-pkg/msys2-runtime-devel-$MSYS_RUNTIME_PKGVER-$MSYS_RUNTIME_PKGREL-x86_64.pkg.tar.zst",
   ].join(" ");
-  exitWith(
-    await runMsysCommand(
-      msysBash,
-      `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${packages}`,
-      env,
-    ),
+  await runMsysCommand(
+    msysBash,
+    `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${packages}`,
+    exitOpts,
   );
-  exitWith(
-    await runMsysCommand(
-      msysBash,
-      `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${runtimePackagesInit}`,
-      env,
-    ),
+  await runMsysCommand(
+    msysBash,
+    `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${runtimePackagesInit}`,
+    exitOpts,
   );
 }
 
@@ -130,19 +127,15 @@ async function installMsys2HookRuntime() {
     "./dist/init/msys2-runtime-$MSYS_RUNTIME_PKGVER-5-x86_64.pkg.tar.zst",
     "./dist/init/msys2-runtime-devel-$MSYS_RUNTIME_PKGVER-5-x86_64.pkg.tar.zst",
   ].join(" ");
-  exitWith(
-    await runMsysCommand(
-      msysBash,
-      `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${packages}`,
-      env,
-    ),
+  await runMsysCommand(
+    msysBash,
+    `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${packages}`,
+    exitOpts,
   );
-  exitWith(
-    await runMsysCommand(
-      msysBash,
-      `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${runtimePackagesInit}`,
-      env,
-    ),
+  await runMsysCommand(
+    msysBash,
+    `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${runtimePackagesInit}`,
+    exitOpts,
   );
 }
 
@@ -165,14 +158,13 @@ async function rebaseallMsys64Stage2() {
   //
   // Remove /etc/rebase.db.x86_64 before and after (before avoids stale-db merge
   // errors; after matches the old batch). -p skips the dash-only process check.
-  exitWith(await runMsysCommand(msysBash, "rm -rf /etc/rebase.db.x86_64", env));
+  await runMsysCommand(msysBash, "rm -rf /etc/rebase.db.x86_64", exitOpts);
   const rebaseEnv = { ...env, MSYS: "", MSYSTEM: "", CHERE_INVOKING: "" };
-  exitWith(
-    await runCommand(msysDash, ["/usr/bin/rebaseall", "-p", "-b", "0x400000000"], {
-      env: rebaseEnv,
-    }),
-  );
-  exitWith(await runMsysCommand(msysBash, "rm -rf /etc/rebase.db.x86_64", env));
+  await runCommand(msysDash, ["/usr/bin/rebaseall", "-p", "-b", "0x400000000"], {
+    env: rebaseEnv,
+    exitOnNonZero: true,
+  });
+  await runMsysCommand(msysBash, "rm -rf /etc/rebase.db.x86_64", exitOpts);
 }
 
 const pipeline: PipelineStep[] = [
