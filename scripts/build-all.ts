@@ -1,11 +1,19 @@
 import * as path from "node:path";
+import { runDeps } from "./deps.ts";
+import { runGenBuildAll } from "./gen-build-all.ts";
+import {
+  installStage0,
+  installStage2,
+  installStage3,
+  installMingwStage3,
+} from "./install-stages.ts";
 import {
   buildLogPath,
   exitWith,
   runCommand,
   runMsysCommand,
   runMsysCommandToLog,
-  runNodeInstallToLog,
+  runStepToLog,
 } from "./build-common.ts";
 
 const ciToolsRoot = process.env.CI_TOOLS_ROOT || "D:\\CI-Tools";
@@ -73,13 +81,19 @@ async function extractMsys64() {
   exitWith(code);
 }
 
-async function runNodeInstall(scriptName: string, logName: string) {
-  const code = await runNodeInstallToLog(scriptName, logName, env);
-  if (code !== 0) {
+async function runLoggedStep(
+  logName: string,
+  label: string,
+  fn: () => Promise<void>,
+) {
+  try {
+    await runStepToLog(logName, label, fn);
+  } catch (error) {
     console.log("");
-    console.log(`ERROR: scripts/${scriptName} failed with exit code ${code}`);
+    console.log(`ERROR: ${label} failed`);
     console.log(`Log file: ${buildLogPath(logName)}`);
-    process.exit(code);
+    console.error(error);
+    process.exit(1);
   }
 }
 
@@ -163,12 +177,40 @@ async function rebaseallMsys64Stage2() {
 
 const pipeline: PipelineStep[] = [
   {
-    id: "stage0-prep",
+    id: "stage0-install",
     group: 1,
-    label: "stage0 prep",
+    label: "stage0 install MSYS packages",
     run: async () => {
-      console.log("Install MSYS base packages into msys64-stage0");
-      await runNodeInstall("install-for-stage0.ts", "install-for-stage0.txt");
+      await runLoggedStep(
+        "install-for-stage0.txt",
+        "Install MSYS base packages into msys64-stage0",
+        installStage0,
+      );
+    },
+  },
+  {
+    id: "stage0-generate",
+    group: 2,
+    label: "stage0 generate deps and package lists",
+    run: async () => {
+      initMsys64Stage("stage0");
+      await runLoggedStep(
+        "deps.txt",
+        "Generate scripts/generated/deps.json (deps.ts)",
+        runDeps,
+      );
+      await runLoggedStep(
+        "gen-build-all.txt",
+        "Generate stage1/stage2 package lists (gen-build-all.ts)",
+        runGenBuildAll,
+      );
+    },
+  },
+  {
+    id: "stage0-extract",
+    group: 3,
+    label: "stage0 extract archive",
+    run: async () => {
       initMsys64Stage("stage0");
       console.log("Extract msys64-stage0 from archive");
       await extractMsys64();
@@ -176,7 +218,7 @@ const pipeline: PipelineStep[] = [
   },
   {
     id: "hook-runtime",
-    group: 2,
+    group: 4,
     label: "hook/runtime builds",
     run: async () => {
       initMsys64Stage("stage0");
@@ -196,7 +238,7 @@ const pipeline: PipelineStep[] = [
   },
   {
     id: "stage1",
-    group: 3,
+    group: 5,
     label: "stage1",
     run: async () => {
       initMsys64Stage("stage0");
@@ -206,17 +248,20 @@ const pipeline: PipelineStep[] = [
   },
   {
     id: "stage2-prep",
-    group: 4,
+    group: 6,
     label: "stage2 prep",
     run: async () => {
       initMsys64Stage("stage2");
-      console.log("Install stage1-built packages into msys64-stage2");
-      await runNodeInstall("install-for-stage2.ts", "install-for-stage2.txt");
+      await runLoggedStep(
+        "install-for-stage2.txt",
+        "Install stage1-built packages into msys64-stage2",
+        installStage2,
+      );
     },
   },
   {
     id: "stage2-gcc",
-    group: 5,
+    group: 7,
     label: "stage2 gcc",
     run: async () => {
       initMsys64Stage("stage2");
@@ -229,7 +274,7 @@ const pipeline: PipelineStep[] = [
   },
   {
     id: "stage2-rust-cross",
-    group: 5,
+    group: 7,
     label: "stage2 rust cross",
     run: async () => {
       initMsys64Stage("stage2");
@@ -242,7 +287,7 @@ const pipeline: PipelineStep[] = [
   },
   {
     id: "stage2-rebaseall",
-    group: 5,
+    group: 7,
     label: "stage2 rebaseall (before rust native)",
     run: async () => {
       initMsys64Stage("stage2");
@@ -251,7 +296,7 @@ const pipeline: PipelineStep[] = [
   },
   {
     id: "stage2-rust-native",
-    group: 5,
+    group: 7,
     label: "stage2 rust native",
     run: async () => {
       initMsys64Stage("stage2");
@@ -264,7 +309,7 @@ const pipeline: PipelineStep[] = [
   },
   {
     id: "stage2-rebaseall-2",
-    group: 5,
+    group: 7,
     label: "stage2 rebaseall (after rust native)",
     run: async () => {
       initMsys64Stage("stage2");
@@ -273,7 +318,7 @@ const pipeline: PipelineStep[] = [
   },
   {
     id: "stage2-cargo",
-    group: 5,
+    group: 7,
     label: "stage2 cargo-c",
     run: async () => {
       initMsys64Stage("stage2");
@@ -286,7 +331,7 @@ const pipeline: PipelineStep[] = [
   },
   {
     id: "stage2-lists",
-    group: 6,
+    group: 8,
     label: "stage2 package lists",
     run: async () => {
       initMsys64Stage("stage2");
@@ -298,49 +343,37 @@ const pipeline: PipelineStep[] = [
     },
   },
   {
-    id: "stage2-list-extra",
-    group: 6,
-    label: "stage2 package list extra",
-    run: async () => {
-      initMsys64Stage("stage2");
-      console.log("Build stage2 extra packages (stage2-list-extra.sh)");
-      await runMsysBuild(
-        "build-stage2-list-extra.txt",
-        `${msysStage2BasicExports}; ${checkBootstrap}; sh scripts/sh/stage2-list-extra.sh`,
-      );
-    },
-  },
-  {
     id: "stage3-prep",
-    group: 7,
+    group: 9,
     label: "stage3 prep (cygwin packages + archive)",
     run: async () => {
-      console.log(
-        "Install stage1/stage2 packages into msys64-stage3 and create archive",
-      );
       initMsys64Stage("stage3");
-      await runNodeInstall("install-for-stage3.ts", "install-for-stage3.txt");
+      await runLoggedStep(
+        "install-for-stage3.txt",
+        "Install stage1/stage2 packages into msys64-stage3 and create archive",
+        installStage3,
+      );
     },
   },
   {
     id: "stage3-mingw",
-    group: 8,
+    group: 10,
     label: "stage3 extract + mingw packages",
     run: async () => {
       initMsys64Stage("stage3");
       console.log("Extract msys64-stage3 from archive");
       await extractMsys64();
-      console.log("Install mingw-w64 packages for stage3");
-      await runNodeInstall(
-        "install-mingw-for-stage3.ts",
+      await runLoggedStep(
         "install-mingw-for-stage3.txt",
+        "Install mingw-w64 packages for stage3",
+        installMingwStage3,
       );
     },
   },
 ];
 
 function resolveFromStep(fromArg: string): string {
-  if (/^[1-8]$/.test(fromArg)) {
+  if (/^([1-9]|10)$/.test(fromArg)) {
     const group = Number(fromArg);
     const step = pipeline.find((item) => item.group === group);
     if (!step) {
@@ -372,16 +405,18 @@ Environment:
   CI_TOOLS_ROOT        CI tools root (default: D:\\CI-Tools)
 
 Pipeline groups:
-  1. stage0 prep
-  2. hook/runtime builds
-  3. stage1
-  4. stage2 prep
-  5. stage2 gcc/rust/cargo
-  6. stage2 package lists
-  7. stage3 prep (cygwin + archive)
-  8. stage3 extract + mingw
+  1. stage0 install MSYS packages
+  2. stage0 generate deps and package lists
+  3. stage0 extract archive
+  4. hook/runtime builds
+  5. stage1
+  6. stage2 prep
+  7. stage2 gcc/rust/cargo
+  8. stage2 package lists
+  9. stage3 prep (cygwin + archive)
+  10. stage3 extract + mingw
 
-Steps (--from accepts the id or group number 1-8):
+Steps (--from accepts the id or group number 1-10):
 `);
   for (const step of pipeline) {
     console.log(`  ${step.group}. ${step.id.padEnd(20)} ${step.label}`);
@@ -389,7 +424,8 @@ Steps (--from accepts the id or group number 1-8):
   console.log(`
 Examples:
   start.bat
-  start.bat --from 4
+  start.bat --from stage0-generate
+  start.bat --from 6
   start.bat --from stage2-gcc
   start.bat --from stage2-rust-native
   start.bat --from stage3-mingw

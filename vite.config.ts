@@ -20,16 +20,9 @@ export default defineConfig({
       external: (id) => external.has(id),
       input: {
         "build-all": resolve(rootDir, "scripts/build-all.ts"),
-        check: resolve(rootDir, "scripts/check.ts"),
         deps: resolve(rootDir, "scripts/deps.ts"),
         "gen-build-all": resolve(rootDir, "scripts/gen-build-all.ts"),
-        "install-for-stage0": resolve(rootDir, "scripts/install-for-stage0.ts"),
-        "install-for-stage2": resolve(rootDir, "scripts/install-for-stage2.ts"),
-        "install-for-stage3": resolve(rootDir, "scripts/install-for-stage3.ts"),
-        "install-mingw-for-stage3": resolve(
-          rootDir,
-          "scripts/install-mingw-for-stage3.ts",
-        ),
+        "install-stages": resolve(rootDir, "scripts/install-stages.ts"),
         "test/utils-install-base.test": resolve(
           rootDir,
           "scripts/test/utils-install-base.test.ts",

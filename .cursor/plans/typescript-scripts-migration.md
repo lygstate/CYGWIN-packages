@@ -112,12 +112,9 @@ dependency changes.
 
 | Current file | Action |
 |--------------|--------|
-| `install-for-stage0.ts` | Export `installStage0()`; call from pipeline |
-| `install-for-stage2.ts` | Export `installStage2()` |
-| `install-for-stage3.ts` | Export `installStage3()` |
-| `install-mingw-for-stage3.ts` | Export `installMingwStage3()`; fix hardcoded `D:/CI-Tools` |
-| `deps.ts` | Export `runDeps()`; call from `stage0-generate` |
-| `gen-build-all.ts` | Export `runGenBuildAll()`; call from `stage0-generate` |
+| `scripts/install-stages.ts` | Exports `installStage0/2/3`, `installMingwStage3`; called from pipeline |
+| `deps.ts` | Export `runDeps()`; CLI + `stage0-generate` step |
+| `gen-build-all.ts` | Export `runGenBuildAll()`; CLI + `stage0-generate` step |
 
 Keep `deps.ts` and `gen-build-all.ts` as modules; drop standalone `main()`
 spawn from `build-all.ts` once folded.
@@ -126,7 +123,7 @@ spawn from `build-all.ts` once folded.
 
 | Item | Action |
 |------|--------|
-| `scripts/sh/stage2-list-extra.sh` | Empty today; remove pipeline step or populate |
+| `scripts/sh/stage2-list-extra.sh` | Removed (was empty) |
 | Dead `do_build()` / `do_other()` in `stage0.sh`, `stage-hook.sh`, `stage1.sh` | Delete or move to BUILD-START manual recipes |
 | `runShellFile` in `build-common.ts` | Remove if unused |
 | `scripts/check.ts` | Restore or remove from `vite.config.ts` / `package.json` main |
@@ -140,14 +137,12 @@ spawn from `build-all.ts` once folded.
 
 ### Implementation phases
 
-1. Add `stage0-generate` pipeline step (wire `deps.ts` + `gen-build-all.ts`).
-2. Split `stage0-prep` into install / generate / extract; update `--from` help
-   and BUILD-START.md.
-3. Merge four install scripts into `install-stages.ts`; import from
-   `build-all.ts`.
-4. Clean empty extra list step and dead shell blocks.
-5. Optional: export `runDeps` / `runGenBuildAll` for `node scripts/deps.ts`
-   CLI wrappers during transition.
+1. ~~Add `stage0-generate` pipeline step (wire `deps.ts` + `gen-build-all.ts`).~~ Done.
+2. ~~Split `stage0-prep` into install / generate / extract; update `--from` help.~~ Done.
+3. ~~Merge four install scripts into `install-stages.ts`; import from `build-all.ts`.~~ Done.
+4. ~~Remove empty `stage2-list-extra` pipeline step.~~ Done.
+5. Optional: trim dead shell blocks in `stage0.sh`, `stage-hook.sh`, `stage1.sh`.
+6. `deps.ts` and `gen-build-all.ts` remain runnable as CLI for manual regen.
 
 ### Risks
 
@@ -190,7 +185,7 @@ spawn from `build-all.ts` once folded.
   helper.
 - Add `stage0-generate` pipeline step: run `deps.ts` + `gen-build-all.ts`
   after `install-for-stage0.ts`.
-- Merge install scripts into `install-stages.ts` and call from `build-all.ts`.
+- ~~Merge install scripts into `install-stages.ts` and call from `build-all.ts`.~~
 - Update README/package references to the new TypeScript commands and
   compatibility wrappers.
 - Run focused tests, type checks, Vite build, and lightweight smoke checks.

@@ -1,5 +1,6 @@
 import * as fs from "fs/promises";
 import process from "node:process";
+import { fileURLToPath } from "node:url";
 import { repoPath } from "./utils.ts";
 
 let need_exit = false;
@@ -247,7 +248,7 @@ async function get_deps_map_make() {
   return deps_map_make;
 }
 
-async function main() {
+async function runGenBuildAll() {
   let deps_map_make = await get_deps_map_make();
   await fs.mkdir(repoPath("scripts", "generated"), { recursive: true });
   await fs.writeFile(
@@ -308,4 +309,11 @@ sh scripts/sh/single.sh libxml2
   );
 }
 
-main();
+export { runGenBuildAll };
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  runGenBuildAll().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}

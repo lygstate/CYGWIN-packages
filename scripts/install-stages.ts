@@ -1,14 +1,140 @@
-import * as path from "path";
 import * as fs from "fs/promises";
+import * as path from "path";
 import {
-  repoRoot,
   archiveFull,
+  ci_tools_msys64_stage0,
+  ci_tools_msys64_stage2,
+  ci_tools_msys64_stage3,
   executePacmanInstall,
-  writeExtractBat,
   getYYYYMMDD,
+  installMsys2AllPackages,
+  installMsys2BasePackages,
+  installMsys2StageBatchScripts,
+  repoRoot,
+  dedupeDistPackageDir,
+  writeExtractBat,
 } from "./utils.ts";
 
-async function install_mingw(MINGW_PACKAGE_PREFIX) {
+export async function installStage0() {
+  const msys_root = path.join(ci_tools_msys64_stage0, "msys64");
+  const pkg_root = repoRoot;
+
+  const has_msys64 = await installMsys2AllPackages(
+    ci_tools_msys64_stage0,
+    pkg_root,
+    true,
+  );
+
+  const msys2_base_filename = await archiveFull(
+    ci_tools_msys64_stage0,
+    msys_root,
+  );
+  console.log(
+    `===stage0: Archive finished as: ${msys2_base_filename} with has_msys64:${has_msys64}`,
+  );
+  await installMsys2StageBatchScripts(
+    ci_tools_msys64_stage0,
+    msys2_base_filename,
+  );
+  console.log(`===stage0: Wrote extract.bat and delete-msys64.bat`);
+}
+
+export async function installStage2() {
+  const msys_root = path.join(ci_tools_msys64_stage2, "msys64");
+  const pkg_root = repoRoot;
+  const stage1_dist = path.join(pkg_root, "dist", "stage1");
+
+  const has_msys64 = await installMsys2BasePackages(
+    ci_tools_msys64_stage2,
+    true,
+  );
+
+  const removed = await dedupeDistPackageDir(stage1_dist);
+  console.log(
+    `===Removed ${removed.length} duplicate package(s) from dist/stage1`,
+  );
+
+  const install_commands = [
+    "pacman -U --noconfirm --overwrite \\* `ls | tr '\n' ' '`",
+    "pacman -U --noconfirm --overwrite \\* `ls | tr '\n' ' '`",
+    "pacman -S --needed --noconfirm --overwrite \\* mingw-w64-x86_64-python mingw-w64-x86_64-llvm mingw-w64-x86_64-clang",
+  ];
+  for (let i = 0; i < install_commands.length; i += 1) {
+    console.log(`===Execute: "${install_commands[i]}"`);
+    await executePacmanInstall(
+      msys_root,
+      install_commands[i],
+      stage1_dist,
+    );
+  }
+  console.log("===Switch to cygwin finished");
+  const msys2_base_filename = await archiveFull(
+    ci_tools_msys64_stage2,
+    msys_root,
+  );
+  console.log(
+    `===stage2: Archive finished as: ${msys2_base_filename} with has_msys64:${has_msys64}`,
+  );
+  await installMsys2StageBatchScripts(
+    ci_tools_msys64_stage2,
+    msys2_base_filename,
+  );
+  console.log(`===stage2: Wrote extract.bat and delete-msys64.bat`);
+}
+
+export async function installStage3() {
+  const msys_root = path.join(ci_tools_msys64_stage3, "msys64");
+  const pkg_root = repoRoot;
+  const stage1_dist = path.join(pkg_root, "dist", "stage1");
+  const stage2_dist = path.join(pkg_root, "dist", "stage2");
+
+  const has_msys64 = await installMsys2BasePackages(
+    ci_tools_msys64_stage3,
+    true,
+  );
+
+  const removed_stage1 = await dedupeDistPackageDir(stage1_dist);
+  console.log(
+    `===Removed ${removed_stage1.length} duplicate package(s) from dist/stage1`,
+  );
+  const removed_stage2 = await dedupeDistPackageDir(stage2_dist);
+  console.log(
+    `===Removed ${removed_stage2.length} duplicate package(s) from dist/stage2`,
+  );
+
+  const install_commands = [
+    "pacman -U --noconfirm --overwrite \\* `ls | tr '\n' ' '`",
+    "pacman -U --noconfirm --overwrite \\* `ls | tr '\n' ' '`",
+  ];
+  for (let i = 0; i < install_commands.length; i += 1) {
+    await executePacmanInstall(
+      msys_root,
+      install_commands[i],
+      stage1_dist,
+    );
+  }
+  await executePacmanInstall(
+    msys_root,
+    "pacman -U --noconfirm --overwrite \\* `ls | tr '\n' ' '`",
+    stage2_dist,
+  );
+  console.log("===stage3: Switch to cygwin finished");
+  const msys2_base_filename = await archiveFull(
+    ci_tools_msys64_stage3,
+    msys_root,
+  );
+  console.log(
+    `===stage3: Archive finished as: ${msys2_base_filename} with has_msys64:${has_msys64}`,
+  );
+  await installMsys2StageBatchScripts(
+    ci_tools_msys64_stage3,
+    msys2_base_filename,
+  );
+  console.log(`===stage3: Wrote extract.bat and delete-msys64.bat`);
+}
+
+export async function installMingwStage3() {
+  const MINGW_PACKAGE_PREFIX = "mingw-w64-x86_64";
   const packages_extra = [
     `${MINGW_PACKAGE_PREFIX}-cmake`,
     `${MINGW_PACKAGE_PREFIX}-gdb`,
@@ -28,14 +154,8 @@ async function install_mingw(MINGW_PACKAGE_PREFIX) {
     `${MINGW_PACKAGE_PREFIX}-ruby`,
     `${MINGW_PACKAGE_PREFIX}-vala`,
     `${MINGW_PACKAGE_PREFIX}-meson`,
-    // `${MINGW_PACKAGE_PREFIX}-openmp`,
-
-    // depends
-    // `${MINGW_PACKAGE_PREFIX}-babl`,
     `${MINGW_PACKAGE_PREFIX}-cairo`,
-    // `${MINGW_PACKAGE_PREFIX}-exiv2`,
     `${MINGW_PACKAGE_PREFIX}-ffmpeg`,
-    // `${MINGW_PACKAGE_PREFIX}-gexiv2`,
     `${MINGW_PACKAGE_PREFIX}-gcc-libs`,
     `${MINGW_PACKAGE_PREFIX}-gdk-pixbuf2`,
     `${MINGW_PACKAGE_PREFIX}-gettext`,
@@ -56,9 +176,7 @@ async function install_mingw(MINGW_PACKAGE_PREFIX) {
     `${MINGW_PACKAGE_PREFIX}-SDL2`,
     `${MINGW_PACKAGE_PREFIX}-suitesparse`,
   ];
-
   const packages_mesa = [
-    // make depends
     `${MINGW_PACKAGE_PREFIX}-cc`,
     `${MINGW_PACKAGE_PREFIX}-glslang`,
     `${MINGW_PACKAGE_PREFIX}-python-mako`,
@@ -66,8 +184,6 @@ async function install_mingw(MINGW_PACKAGE_PREFIX) {
     `${MINGW_PACKAGE_PREFIX}-meson`,
     `${MINGW_PACKAGE_PREFIX}-pkgconf`,
     `${MINGW_PACKAGE_PREFIX}-libelf`,
-
-    // depends
     `${MINGW_PACKAGE_PREFIX}-llvm`,
     `${MINGW_PACKAGE_PREFIX}-clang`,
     `${MINGW_PACKAGE_PREFIX}-libclc`,
@@ -77,12 +193,9 @@ async function install_mingw(MINGW_PACKAGE_PREFIX) {
     `${MINGW_PACKAGE_PREFIX}-vulkan-loader`,
     `${MINGW_PACKAGE_PREFIX}-zlib`,
     `${MINGW_PACKAGE_PREFIX}-zstd`,
-
-    // optdepends
     `${MINGW_PACKAGE_PREFIX}-opengl-man-pages`,
     `${MINGW_PACKAGE_PREFIX}-vulkan-validation-layers`,
   ];
-
   const packages_tss = [
     `${MINGW_PACKAGE_PREFIX}-toolchain`,
     `${MINGW_PACKAGE_PREFIX}-pkgconf`,
@@ -92,7 +205,6 @@ async function install_mingw(MINGW_PACKAGE_PREFIX) {
     `${MINGW_PACKAGE_PREFIX}-clang`,
     `${MINGW_PACKAGE_PREFIX}-lld`,
   ];
-
   const packages_scade = [
     `${MINGW_PACKAGE_PREFIX}-toolchain`,
     `${MINGW_PACKAGE_PREFIX}-pkgconf`,
@@ -103,7 +215,6 @@ async function install_mingw(MINGW_PACKAGE_PREFIX) {
     `${MINGW_PACKAGE_PREFIX}-mesa`,
     `${MINGW_PACKAGE_PREFIX}-mosquitto`,
   ];
-
   const packages_qemu = [
     `${MINGW_PACKAGE_PREFIX}-binutils`,
     `${MINGW_PACKAGE_PREFIX}-capstone`,
@@ -157,19 +268,29 @@ async function install_mingw(MINGW_PACKAGE_PREFIX) {
     ),
   );
 
-  const ci_tools_msys64_parent = "D:/CI-Tools/msys64-stage3";
+  const ci_tools_msys64_parent = ci_tools_msys64_stage3;
   const msys_root = path.join(ci_tools_msys64_parent, "msys64");
   const pkg_root = repoRoot;
 
-  const msys_txt_path = path.join(pkg_root, "install-mingw-for-stage3-packages.txt");
+  const msys_txt_path = path.join(
+    pkg_root,
+    "scripts",
+    "generated",
+    "install-mingw-for-stage3-packages.txt",
+  );
+  await fs.mkdir(path.dirname(msys_txt_path), { recursive: true });
   await fs.writeFile(msys_txt_path, packages.join("\n"), "utf-8");
 
-  await executePacmanInstall(msys_root, `pacman -S --noconfirm --needed $(cat install-mingw-for-stage3-packages.txt)`, pkg_root);
+  await executePacmanInstall(
+    msys_root,
+    "pacman -S --noconfirm --needed $(cat scripts/generated/install-mingw-for-stage3-packages.txt)",
+    pkg_root,
+  );
   console.log("===stage3: Install mingw packages finished");
   const msys2_base_filename = await archiveFull(
     ci_tools_msys64_parent,
     msys_root,
-    `msys2-mingw-x86_64-${getYYYYMMDD(new Date())}-full.tar`
+    `msys2-mingw-x86_64-${getYYYYMMDD(new Date())}-full.tar`,
   );
   await writeExtractBat(
     ci_tools_msys64_parent,
@@ -181,8 +302,3 @@ async function install_mingw(MINGW_PACKAGE_PREFIX) {
     `===stage3: Archive finished as: ${msys2_base_filename} for mingw64`,
   );
 }
-
-install_mingw("mingw-w64-x86_64").catch((error) => {
-  console.error(error);
-  process.exit(1);
-});

@@ -2,6 +2,7 @@ import { spawn } from "node:child_process";
 import { createWriteStream } from "node:fs";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
+import util from "node:util";
 import { repoRoot } from "./utils.ts";
 
 export const buildLogsDir = path.join(repoRoot, "scripts", "logs");
@@ -41,13 +42,36 @@ export async function runCommand(
   });
 }
 
-export async function runShellFile(
-  scriptPath: string,
-  args: string[] = [],
-  env: NodeJS.ProcessEnv = process.env,
+export async function runStepToLog(
+  logName: string,
+  label: string,
+  fn: () => Promise<void>,
 ) {
-  const shell = env.MSYS_BASH || env.SHELL || "/usr/bin/bash";
-  return runCommand(shell, [scriptPath, ...args], { cwd: repoRoot, env });
+  await touchLog(logName);
+  const logPath = buildLogPath(logName);
+  console.log(label);
+  console.log(`Log: ${logPath}`);
+  const logStream = createWriteStream(logPath, { flags: "w" });
+  const origLog = console.log;
+  const origErr = console.error;
+  const teeLine = (line: string) => {
+    logStream.write(line);
+  };
+  console.log = (...args: unknown[]) => {
+    teeLine(`${util.format(...args)}\n`);
+    origLog(...args);
+  };
+  console.error = (...args: unknown[]) => {
+    teeLine(`${util.format(...args)}\n`);
+    origErr(...args);
+  };
+  try {
+    await fn();
+  } finally {
+    console.log = origLog;
+    console.error = origErr;
+    await new Promise<void>((resolve) => logStream.end(() => resolve()));
+  }
 }
 
 export async function runMsysCommand(
@@ -58,45 +82,6 @@ export async function runMsysCommand(
   return runCommand(msysBash, ["--login", "-c", command], {
     cwd: repoRoot,
     env,
-  });
-}
-
-export async function runNodeInstallToLog(
-  scriptName: string,
-  logName: string,
-  env: NodeJS.ProcessEnv = process.env,
-) {
-  await touchLog(logName);
-  const logPath = buildLogPath(logName);
-  console.log(`Running node scripts/${scriptName}`);
-  console.log(`Log: ${logPath}`);
-  const logStream = createWriteStream(logPath, { flags: "w" });
-
-  return new Promise<number>((resolve, reject) => {
-    const child = spawn(process.execPath, [repoScript(scriptName)], {
-      cwd: repoRoot,
-      env: {
-        ...env,
-        PYTHONUNBUFFERED: "1",
-      },
-      windowsHide: false,
-    });
-
-    const tee = (chunk: Buffer | string, output: NodeJS.WriteStream) => {
-      logStream.write(chunk);
-      output.write(chunk);
-    };
-
-    child.stdout?.on("data", (chunk) => tee(chunk, process.stdout));
-    child.stderr?.on("data", (chunk) => tee(chunk, process.stderr));
-
-    child.on("error", (error) => {
-      logStream.destroy();
-      reject(error);
-    });
-    child.on("close", (code) => {
-      logStream.end(() => resolve(code ?? 0));
-    });
   });
 }
 

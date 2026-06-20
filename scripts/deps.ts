@@ -2,10 +2,12 @@ import * as fs from "fs/promises";
 import * as fsSync from "fs";
 import * as path from "path";
 import process from "node:process";
+import { fileURLToPath } from "node:url";
 import {
   black_list,
   ci_tools_msys64_stage0,
   repoPath,
+  repoRoot,
   spawnProcessAsyncCapture,
 } from "./utils.ts";
 
@@ -15,7 +17,7 @@ process.on("SIGINT", function () {
   need_exit = true;
 });
 
-async function main() {
+export async function runDeps() {
   const portsDir = repoPath("ports");
   const generatedDir = repoPath("scripts", "generated");
   const packages_list = await fs.readdir(portsDir);
@@ -26,7 +28,6 @@ async function main() {
       console.log(`Invalid ${fullUrl}`);
       continue;
     }
-    // if (pkg_name.startsWith(".")) continue;
     script += `pkgrel=\n`;
     script += `pkgver=\n`;
     script += `pkgname=()\n`;
@@ -34,13 +35,14 @@ async function main() {
     script += `makedepends=()\n`;
     script += `source ./ports/${pkg_name}/PKGBUILD; echo "{\\\"makedepends\\\": \\\"\${makedepends[*]}\\\", \\\"pkgrel\\\": \\\"\${pkgrel}\\\", \\\"pkgver\\\": \\\"\${pkgver}\\\", \\\"dir\\\": \\\"${pkg_name}\\\", \\\"pkgname\\\": \\\"\${pkgname[*]}\\\", \\\"pkgbase\\\": \\\"\${pkgbase}\\\"}"\n`;
   }
-  await fs.writeFile("pkg_info.sh", script);
+  await fs.writeFile(path.join(repoRoot, "pkg_info.sh"), script);
   const pkg_info = await spawnProcessAsyncCapture(
     `${ci_tools_msys64_stage0}/msys64/usr/bin/bash.exe`,
     ["--login", "-c", "source pkg_info.sh"],
     {
+      cwd: repoRoot,
       env: {
-        CHERE_INVOKING: 1,
+        CHERE_INVOKING: "1",
       },
     },
   );
@@ -82,4 +84,9 @@ async function main() {
   );
 }
 
-main();
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  runDeps().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}

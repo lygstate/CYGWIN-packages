@@ -29,8 +29,8 @@ Use `start.bat --from <step>` to resume from any pipeline step. Run
    start.bat
    ```
 
-   The pipeline runs `deps.ts` and `gen-build-all.ts` immediately after
-   `install-for-stage0.ts`. Manual re-run when ports change:
+   The pipeline runs `deps.ts` and `gen-build-all.ts` in the `stage0-generate`
+   step immediately after stage0 install. Manual re-run when ports change:
 
    ```bat
    node scripts/deps.ts
@@ -61,7 +61,7 @@ cd /d D:\work\xemu\CYGWIN-packages
 set CI_TOOLS_ROOT=D:\CI-Tools
 start.bat
 start.bat --help
-start.bat --from 4
+start.bat --from 6
 start.bat --from stage2-gcc
 ```
 
@@ -80,23 +80,24 @@ Logs are written under `scripts/logs/`:
 - `scripts/logs/build-stage2-rust-native.txt`
 - `scripts/logs/build-stage2-cargo-native.txt`
 - `scripts/logs/build-stage2.txt`
-- `scripts/logs/build-stage2-list-extra.txt`
 
 ## What `build-all.ts` runs
 
 Order of operations:
 
-1. `node scripts/install-for-stage0.ts`
-2. `node scripts/deps.ts` and `node scripts/gen-build-all.ts` (stage lists)
-3. Extract `msys64-stage0`, install runtime packages, run stage hook / stage0 / stage1
-4. `node scripts/install-for-stage2.ts`
-5. Build stage2 `gcc`, `rust` cross, `rebaseall -p`, `rust` native, `rebaseall -p`, `cargo-c`
-6. Run `scripts/generated/stage2-list.sh` and `scripts/sh/stage2-list-extra.sh`
-7. `node scripts/install-for-stage3.ts`, then `stage3-mingw` (extract + mingw install)
+1. `stage0-install` -- install MSYS packages into `msys64-stage0`
+2. `stage0-generate` -- `deps.ts` and `gen-build-all.ts`
+3. `stage0-extract` -- extract `msys64-stage0` from archive
+4. Hook/runtime builds, then `stage1.sh`
+5. `stage2-prep` -- install stage1-built packages
+6. Build stage2 `gcc`, `rust` cross, `rebaseall -p`, `rust` native, `rebaseall -p`, `cargo-c`
+7. Run `scripts/generated/stage2-list.sh`
+8. `stage3-prep`, then `stage3-mingw` (extract + mingw install)
 
 ## Resume with `--from`
 
 ```bat
+start.bat --from stage0-install
 start.bat --from stage0-generate
 start.bat --from stage2-prep
 start.bat --from stage2-gcc
@@ -110,8 +111,8 @@ Group numbers also work and start at the first step in that group:
 
 ```bat
 start.bat --from 4
-start.bat --from 5
-start.bat --from 7
+start.bat --from 6
+start.bat --from 9
 ```
 
 Run `start.bat --help` for the full step list.
@@ -120,14 +121,35 @@ Run `start.bat --help` for the full step list.
 
 Use these only if you need to run one command outside `start.bat`.
 
-### Stage0 prep only
+### Stage0 install only
 
 ```bat
-node scripts/install-for-stage0.ts
+start.bat --from stage0-install
 ```
 
-Then extract stage0 from `%CI_TOOLS_ROOT%\msys64-stage0` with `delete-msys64.bat`
-and `extract.bat`.
+### Stage0 generate only (deps + stage lists)
+
+Requires `stage0-install` to have finished.
+
+```bat
+start.bat --from stage0-generate
+```
+
+Or manually:
+
+```bat
+node scripts/deps.ts
+node scripts/gen-build-all.ts
+```
+
+### Stage0 extract only
+
+```bat
+start.bat --from stage0-extract
+```
+
+Or extract from `%CI_TOOLS_ROOT%\msys64-stage0` with `delete-msys64.bat` and
+`extract.bat`.
 
 ### Stage1 only
 
@@ -143,7 +165,7 @@ set CHERE_INVOKING=1
 ### Stage2 prep only
 
 ```bat
-node scripts/install-for-stage2.ts
+start.bat --from stage2-prep
 ```
 
 Check `scripts/logs/install-for-stage2.txt` for pacman errors before continuing.
@@ -195,18 +217,17 @@ Run rebaseall again, then build `cargo-c`.
 
 ```bat
 "%MSYS_BASH%" --login -c "export MSYS_BOOTSTRAP_STAGE=stage2; source scripts/sh/check-bootstrap.sh; sh scripts/generated/stage2-list.sh >scripts/logs/build-stage2.txt 2>&1"
-"%MSYS_BASH%" --login -c "export MSYS_BOOTSTRAP_STAGE=stage2; source scripts/sh/check-bootstrap.sh; sh scripts/sh/stage2-list-extra.sh >scripts/logs/build-stage2-list-extra.txt 2>&1"
 ```
 
 ### Stage3 prep only
 
 ```bat
-node scripts/install-for-stage3.ts
+start.bat --from stage3-prep
 ```
 
 ### Stage3 mingw only (extract archive + install mingw)
 
-Requires `install-for-stage3.ts` to have finished (creates `extract.bat` under
+Requires `stage3-prep` to have finished (creates `extract.bat` under
 `%CI_TOOLS_ROOT%\msys64-stage3`).
 
 ```bat
@@ -244,8 +265,8 @@ Fix:
 
 Other things that can still break rebase:
 
-1. **Stage2 tree unhealthy** - pacman `dofork` errors during
-   `install-for-stage2.ts` mean the Cygwin layer may already be broken.
+1. **Stage2 tree unhealthy** - pacman `dofork` errors during `stage2-prep`
+   mean the Cygwin layer may already be broken.
 2. **IDE terminal PATH** - prefer a plain Command Prompt, but the errors above
    are not caused by Cursor being on `PATH`.
 
@@ -275,7 +296,7 @@ Other things that can still break rebase:
    of continuing in the broken tree:
 
    ```bat
-   node scripts/install-for-stage2.ts
+   start.bat --from stage2-prep
    ```
 
 6. If rebase still fails, inspect which DLL still has the old base:
