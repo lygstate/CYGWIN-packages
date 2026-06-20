@@ -148,18 +148,20 @@ function msysBashEnv() {
 }
 
 export class Msys2Installer {
+  step: ProcessRunner;
   fs: any;
   baseTarball: string;
 
-  constructor(overrides: Record<string, any> = {}) {
+  constructor(step: ProcessRunner, overrides: Record<string, any> = {}) {
+    this.step = step;
     this.fs = fs;
     this.baseTarball = MSYS2_BASE_TARBALL;
     Object.assign(this, overrides);
   }
 
-  async runMsysBash(msys_root, script, step: ProcessRunner) {
+  async runMsysBash(msys_root, script) {
     const prelude = `mkdir -p /tmp\n${script}`;
-    await step.run(
+    await this.step.run(
       msysBashExe(msys_root),
       ["--login", "-c", prelude],
       {
@@ -170,15 +172,10 @@ export class Msys2Installer {
     );
   }
 
-  async runMsysBashPacmanStep(
-    msys_root,
-    install_command,
-    cwd,
-    step: ProcessRunner,
-  ) {
+  async runMsysBashPacmanStep(msys_root, install_command, cwd) {
     const wrapped_command = wrapPacmanNonInteractiveCommand(install_command);
     console.log(`===Execute: "${install_command}" at ${msys_root} at ${cwd}`);
-    const { code } = await step.run(
+    const { code } = await this.step.run(
       msysBashExe(msys_root),
       ["--login", "-c", wrapped_command],
       {
@@ -195,13 +192,13 @@ export class Msys2Installer {
     }
   }
 
-  async bootstrapCoreUpgrade(msys_root, cwd, step: ProcessRunner) {
+  async bootstrapCoreUpgrade(msys_root, cwd) {
     console.log(`===Bootstrap core upgrade at ${msys_root}`);
-    await this.linkPacmanCache(msys_root, true, step);
+    await this.linkPacmanCache(msys_root, true);
     for (const command of bash_bootstrap_core_upgrade_steps) {
-      await this.runMsysBashPacmanStep(msys_root, command, cwd, step);
+      await this.runMsysBashPacmanStep(msys_root, command, cwd);
     }
-    await this.linkPacmanCache(msys_root, false, step);
+    await this.linkPacmanCache(msys_root, false);
     console.log(`===Bootstrap core upgrade finished at ${msys_root}`);
   }
 
@@ -216,11 +213,7 @@ export class Msys2Installer {
   // Merge tree-local pkg/ into msys64-caches. With bootstrap true, leave an empty
   // local pkg/ for the next pacman run (core self-upgrade). Otherwise symlink pkg/
   // to the shared cache so pacman reads and writes there.
-  async linkPacmanCache(
-    msys_root,
-    bootstrap: boolean,
-    step: ProcessRunner,
-  ) {
+  async linkPacmanCache(msys_root, bootstrap: boolean) {
     const tail = bootstrap
       ? `mkdir -p /var/cache/pacman/pkg
 touch /var/cache/pacman/pkg/gitignore`
@@ -230,7 +223,7 @@ ${tail}`.trim();
     console.log(
       `===linkPacmanCache bootstrap=${bootstrap} at ${msys_root}`,
     );
-    await this.runMsysBash(msys_root, script, step);
+    await this.runMsysBash(msys_root, script);
   }
 
   // Run pacman with linkPacmanCache before and after install.
@@ -239,12 +232,11 @@ ${tail}`.trim();
     install_command,
     cwd,
     bootstrap: boolean,
-    step: ProcessRunner,
   ) {
     const wrapped_command = wrapPacmanNonInteractiveCommand(install_command);
     console.log(`===Execute: "${install_command}" at ${msys_root} at ${cwd}`);
-    await this.linkPacmanCache(msys_root, bootstrap, step);
-    const { code } = await step.run(
+    await this.linkPacmanCache(msys_root, bootstrap);
+    const { code } = await this.step.run(
       msysBashExe(msys_root),
       ["--login", "-c", wrapped_command],
       {
@@ -259,10 +251,10 @@ ${tail}`.trim();
         `executePacmanInstall failed (${code}): ${install_command}`,
       );
     }
-    await this.linkPacmanCache(msys_root, false, step);
+    await this.linkPacmanCache(msys_root, false);
   }
 
-  async clearMsys64(msys_root, step: ProcessRunner) {
+  async clearMsys64(msys_root) {
     console.log(`Remove existing ${msys_root}`);
     if (!(await this.fsExistsAsync(msys_root))) {
       return;
@@ -270,8 +262,8 @@ ${tail}`.trim();
     const bash_exe = msysBashExe(msys_root);
     if (await this.fsExistsAsync(bash_exe)) {
       console.log(`===Merge pacman cache before removing ${msys_root}`);
-      await this.linkPacmanCache(msys_root, false, step);
-      await this.runMsysBash(msys_root, bash_detach_pacman_pkg_cache, step);
+      await this.linkPacmanCache(msys_root, false);
+      await this.runMsysBash(msys_root, bash_detach_pacman_pkg_cache);
     } else {
       console.log(`===Skip cache merge, bash missing at ${bash_exe}`);
     }
@@ -286,11 +278,10 @@ ${tail}`.trim();
   async installMsys2BasePackages(
     ci_tools_msys64_parent,
     enable_clear_msys64,
-    step: ProcessRunner,
   ) {
     const msys_root = path.join(ci_tools_msys64_parent, MSYS64_DIR_NAME);
     if (enable_clear_msys64) {
-      await this.clearMsys64(msys_root, step);
+      await this.clearMsys64(msys_root);
     }
 
     console.log(`===Init env at ${msys_root}`);
@@ -304,7 +295,7 @@ ${tail}`.trim();
     }
     if (!has_msys64) {
       console.log(`===Extracting base`);
-      await step.run(
+      await this.step.run(
         `tar`,
         [
           "xf",
@@ -319,14 +310,13 @@ ${tail}`.trim();
       console.log("===Extract base finished\n");
     }
 
-    await this.bootstrapCoreUpgrade(msys_root, msys_root, step);
+    await this.bootstrapCoreUpgrade(msys_root, msys_root);
 
     await this.executePacmanInstall(
       msys_root,
       `pacman -Syu --noconfirm`,
       msys_root,
       false,
-      step,
     );
     console.log("===Full pacman -Syu finished");
     return has_msys64;
@@ -336,22 +326,20 @@ ${tail}`.trim();
     ci_tools_msys64_parent,
     pkg_root,
     enable_clear_msys64,
-    step: ProcessRunner,
   ) {
     const msys_root = path.join(ci_tools_msys64_parent, MSYS64_DIR_NAME);
     const has_msys64 = await this.installMsys2BasePackages(
       ci_tools_msys64_parent,
       enable_clear_msys64,
-      step,
     );
     const pkg_root_cygwin = (
-      await step.run(
+      await this.step.run(
         path.join(msys_root, "usr", "bin", "cygpath.exe"),
         [pkg_root],
       )
     ).stdout.trim();
 
-    const msys_list_capture = await step.run(
+    const msys_list_capture = await this.step.run(
       path.join(msys_root, "usr", "bin", "pacman.exe"),
       ["-Sl", "msys"],
     );
@@ -381,7 +369,6 @@ ${tail}`.trim();
       `cd ${pkg_root_cygwin}/; ${bash_commands_for_install_all.join("; ")}`,
       pkg_root,
       false,
-      step,
     );
 
     console.log(
@@ -395,10 +382,9 @@ ${tail}`.trim();
     ci_tools_msys64_parent,
     msys_root,
     msys2_base_filename,
-    step: ProcessRunner,
   ) {
     const ci_tools_msys64_parent_cygwin = (
-      await step.run(
+      await this.step.run(
         path.join(msys_root, "usr", "bin", "cygpath.exe"),
         [ci_tools_msys64_parent],
       )
@@ -418,7 +404,7 @@ ${tail}`.trim();
       console.log(`remove ${target_msys_tar_path} failed with: ${e}`);
     }
 
-    await step.run(
+    await this.step.run(
       msysBashExe(msys_root),
       [
         "--login",
@@ -436,7 +422,7 @@ ${tail}`.trim();
         tee: true,
       },
     );
-    await step.run(
+    await this.step.run(
       path.join(msys_root, "usr", "bin", "tar.exe"),
       ["cf", target_msys_tar_path_cygwin, MSYS64_DIR_NAME],
       {
@@ -447,12 +433,10 @@ ${tail}`.trim();
       },
     );
 
-    await this.linkPacmanCache(msys_root, false, step);
+    await this.linkPacmanCache(msys_root, false);
     return msys2_base_filename;
   }
 }
-
-const defaultMsys2Installer = new Msys2Installer();
 
 export async function removeDirectory(folder_dir) {
   console.log(`Remove existing ${folder_dir}`);
@@ -462,81 +446,13 @@ export async function removeDirectory(folder_dir) {
     console.log(`remove with error: ${e}`);
     process.exit(0);
   }
-  let has_folder = await defaultMsys2Installer.fsExistsAsync(folder_dir);
+  let has_folder = false;
+  try {
+    await fs.access(folder_dir);
+    has_folder = true;
+  } catch (e) {}
   console.log(
     `Remove ${folder_dir} finished with: ${has_folder ? "exists" : "not exists"}`,
-  );
-}
-
-export async function linkPacmanCache(
-  msys_root,
-  bootstrap: boolean,
-  step: ProcessRunner,
-) {
-  return defaultMsys2Installer.linkPacmanCache(
-    msys_root,
-    bootstrap,
-    step,
-  );
-}
-
-export async function archiveFull(
-  ci_tools_msys64_parent,
-  msys_root,
-  msys2_base_filename = "",
-  step: ProcessRunner,
-) {
-  return defaultMsys2Installer.archiveFull(
-    ci_tools_msys64_parent,
-    msys_root,
-    msys2_base_filename,
-    step,
-  );
-}
-
-export async function executePacmanInstall(
-  msys_root,
-  install_command,
-  cwd,
-  bootstrap: boolean,
-  step: ProcessRunner,
-) {
-  return defaultMsys2Installer.executePacmanInstall(
-    msys_root,
-    install_command,
-    cwd,
-    bootstrap,
-    step,
-  );
-}
-
-export async function fsExistsAsync(p) {
-  return defaultMsys2Installer.fsExistsAsync(p);
-}
-
-export async function installMsys2BasePackages(
-  ci_tools_msys64_parent,
-  enable_clear_msys64,
-  step: ProcessRunner,
-) {
-  return defaultMsys2Installer.installMsys2BasePackages(
-    ci_tools_msys64_parent,
-    enable_clear_msys64,
-    step,
-  );
-}
-
-export async function installMsys2AllPackages(
-  ci_tools_msys64_parent,
-  pkg_root,
-  enable_clear_msys64,
-  step: ProcessRunner,
-) {
-  return defaultMsys2Installer.installMsys2AllPackages(
-    ci_tools_msys64_parent,
-    pkg_root,
-    enable_clear_msys64,
-    step,
   );
 }
 

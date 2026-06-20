@@ -12,8 +12,8 @@ import {
   parsePkgArchiveFilename,
 } from "../scripts/utils.ts";
 
-function makeInstaller(overrides = {}) {
-  return new Msys2Installer(overrides);
+function makeInstaller(step, overrides = {}) {
+  return new Msys2Installer(step, overrides);
 }
 
 function mockArguments(mockFn) {
@@ -49,7 +49,7 @@ test("installMsys2BasePackages", async () => {
       return processResult();
     }),
   };
-  const installer = makeInstaller({
+  const installer = makeInstaller(step, {
     clearMsys64,
     fsExistsAsync: mock.fn(async () => true),
     linkPacmanCache,
@@ -58,7 +58,6 @@ test("installMsys2BasePackages", async () => {
   const has_msys64 = await installer.installMsys2BasePackages(
     ci_tools_msys64_parent,
     false,
-    step,
   );
 
   assert.deepEqual(
@@ -72,10 +71,10 @@ test("installMsys2BasePackages", async () => {
       has_msys64: true,
       clearMsys64Calls: [],
       linkPacmanCacheCalls: [
-        ["D:\\CI-Tools\\msys64-stage0\\msys64", true, step],
-        ["D:\\CI-Tools\\msys64-stage0\\msys64", false, step],
-        ["D:\\CI-Tools\\msys64-stage0\\msys64", false, step],
-        ["D:\\CI-Tools\\msys64-stage0\\msys64", false, step],
+        ["D:\\CI-Tools\\msys64-stage0\\msys64", true],
+        ["D:\\CI-Tools\\msys64-stage0\\msys64", false],
+        ["D:\\CI-Tools\\msys64-stage0\\msys64", false],
+        ["D:\\CI-Tools\\msys64-stage0\\msys64", false],
       ],
       runProcessCalls: [
         ...bash_bootstrap_core_upgrade_steps.map((step) => ({
@@ -121,7 +120,7 @@ test("clearMsys64 skips cache merge when bash is missing", async () => {
   const step = {
     run: mock.fn(async () => processResult()),
   };
-  const installer = makeInstaller({
+  const installer = makeInstaller(step, {
     linkPacmanCache,
     fs: { rm },
     fsExistsAsync: mock.fn(async (target) => {
@@ -135,7 +134,7 @@ test("clearMsys64 skips cache merge when bash is missing", async () => {
     }),
   });
 
-  await installer.clearMsys64(msys_root, step);
+  await installer.clearMsys64(msys_root);
 
   assert.deepEqual(
     {
@@ -185,7 +184,7 @@ test("installMsys2AllPackages", async () => {
       return processResult();
     }),
   };
-  const installer = makeInstaller({
+  const installer = makeInstaller(step, {
     installMsys2BasePackages,
     linkPacmanCache,
     fs: { mkdir, writeFile },
@@ -195,7 +194,6 @@ test("installMsys2AllPackages", async () => {
     ci_tools_msys64_parent,
     pkg_root_win,
     false,
-    step,
   );
 
   assert.deepEqual(
@@ -211,7 +209,7 @@ test("installMsys2AllPackages", async () => {
     {
       has_msys64: true,
       installMsys2BasePackagesCalls: [
-        ["D:\\CI-Tools\\msys64-stage0", false, step],
+        ["D:\\CI-Tools\\msys64-stage0", false],
       ],
       runProcessCaptureCalls: [
         [
@@ -237,8 +235,8 @@ test("installMsys2AllPackages", async () => {
         ],
       ],
       linkPacmanCacheCalls: [
-        ["D:\\CI-Tools\\msys64-stage0\\msys64", false, step],
-        ["D:\\CI-Tools\\msys64-stage0\\msys64", false, step],
+        ["D:\\CI-Tools\\msys64-stage0\\msys64", false],
+        ["D:\\CI-Tools\\msys64-stage0\\msys64", false],
       ],
       runProcessCalls: [
         {
@@ -286,7 +284,7 @@ test("archiveFull", async () => {
       return processResult();
     }),
   };
-  const installer = makeInstaller({
+  const installer = makeInstaller(step, {
     linkPacmanCache,
     fs: { rm },
   });
@@ -295,7 +293,6 @@ test("archiveFull", async () => {
     ci_tools_msys64_parent,
     `${ci_tools_msys64_parent}\\msys64`,
     msys2_base_filename,
-    step,
   );
 
   assert.deepEqual(
@@ -320,7 +317,7 @@ test("archiveFull", async () => {
           { force: true, recursive: true },
         ],
       ],
-      linkPacmanCacheCalls: [["D:\\CI-Tools\\msys64-stage0\\msys64", false, step]],
+      linkPacmanCacheCalls: [["D:\\CI-Tools\\msys64-stage0\\msys64", false]],
       runProcessCalls: [
         {
           command:

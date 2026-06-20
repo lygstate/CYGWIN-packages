@@ -9,10 +9,7 @@ import {
   MSYS64_DIR_NAME,
 } from "./build-config.ts";
 import {
-  archiveFull,
-  executePacmanInstall,
-  installMsys2AllPackages,
-  installMsys2BasePackages,
+  Msys2Installer,
   installMsys2StageBatchScripts,
   writeExtractBat,
 } from "./msys2-installer.ts";
@@ -26,21 +23,20 @@ import {
 } from "./utils.ts";
 
 export async function installStage0(step: RunContext) {
+  const installer = new Msys2Installer(step);
   const msys_root = path.join(ci_tools_msys64_stage0, MSYS64_DIR_NAME);
   const pkg_root = repoRoot;
 
-  const has_msys64 = await installMsys2AllPackages(
+  const has_msys64 = await installer.installMsys2AllPackages(
     ci_tools_msys64_stage0,
     pkg_root,
     true,
-    step,
   );
 
-  const msys2_base_filename = await archiveFull(
+  const msys2_base_filename = await installer.archiveFull(
     ci_tools_msys64_stage0,
     msys_root,
     "",
-    step,
   );
   console.log(
     `===stage0: Archive finished as: ${msys2_base_filename} with has_msys64:${has_msys64}`,
@@ -53,14 +49,14 @@ export async function installStage0(step: RunContext) {
 }
 
 export async function installStage2(step: RunContext) {
+  const installer = new Msys2Installer(step);
   const msys_root = path.join(ci_tools_msys64_stage2, MSYS64_DIR_NAME);
   const pkg_root = repoRoot;
   const stage1_dist = path.join(pkg_root, "dist", "stage1");
 
-  const has_msys64 = await installMsys2BasePackages(
+  const has_msys64 = await installer.installMsys2BasePackages(
     ci_tools_msys64_stage2,
     true,
-    step,
   );
 
   const removed = await dedupeDistPackageDir(stage1_dist);
@@ -75,20 +71,18 @@ export async function installStage2(step: RunContext) {
   ];
   for (let i = 0; i < install_commands.length; i += 1) {
     console.log(`===Execute: "${install_commands[i]}"`);
-    await executePacmanInstall(
+    await installer.executePacmanInstall(
       msys_root,
       install_commands[i],
       stage1_dist,
       false,
-      step,
     );
   }
   console.log("===Switch to cygwin finished");
-  const msys2_base_filename = await archiveFull(
+  const msys2_base_filename = await installer.archiveFull(
     ci_tools_msys64_stage2,
     msys_root,
     "",
-    step,
   );
   console.log(
     `===stage2: Archive finished as: ${msys2_base_filename} with has_msys64:${has_msys64}`,
@@ -101,15 +95,15 @@ export async function installStage2(step: RunContext) {
 }
 
 export async function installStage3(step: RunContext) {
+  const installer = new Msys2Installer(step);
   const msys_root = path.join(ci_tools_msys64_stage3, MSYS64_DIR_NAME);
   const pkg_root = repoRoot;
   const stage1_dist = path.join(pkg_root, "dist", "stage1");
   const stage2_dist = path.join(pkg_root, "dist", "stage2");
 
-  const has_msys64 = await installMsys2BasePackages(
+  const has_msys64 = await installer.installMsys2BasePackages(
     ci_tools_msys64_stage3,
     true,
-    step,
   );
 
   const removed_stage1 = await dedupeDistPackageDir(stage1_dist);
@@ -126,27 +120,24 @@ export async function installStage3(step: RunContext) {
     "pacman -U --noconfirm --overwrite \\* `ls | tr '\n' ' '`",
   ];
   for (let i = 0; i < install_commands.length; i += 1) {
-    await executePacmanInstall(
+    await installer.executePacmanInstall(
       msys_root,
       install_commands[i],
       stage1_dist,
       false,
-      step,
     );
   }
-  await executePacmanInstall(
+  await installer.executePacmanInstall(
     msys_root,
     "pacman -U --noconfirm --overwrite \\* `ls | tr '\n' ' '`",
     stage2_dist,
     false,
-    step,
   );
   console.log("===stage3: Switch to cygwin finished");
-  const msys2_base_filename = await archiveFull(
+  const msys2_base_filename = await installer.archiveFull(
     ci_tools_msys64_stage3,
     msys_root,
     "",
-    step,
   );
   console.log(
     `===stage3: Archive finished as: ${msys2_base_filename} with has_msys64:${has_msys64}`,
@@ -296,24 +287,23 @@ export async function installMingwStage3(step: RunContext) {
   const ci_tools_msys64_parent = ci_tools_msys64_stage3;
   const msys_root = path.join(ci_tools_msys64_parent, MSYS64_DIR_NAME);
   const pkg_root = repoRoot;
+  const installer = new Msys2Installer(step);
 
   const msys_txt_path = path.join(pkg_root, GENERATED_MINGW_STAGE3_PACKAGES_TXT);
   await fs.mkdir(path.dirname(msys_txt_path), { recursive: true });
   await fs.writeFile(msys_txt_path, packages.join("\n"), "utf-8");
 
-  await executePacmanInstall(
+  await installer.executePacmanInstall(
     msys_root,
     `pacman -S --noconfirm --needed $(cat ${GENERATED_MINGW_STAGE3_PACKAGES_TXT})`,
     pkg_root,
     false,
-    step,
   );
   console.log("===stage3: Install mingw packages finished");
-  const msys2_base_filename = await archiveFull(
+  const msys2_base_filename = await installer.archiveFull(
     ci_tools_msys64_parent,
     msys_root,
     `msys2-mingw-x86_64-${getYYYYMMDD(new Date())}-full.tar`,
-    step,
   );
   await writeExtractBat(
     ci_tools_msys64_parent,
