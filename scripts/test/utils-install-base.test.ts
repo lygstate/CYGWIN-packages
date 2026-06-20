@@ -2,12 +2,14 @@ import assert from "node:assert/strict";
 import path from "node:path";
 import { mock, test } from "node:test";
 import {
-  Msys2Installer,
-  bash_bootstrap_core_upgrade,
+  bash_bootstrap_core_upgrade_steps,
   bash_detach_pacman_pkg_cache,
-  parsePkgArchiveFilename,
-  dedupeDistPackageDir,
+  Msys2Installer,
   wrapPacmanNonInteractiveCommand,
+} from "../msys2-installer.ts";
+import {
+  dedupeDistPackageDir,
+  parsePkgArchiveFilename,
 } from "../utils.ts";
 
 function makeInstaller(overrides = {}) {
@@ -65,13 +67,13 @@ test("installMsys2BasePackages", async () => {
         ["D:\\CI-Tools\\msys64-stage0\\msys64"],
       ],
       spawnProcessAsyncCalls: [
-        {
+        ...bash_bootstrap_core_upgrade_steps.map((step) => ({
           command:
             "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\bash.exe",
           args: [
             "--login",
             "-c",
-            wrapPacmanNonInteractiveCommand(bash_bootstrap_core_upgrade),
+            wrapPacmanNonInteractiveCommand(step),
           ],
           cwd: "D:\\CI-Tools\\msys64-stage0\\msys64",
           env: {
@@ -79,7 +81,7 @@ test("installMsys2BasePackages", async () => {
             MSYSTEM: "MSYS",
             CHERE_INVOKING: "1",
           },
-        },
+        })),
         {
           command:
             "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\bash.exe",

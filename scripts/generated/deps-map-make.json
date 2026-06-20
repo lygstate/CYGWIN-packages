@@ -426,7 +426,6 @@
     "wget",
     "xz",
     "gzip",
-    "unzip",
     "help2man"
   ],
   "cscope": [
@@ -3015,8 +3014,7 @@
   ],
   "uutils-coreutils": [
     "rust",
-    "pkgconf",
-    "oniguruma"
+    "pkgconf"
   ],
   "uv": [
     "rust",

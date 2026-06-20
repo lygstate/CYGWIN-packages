@@ -11,7 +11,7 @@
     {
       "makedepends": "python-setuptools python-build python-installer python-setuptools",
       "pkgrel": "1",
-      "pkgver": "13.7.0",
+      "pkgver": "14.0.0",
       "dir": "ansible",
       "pkgname": "ansible",
       "pkgbase": ""
@@ -26,7 +26,7 @@
     },
     {
       "makedepends": "libxcrypt-devel libuuid-devel autotools gcc",
-      "pkgrel": "1",
+      "pkgrel": "2",
       "pkgver": "1.7.6",
       "dir": "apr",
       "pkgname": "apr apr-devel",
@@ -251,7 +251,7 @@
     {
       "makedepends": "gettext-devel libreadline-devel>=7.0 ncurses-devel autotools gcc",
       "pkgrel": "1",
-      "pkgver": "5.3.009",
+      "pkgver": "5.3.015",
       "dir": "bash",
       "pkgname": "bash bash-devel",
       "pkgbase": "bash"
@@ -283,7 +283,7 @@
     {
       "makedepends": "libiconv-devel gettext-devel zlib-devel libzstd-devel autotools gcc",
       "pkgrel": "6",
-      "pkgver": "2.46",
+      "pkgver": "2.46.1",
       "dir": "binutils",
       "pkgname": "binutils",
       "pkgbase": ""
@@ -363,7 +363,7 @@
     {
       "makedepends": "pkgconf libopenssl libgit2-devel libssh2-devel libsqlite-devel libcurl-devel",
       "pkgrel": "1",
-      "pkgver": "0.10.22",
+      "pkgver": "0.10.23",
       "dir": "cargo-c",
       "pkgname": "cargo-c",
       "pkgbase": ""
@@ -497,7 +497,7 @@
       "pkgbase": "cppdap"
     },
     {
-      "makedepends": "autoconf automake-wrapper binutils bison flex gettext-devel git gcc gperf patch ncurses-devel tar texinfo wget xz gzip autotools unzip help2man",
+      "makedepends": "autoconf automake-wrapper binutils bison flex gettext-devel git gcc gperf patch ncurses-devel tar texinfo wget xz gzip autotools help2man",
       "pkgrel": "1",
       "pkgver": "1.28.0",
       "dir": "crosstool-ng",
@@ -506,7 +506,7 @@
     },
     {
       "makedepends": "ncurses-devel autotools gcc",
-      "pkgrel": "2",
+      "pkgrel": "3",
       "pkgver": "15.9",
       "dir": "cscope",
       "pkgname": "cscope",
@@ -547,7 +547,7 @@
     {
       "makedepends": "gcc git autotools",
       "pkgrel": "1",
-      "pkgver": "1.64",
+      "pkgver": "1.65",
       "dir": "cygrunsrv",
       "pkgname": "cygrunsrv",
       "pkgbase": ""
@@ -699,7 +699,7 @@
     {
       "makedepends": "perl gettext-devel gcc make",
       "pkgrel": "1",
-      "pkgver": "7.5.5",
+      "pkgver": "7.5.6",
       "dir": "dos2unix",
       "pkgname": "dos2unix",
       "pkgbase": ""
@@ -811,7 +811,7 @@
     {
       "makedepends": "python zlib-devel libbz2-devel liblzma-devel libzstd-devel autotools gcc",
       "pkgrel": "1",
-      "pkgver": "5.47",
+      "pkgver": "5.48",
       "dir": "file",
       "pkgname": "file",
       "pkgbase": ""
@@ -899,14 +899,14 @@
     {
       "makedepends": "gcc binutils autotools isl-devel gmp-devel mpc-devel mpfr-devel zlib-devel libzstd-devel windows-default-manifest gperf",
       "pkgrel": "6",
-      "pkgver": "15.2.0",
+      "pkgver": "15.3.0",
       "dir": "gcc",
       "pkgname": "gcc gcc-libs",
       "pkgbase": "gcc"
     },
     {
       "makedepends": "autotools gcc guile libexpat-devel libguile-devel liblzma-devel libreadline-devel libzstd-devel mpfr-devel ncurses-devel python-devel zlib-devel",
-      "pkgrel": "2",
+      "pkgrel": "3",
       "pkgver": "17.1",
       "dir": "gdb",
       "pkgname": "gdb gdb-multiarch",
@@ -1058,7 +1058,7 @@
     },
     {
       "makedepends": "gtk-doc gcc autotools gettext-devel libidn2-devel libiconv-devel gmp-devel libnettle-devel libp11-kit-devel libtasn1-devel libunistring-devel zlib-devel",
-      "pkgrel": "1",
+      "pkgrel": "2",
       "pkgver": "3.8.13",
       "dir": "gnutls",
       "pkgname": "gnutls libgnutls libgnutls-devel",
@@ -1315,7 +1315,7 @@
     {
       "makedepends": "ncurses-devel pcre2-devel autotools gcc groff",
       "pkgrel": "1",
-      "pkgver": "702",
+      "pkgver": "704",
       "dir": "less",
       "pkgname": "less",
       "pkgbase": ""
@@ -1330,7 +1330,7 @@
     },
     {
       "makedepends": "libbz2-devel libiconv-devel libexpat-devel liblzma-devel liblz4-devel openssl-devel libzstd-devel zlib-devel autotools gcc",
-      "pkgrel": "1",
+      "pkgrel": "2",
       "pkgver": "3.8.7",
       "dir": "libarchive",
       "pkgname": "libarchive libarchive-devel bsdcpio bsdtar",
@@ -1435,7 +1435,7 @@
     {
       "makedepends": "gcc ninja cmake pkgconf libssh2-devel libiconv-devel pcre2-devel zlib-devel openssl-devel",
       "pkgrel": "1",
-      "pkgver": "1.9.2",
+      "pkgver": "1.9.4",
       "dir": "libgit2",
       "pkgname": "libgit2 libgit2-devel",
       "pkgbase": "libgit2"
@@ -1459,7 +1459,7 @@
     {
       "makedepends": "gcc texinfo autotools gettext-devel gtk-doc gperf",
       "pkgrel": "1",
-      "pkgver": "1.43",
+      "pkgver": "1.44",
       "dir": "libidn",
       "pkgname": "libidn libidn-devel",
       "pkgbase": ""
@@ -1595,7 +1595,7 @@
     {
       "makedepends": "gcc autotools",
       "pkgrel": "1",
-      "pkgver": "1.52.0",
+      "pkgver": "1.52.1",
       "dir": "libuv",
       "pkgname": "libuv libuv-devel",
       "pkgbase": "libuv"
@@ -1683,7 +1683,7 @@
     {
       "makedepends": "gcc autotools openssl-devel libidn-devel ncurses-devel gettext-devel",
       "pkgrel": "1",
-      "pkgver": "2.9.2",
+      "pkgver": "2.9.3",
       "dir": "lynx",
       "pkgname": "lynx",
       "pkgbase": ""
@@ -1730,7 +1730,7 @@
     },
     {
       "makedepends": "gettext procps-ng autotools gcc gettext-devel",
-      "pkgrel": "2",
+      "pkgrel": "3",
       "pkgver": "4.4.1",
       "dir": "make",
       "pkgname": "make",
@@ -1803,7 +1803,7 @@
     {
       "makedepends": "libiconv-devel zlib-devel autotools gcc libzstd-devel gettext-devel",
       "pkgrel": "1",
-      "pkgver": "2.46.0",
+      "pkgver": "2.46.1",
       "dir": "mingw-w64-cross-binutils",
       "pkgname": "mingw-w64-cross-binutils mingw-w64-cross-common-binutils mingw-w64-cross-ucrt64-binutils mingw-w64-cross-mingw32-binutils mingw-w64-cross-mingw64-binutils",
       "pkgbase": ""
@@ -1970,8 +1970,8 @@
     },
     {
       "makedepends": "gcc",
-      "pkgrel": "1",
-      "pkgver": "3.8.2",
+      "pkgrel": "2",
+      "pkgver": "3.8.3",
       "dir": "mintty",
       "pkgname": "mintty",
       "pkgbase": ""
@@ -2091,7 +2091,7 @@
     {
       "makedepends": "docbook-xml docbook-xsl elinks libgdbm-devel libgnutls-devel libgpgme-devel libidn2-devel libsasl-devel libsqlite-devel ncurses-devel autotools gcc zlib-devel",
       "pkgrel": "1",
-      "pkgver": "2.3.2",
+      "pkgver": "2.3.3",
       "dir": "mutt",
       "pkgname": "mutt",
       "pkgbase": ""
@@ -2114,8 +2114,8 @@
     },
     {
       "makedepends": "",
-      "pkgrel": "2",
-      "pkgver": "2025.07.01",
+      "pkgrel": "1",
+      "pkgver": "2026.05.01",
       "dir": "nano-syntax-highlighting",
       "pkgname": "nano-syntax-highlighting",
       "pkgbase": ""
@@ -2163,7 +2163,7 @@
     {
       "makedepends": "libgpgme-devel libsasl-devel libgdbm-devel ncurses-devel libidn2-devel libiconv-devel openssl-devel gettext-devel heimdal-devel gcc libxslt docbook-xsl pkgconf",
       "pkgrel": "1",
-      "pkgver": "20260504",
+      "pkgver": "20260616",
       "dir": "neomutt",
       "pkgname": "neomutt",
       "pkgbase": ""
@@ -2179,7 +2179,7 @@
     {
       "makedepends": "gmp-devel autotools gcc",
       "pkgrel": "2",
-      "pkgver": "3.10.2",
+      "pkgver": "4.0",
       "dir": "nettle",
       "pkgname": "nettle libnettle libhogweed libnettle-devel",
       "pkgbase": ""
@@ -2195,7 +2195,7 @@
     {
       "makedepends": "gcc cmake ninja",
       "pkgrel": "1",
-      "pkgver": "1.15.0",
+      "pkgver": "1.16.0",
       "dir": "nghttp3",
       "pkgname": "libnghttp3 libnghttp3-devel",
       "pkgbase": "nghttp3"
@@ -2203,7 +2203,7 @@
     {
       "makedepends": "gcc cmake ninja openssl-devel",
       "pkgrel": "1",
-      "pkgver": "1.22.1",
+      "pkgver": "1.23.0",
       "dir": "ngtcp2",
       "pkgname": "libngtcp2 libngtcp2-devel",
       "pkgbase": "ngtcp2"
@@ -2274,7 +2274,7 @@
     },
     {
       "makedepends": "heimdal-devel libedit-devel libxcrypt-devel libfido2-devel openssl-devel autotools gcc groff",
-      "pkgrel": "1",
+      "pkgrel": "2",
       "pkgver": "10.3p1",
       "dir": "openssh",
       "pkgname": "openssh",
@@ -2283,7 +2283,7 @@
     {
       "makedepends": "gcc tar perl diffutils nasm",
       "pkgrel": "1",
-      "pkgver": "3.6.2",
+      "pkgver": "3.6.3",
       "dir": "openssl",
       "pkgname": "openssl libopenssl openssl-devel openssl-docs",
       "pkgbase": ""
@@ -2306,7 +2306,7 @@
     },
     {
       "makedepends": "asciidoc doxygen git gcc meson ninja gettext-devel heimdal-devel libarchive-devel libcurl-devel libgpgme-devel libsqlite-devel libunistring-devel",
-      "pkgrel": "24",
+      "pkgrel": "25",
       "pkgver": "6.1.0",
       "dir": "pacman",
       "pkgname": "pacman",
@@ -2554,8 +2554,8 @@
     },
     {
       "makedepends": "perl-devel gcc",
-      "pkgrel": "4",
-      "pkgver": "1.647",
+      "pkgrel": "1",
+      "pkgver": "1.648",
       "dir": "perl-DBI",
       "pkgname": "perl-DBI",
       "pkgbase": ""
@@ -2803,7 +2803,7 @@
     {
       "makedepends": "perl-Try-Tiny",
       "pkgrel": "1",
-      "pkgver": "7.01",
+      "pkgver": "7.02",
       "dir": "perl-HTTP-Message",
       "pkgname": "perl-HTTP-Message",
       "pkgbase": ""
@@ -3027,7 +3027,7 @@
     {
       "makedepends": "make gcc",
       "pkgrel": "1",
-      "pkgver": "1.54",
+      "pkgver": "1.55",
       "dir": "perl-Net-DNS",
       "pkgname": "perl-Net-DNS",
       "pkgbase": ""
@@ -3411,7 +3411,7 @@
     {
       "makedepends": "",
       "pkgrel": "1",
-      "pkgver": "5.34",
+      "pkgver": "5.35",
       "dir": "perl-URI",
       "pkgname": "perl-URI",
       "pkgbase": ""
@@ -3427,7 +3427,7 @@
     {
       "makedepends": "perl-devel libxml2-devel perl-Path-Tiny make gcc",
       "pkgrel": "1",
-      "pkgver": "2.0212",
+      "pkgver": "2.0213",
       "dir": "perl-XML-LibXML",
       "pkgname": "perl-XML-LibXML",
       "pkgbase": ""
@@ -3683,7 +3683,7 @@
     {
       "makedepends": "python-build python-installer python-maturin python-setuptools rust openssl-devel pkgconf",
       "pkgrel": "1",
-      "pkgver": "46.0.7",
+      "pkgver": "48.0.1",
       "dir": "python-cryptography",
       "pkgname": "python-cryptography",
       "pkgbase": ""
@@ -3699,7 +3699,7 @@
     {
       "makedepends": "python-build python-installer python-setuptools python-setuptools-rust python-devel rust gcc",
       "pkgrel": "1",
-      "pkgver": "1.0.0",
+      "pkgver": "1.2.6",
       "dir": "python-dulwich",
       "pkgname": "python-dulwich",
       "pkgbase": ""
@@ -3763,7 +3763,7 @@
     {
       "makedepends": "python-build python-flit-core python-installer",
       "pkgrel": "1",
-      "pkgver": "3.16",
+      "pkgver": "3.18",
       "dir": "python-idna",
       "pkgname": "python-idna",
       "pkgbase": ""
@@ -3883,7 +3883,7 @@
     {
       "makedepends": "python-devel gcc python-setuptools python-setuptools-rust python-build python-installer",
       "pkgrel": "1",
-      "pkgver": "0.2.17",
+      "pkgver": "0.2.18",
       "dir": "python-patiencediff",
       "pkgname": "python-patiencediff",
       "pkgbase": ""
@@ -3891,7 +3891,7 @@
     {
       "makedepends": "python-build python-flit-core python-installer python-setuptools",
       "pkgrel": "1",
-      "pkgver": "26.1.1",
+      "pkgver": "26.1.2",
       "dir": "python-pip",
       "pkgname": "python-pip",
       "pkgbase": "python-pip"
@@ -4059,7 +4059,7 @@
     {
       "makedepends": "python-build python-installer python-setuptools",
       "pkgrel": "1",
-      "pkgver": "3.0.1",
+      "pkgver": "3.1.1",
       "dir": "python-snowballstemmer",
       "pkgname": "python-snowballstemmer",
       "pkgbase": ""
@@ -4131,7 +4131,7 @@
     {
       "makedepends": "python-build python-installer python-setuptools python-calver",
       "pkgrel": "1",
-      "pkgver": "2026.5.22.10",
+      "pkgver": "2026.6.1.19",
       "dir": "python-trove-classifiers",
       "pkgname": "python-trove-classifiers",
       "pkgbase": ""
@@ -4266,8 +4266,8 @@
     },
     {
       "makedepends": "libiconv-devel liblz4-devel libxxhash-devel libzstd-devel openssl-devel popt-devel autotools gcc",
-      "pkgrel": "2",
-      "pkgver": "3.4.2",
+      "pkgrel": "1",
+      "pkgver": "3.4.4",
       "dir": "rsync",
       "pkgname": "rsync",
       "pkgbase": ""
@@ -4283,7 +4283,7 @@
     {
       "makedepends": "gcc llvm python libgit2-devel pcre2-devel libssh2-devel openssl-devel pkgconf libsqlite-devel liblzma-devel libzstd-devel zlib-devel libcurl-devel rust",
       "pkgrel": "2",
-      "pkgver": "1.95.0",
+      "pkgver": "1.96.0",
       "dir": "rust",
       "pkgname": "rust",
       "pkgbase": ""
@@ -4371,7 +4371,7 @@
     {
       "makedepends": "libreadline-devel tcl-devel zlib-devel autotools gcc",
       "pkgrel": "1",
-      "pkgver": "3.53.1",
+      "pkgver": "3.53.2",
       "dir": "sqlite",
       "pkgname": "sqlite libsqlite libsqlite-devel sqlite-doc tcl-sqlite sqlite-extensions lemon",
       "pkgbase": "sqlite"
@@ -4475,7 +4475,7 @@
     {
       "makedepends": "asciidoc xmlto libreadline-devel ncurses-devel libiconv-devel autotools gcc",
       "pkgrel": "1",
-      "pkgver": "2.6.0",
+      "pkgver": "2.6.1",
       "dir": "tig",
       "pkgname": "tig",
       "pkgbase": ""
@@ -4593,17 +4593,17 @@
       "pkgbase": ""
     },
     {
-      "makedepends": "git rust pkgconf",
-      "pkgrel": "4",
-      "pkgver": "0.8.0",
+      "makedepends": "rust pkgconf",
+      "pkgrel": "2",
+      "pkgver": "0.9.0",
       "dir": "uutils-coreutils",
       "pkgname": "uutils-coreutils",
       "pkgbase": ""
     },
     {
       "makedepends": "rust python-maturin python-installer liblzma-devel libzstd-devel pkgconf git",
-      "pkgrel": "1",
-      "pkgver": "0.11.10",
+      "pkgrel": "4",
+      "pkgver": "0.11.19",
       "dir": "uv",
       "pkgname": "python-uv-build",
       "pkgbase": "uv"
@@ -4611,7 +4611,7 @@
     {
       "makedepends": "ncurses-devel autotools gcc groff",
       "pkgrel": "1",
-      "pkgver": "0.14.3",
+      "pkgver": "0.14.4",
       "dir": "vifm",
       "pkgname": "vifm",
       "pkgbase": ""
@@ -4619,7 +4619,7 @@
     {
       "makedepends": "gawk perl-devel python-devel ruby ncurses-devel autotools gcc libiconv-devel gettext-devel libxcrypt-devel",
       "pkgrel": "1",
-      "pkgver": "9.2.0541",
+      "pkgver": "9.2.0663",
       "dir": "vim",
       "pkgname": "vim",
       "pkgbase": ""
@@ -4643,7 +4643,7 @@
     {
       "makedepends": "perl gettext-devel libunistring-devel ncurses-devel make gcc",
       "pkgrel": "1",
-      "pkgver": "6.0.6",
+      "pkgver": "6.0.7",
       "dir": "wcd",
       "pkgname": "wcd",
       "pkgbase": ""
@@ -4658,8 +4658,8 @@
     },
     {
       "makedepends": "autotools gcc",
-      "pkgrel": "4",
-      "pkgver": "2.23",
+      "pkgrel": "1",
+      "pkgver": "2.25",
       "dir": "which",
       "pkgname": "which",
       "pkgbase": ""
@@ -4778,7 +4778,7 @@
     },
     {
       "makedepends": "make gcc",
-      "pkgrel": "4",
+      "pkgrel": "5",
       "pkgver": "3.0",
       "dir": "zip",
       "pkgname": "zip",
@@ -4823,7 +4823,7 @@
     ],
     "ansible": [
       "python",
-      "ansible-core>=2.20.6"
+      "ansible-core>=2.21.0"
     ],
     "ansible-core": [
       "python",
@@ -5192,11 +5192,11 @@
       "cppdap"
     ],
     "cmake-emacs": [
-      "cmake=4.3.2",
+      "cmake=4.3.4",
       "emacs"
     ],
     "cmake-vim": [
-      "cmake=4.3.2",
+      "cmake=4.3.4",
       "vim"
     ],
     "cmatrix": [
@@ -5235,7 +5235,11 @@
       "ncurses"
     ],
     "ctags": [
-      "libiconv"
+      "libiconv",
+      "libpcre2_8",
+      "jansson",
+      "libxml2",
+      "libyaml"
     ],
     "curl": [
       "ca-certificates",
@@ -5431,7 +5435,7 @@
       "libreadline"
     ],
     "gcc": [
-      "gcc-libs=15.2.0-1",
+      "gcc-libs=15.3.0-1",
       "binutils",
       "gmp",
       "isl",
@@ -5916,7 +5920,7 @@
       "openssl"
     ],
     "libgit2-devel": [
-      "libgit2=1.9.2",
+      "libgit2=1.9.4",
       "pcre2-devel",
       "zlib-devel",
       "openssl-devel"
@@ -5986,7 +5990,7 @@
       "libintl"
     ],
     "libidn-devel": [
-      "libidn=1.43"
+      "libidn=1.44"
     ],
     "libidn2": [
       "libunistring",
@@ -6010,7 +6014,7 @@
       "libgpg-error"
     ],
     "libksba-devel": [
-      "libksba=1.6.8",
+      "libksba=1.8.0",
       "libgpg-error-devel"
     ],
     "libltdl": [],
@@ -6051,8 +6055,8 @@
       "libhogweed"
     ],
     "libnettle-devel": [
-      "libnettle=3.10.2",
-      "libhogweed=3.10.2",
+      "libnettle=4.0",
+      "libhogweed=4.0",
       "gmp-devel"
     ],
     "libnghttp2": [
@@ -6187,7 +6191,7 @@
     ],
     "libsqlite": [],
     "libsqlite-devel": [
-      "libsqlite=3.53.1",
+      "libsqlite=3.53.2",
       "zlib-devel"
     ],
     "libssh": [
@@ -6258,7 +6262,7 @@
       "gcc-libs"
     ],
     "libuv-devel": [
-      "libuv=1.52.0"
+      "libuv=1.52.1"
     ],
     "libwebsockets": [
       "openssl",
@@ -6714,7 +6718,7 @@
       "libopenssl"
     ],
     "openssl-devel": [
-      "libopenssl=3.6.2"
+      "libopenssl=3.6.3"
     ],
     "openssl-docs": [],
     "p11-kit": [
@@ -7791,8 +7795,8 @@
     ],
     "sqlite-doc": [],
     "sqlite-extensions": [
-      "sqlite=3.53.1",
-      "libsqlite=3.53.1"
+      "sqlite=3.53.2",
+      "libsqlite=3.53.2"
     ],
     "squashfs-tools": [
       "gcc-libs",
@@ -7852,7 +7856,7 @@
     ],
     "tcl-doc": [],
     "tcl-sqlite": [
-      "libsqlite=3.53.1",
+      "libsqlite=3.53.2",
       "tcl"
     ],
     "tcsh": [
@@ -7935,10 +7939,6 @@
       "libiconv",
       "libreadline",
       "libsqlite"
-    ],
-    "uutils-coreutils": [
-      "gcc-libs",
-      "oniguruma"
     ],
     "vifm": [
       "ncurses"

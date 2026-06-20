@@ -6,6 +6,8 @@ import { fileURLToPath } from "node:url";
 import {
   black_list,
   ci_tools_msys64_stage0,
+} from "./build-config.ts";
+import {
   repoPath,
   repoRoot,
   spawnProcessAsyncCapture,

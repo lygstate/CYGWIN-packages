@@ -1,22 +1,29 @@
 import * as fs from "fs/promises";
 import * as path from "path";
 import {
-  archiveFull,
   ci_tools_msys64_stage0,
   ci_tools_msys64_stage2,
   ci_tools_msys64_stage3,
+  EXTRACT_MINGW_BAT_FILENAME,
+  GENERATED_MINGW_STAGE3_PACKAGES_TXT,
+  MSYS64_DIR_NAME,
+} from "./build-config.ts";
+import {
+  archiveFull,
   executePacmanInstall,
-  getYYYYMMDD,
   installMsys2AllPackages,
   installMsys2BasePackages,
   installMsys2StageBatchScripts,
-  repoRoot,
-  dedupeDistPackageDir,
   writeExtractBat,
+} from "./msys2-installer.ts";
+import {
+  dedupeDistPackageDir,
+  getYYYYMMDD,
+  repoRoot,
 } from "./utils.ts";
 
 export async function installStage0() {
-  const msys_root = path.join(ci_tools_msys64_stage0, "msys64");
+  const msys_root = path.join(ci_tools_msys64_stage0, MSYS64_DIR_NAME);
   const pkg_root = repoRoot;
 
   const has_msys64 = await installMsys2AllPackages(
@@ -40,7 +47,7 @@ export async function installStage0() {
 }
 
 export async function installStage2() {
-  const msys_root = path.join(ci_tools_msys64_stage2, "msys64");
+  const msys_root = path.join(ci_tools_msys64_stage2, MSYS64_DIR_NAME);
   const pkg_root = repoRoot;
   const stage1_dist = path.join(pkg_root, "dist", "stage1");
 
@@ -83,7 +90,7 @@ export async function installStage2() {
 }
 
 export async function installStage3() {
-  const msys_root = path.join(ci_tools_msys64_stage3, "msys64");
+  const msys_root = path.join(ci_tools_msys64_stage3, MSYS64_DIR_NAME);
   const pkg_root = repoRoot;
   const stage1_dist = path.join(pkg_root, "dist", "stage1");
   const stage2_dist = path.join(pkg_root, "dist", "stage2");
@@ -269,21 +276,16 @@ export async function installMingwStage3() {
   );
 
   const ci_tools_msys64_parent = ci_tools_msys64_stage3;
-  const msys_root = path.join(ci_tools_msys64_parent, "msys64");
+  const msys_root = path.join(ci_tools_msys64_parent, MSYS64_DIR_NAME);
   const pkg_root = repoRoot;
 
-  const msys_txt_path = path.join(
-    pkg_root,
-    "scripts",
-    "generated",
-    "install-mingw-for-stage3-packages.txt",
-  );
+  const msys_txt_path = path.join(pkg_root, GENERATED_MINGW_STAGE3_PACKAGES_TXT);
   await fs.mkdir(path.dirname(msys_txt_path), { recursive: true });
   await fs.writeFile(msys_txt_path, packages.join("\n"), "utf-8");
 
   await executePacmanInstall(
     msys_root,
-    "pacman -S --noconfirm --needed $(cat scripts/generated/install-mingw-for-stage3-packages.txt)",
+    `pacman -S --noconfirm --needed $(cat ${GENERATED_MINGW_STAGE3_PACKAGES_TXT})`,
     pkg_root,
   );
   console.log("===stage3: Install mingw packages finished");
@@ -295,7 +297,7 @@ export async function installMingwStage3() {
   await writeExtractBat(
     ci_tools_msys64_parent,
     msys2_base_filename,
-    "extract-mingw.bat",
+    EXTRACT_MINGW_BAT_FILENAME,
   );
 
   console.log(

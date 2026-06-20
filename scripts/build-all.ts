@@ -14,7 +14,7 @@ import {
   runMsysCommandToLog,
   runStepToLog,
   type RunProcessOptions,
-} from "./build-common.ts";
+} from "./utils.ts";
 
 const ciToolsRoot = process.env.CI_TOOLS_ROOT || "D:\\CI-Tools";
 const env: NodeJS.ProcessEnv = {
