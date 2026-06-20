@@ -16,7 +16,7 @@
   "packageManager": "yarn@1.22.22",
   "main": "scripts/build-all.ts",
   "scripts": {
-    "test": "node --test scripts/test/*.test.ts",
+    "test": "node --test test/*.test.ts",
     "check": "tsc --noEmit",
     "build": "vite build",
     "lint": "tsc --noEmit"

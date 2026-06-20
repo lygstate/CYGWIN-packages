@@ -10,7 +10,7 @@ import {
 import {
   repoPath,
   repoRoot,
-  spawnProcessAsyncCapture,
+  runProcess,
 } from "./utils.ts";
 
 let need_exit = false;
@@ -38,7 +38,7 @@ export async function runDeps() {
     script += `source ./ports/${pkg_name}/PKGBUILD; echo "{\\\"makedepends\\\": \\\"\${makedepends[*]}\\\", \\\"pkgrel\\\": \\\"\${pkgrel}\\\", \\\"pkgver\\\": \\\"\${pkgver}\\\", \\\"dir\\\": \\\"${pkg_name}\\\", \\\"pkgname\\\": \\\"\${pkgname[*]}\\\", \\\"pkgbase\\\": \\\"\${pkgbase}\\\"}"\n`;
   }
   await fs.writeFile(path.join(repoRoot, "pkg_info.sh"), script);
-  const pkg_info = await spawnProcessAsyncCapture(
+  const pkg_info = await runProcess(
     `${ci_tools_msys64_stage0}/msys64/usr/bin/bash.exe`,
     ["--login", "-c", "source pkg_info.sh"],
     {
@@ -63,7 +63,7 @@ export async function runDeps() {
     if (need_exit) {
       break;
     }
-    const deps = await spawnProcessAsyncCapture(
+    const deps = await runProcess(
       `${ci_tools_msys64_stage0}/msys64/usr/bin/pactree.exe`,
       [pkg_name, "-u", "-d", "1"],
     );

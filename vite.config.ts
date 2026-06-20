@@ -25,7 +25,7 @@ export default defineConfig({
         "install-stages": resolve(rootDir, "scripts/install-stages.ts"),
         "test/utils-install-base.test": resolve(
           rootDir,
-          "scripts/test/utils-install-base.test.ts",
+          "test/utils-install-base.test.ts",
         ),
       },
       output: {

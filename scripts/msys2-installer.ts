@@ -18,8 +18,7 @@ import {
 } from "./build-config.ts";
 import {
   getYYYYMMDD,
-  spawnProcessAsync,
-  spawnProcessAsyncCapture,
+  runProcess,
 } from "./utils.ts";
 
 export {
@@ -147,14 +146,12 @@ function msysBashEnv() {
 }
 
 export class Msys2Installer {
-  spawnProcessAsync: typeof spawnProcessAsync;
-  spawnProcessAsyncCapture: typeof spawnProcessAsyncCapture;
+  runProcess: typeof runProcess;
   fs: any;
   baseTarball: string;
 
   constructor(overrides: Record<string, any> = {}) {
-    this.spawnProcessAsync = spawnProcessAsync;
-    this.spawnProcessAsyncCapture = spawnProcessAsyncCapture;
+    this.runProcess = runProcess;
     this.fs = fs;
     this.baseTarball = MSYS2_BASE_TARBALL;
     Object.assign(this, overrides);
@@ -162,22 +159,28 @@ export class Msys2Installer {
 
   async runMsysBash(msys_root, script) {
     const prelude = `mkdir -p /tmp\n${script}`;
-    await this.spawnProcessAsync(
+    await this.runProcess(
       msysBashExe(msys_root),
       ["--login", "-c", prelude],
-      { env: msysBashEnv() },
+      {
+        env: msysBashEnv(),
+        capture: false,
+        tee: true,
+      },
     );
   }
 
   async runMsysBashPacmanStep(msys_root, install_command, cwd) {
     const wrapped_command = wrapPacmanNonInteractiveCommand(install_command);
     console.log(`===Execute: "${install_command}" at ${msys_root} at ${cwd}`);
-    const code = await this.spawnProcessAsync(
+    const { code } = await this.runProcess(
       msysBashExe(msys_root),
       ["--login", "-c", wrapped_command],
       {
         cwd: cwd,
         env: msysBashEnv(),
+        capture: false,
+        tee: true,
       },
     );
     if (code !== 0) {
@@ -231,12 +234,14 @@ ${tail}`.trim();
     const wrapped_command = wrapPacmanNonInteractiveCommand(install_command);
     console.log(`===Execute: "${install_command}" at ${msys_root} at ${cwd}`);
     await this.linkPacmanCache(msys_root, bootstrap);
-    const code = await this.spawnProcessAsync(
+    const { code } = await this.runProcess(
       msysBashExe(msys_root),
       ["--login", "-c", wrapped_command],
       {
         cwd: cwd,
         env: msysBashEnv(),
+        capture: false,
+        tee: true,
       },
     );
     if (code !== 0) {
@@ -288,7 +293,7 @@ ${tail}`.trim();
     }
     if (!has_msys64) {
       console.log(`===Extracting base`);
-      await this.spawnProcessAsync(
+      await this.runProcess(
         `tar`,
         [
           "xf",
@@ -296,6 +301,8 @@ ${tail}`.trim();
         ],
         {
           cwd: ci_tools_msys64_parent,
+          capture: false,
+          tee: true,
         },
       );
       console.log("===Extract base finished\n");
@@ -323,13 +330,13 @@ ${tail}`.trim();
       enable_clear_msys64,
     );
     const pkg_root_cygwin = (
-      await this.spawnProcessAsyncCapture(
+      await this.runProcess(
         path.join(msys_root, "usr", "bin", "cygpath.exe"),
         [pkg_root],
       )
     ).stdout.trim();
 
-    const msys_list_capture = await this.spawnProcessAsyncCapture(
+    const msys_list_capture = await this.runProcess(
       path.join(msys_root, "usr", "bin", "pacman.exe"),
       ["-Sl", "msys"],
     );
@@ -373,7 +380,7 @@ ${tail}`.trim();
     msys2_base_filename,
   ) {
     const ci_tools_msys64_parent_cygwin = (
-      await this.spawnProcessAsyncCapture(
+      await this.runProcess(
         path.join(msys_root, "usr", "bin", "cygpath.exe"),
         [ci_tools_msys64_parent],
       )
@@ -393,7 +400,7 @@ ${tail}`.trim();
       console.log(`remove ${target_msys_tar_path} failed with: ${e}`);
     }
 
-    await this.spawnProcessAsync(
+    await this.runProcess(
       msysBashExe(msys_root),
       [
         "--login",
@@ -405,14 +412,20 @@ ${tail}`.trim();
           `touch /var/cache/pacman/pkg/gitignore`,
         ].join("; "),
       ],
-      { env: msysBashEnv() },
+      {
+        env: msysBashEnv(),
+        capture: false,
+        tee: true,
+      },
     );
-    await this.spawnProcessAsync(
+    await this.runProcess(
       path.join(msys_root, "usr", "bin", "tar.exe"),
       ["cf", target_msys_tar_path_cygwin, MSYS64_DIR_NAME],
       {
         cwd: ci_tools_msys64_parent,
         env: msysBashEnv(),
+        capture: false,
+        tee: true,
       },
     );
 

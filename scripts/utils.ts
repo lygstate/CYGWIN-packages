@@ -1,4 +1,4 @@
-import { spawn } from "child_process";
+import { spawn, type SpawnOptions } from "child_process";
 import { createWriteStream } from "node:fs";
 import * as fs from "fs/promises";
 import * as path from "path";
@@ -22,42 +22,6 @@ export function repoScript(...parts: string[]) {
 
 export function buildLogPath(logName: string) {
   return path.join(buildLogsDir, path.basename(logName));
-}
-
-async function ensureLogsDir() {
-  await fs.mkdir(buildLogsDir, { recursive: true });
-}
-
-export type RunProcessOptions = {
-  cwd?: string;
-  env?: NodeJS.ProcessEnv;
-  stdout?: NodeJS.WritableStream;
-  stderr?: NodeJS.WritableStream;
-  exitOnNonZero?: boolean;
-};
-
-export async function runCommand(
-  command: string,
-  args: string[],
-  options: RunProcessOptions = {},
-) {
-  return new Promise<number>((resolve, reject) => {
-    const child = spawn(command, args, {
-      cwd: options.cwd ?? repoRoot,
-      env: options.env ?? process.env,
-      windowsHide: false,
-    });
-    child.stdout?.pipe(options.stdout ?? process.stdout);
-    child.stderr?.pipe(options.stderr ?? process.stderr);
-    child.on("error", reject);
-    child.on("exit", (code) => {
-      const exitCode = code ?? 0;
-      if (options.exitOnNonZero && exitCode !== 0) {
-        process.exit(exitCode);
-      }
-      resolve(exitCode);
-    });
-  });
 }
 
 export async function runStepToLog(
@@ -92,17 +56,6 @@ export async function runStepToLog(
   }
 }
 
-export async function runMsysCommand(
-  msysBash: string,
-  command: string,
-  options: RunProcessOptions = {},
-) {
-  return runCommand(msysBash, ["--login", "-c", command], {
-    cwd: repoRoot,
-    ...options,
-  });
-}
-
 export type ProcessCapture = {
   stdout: string;
   stderr: string;
@@ -110,51 +63,101 @@ export type ProcessCapture = {
 };
 
 export async function touchLog(logName: string) {
-  await ensureLogsDir();
+  await fs.mkdir(buildLogsDir, { recursive: true });
   const target = buildLogPath(logName);
   await fs.writeFile(target, "");
   const now = new Date();
   await fs.utimes(target, now, now);
 }
 
-export type SpawnProcessCaptureOptions = {
-  cwd?: string;
-  env?: NodeJS.ProcessEnv;
+export type RunProcessOptions = SpawnOptions & {
   logName?: string;
   capture?: boolean;
   tee?: boolean;
-  rejectOnNonZero?: boolean;
   exitOnNonZero?: boolean;
+  stdout?: NodeJS.WritableStream;
+  stderr?: NodeJS.WritableStream;
 };
 
-export async function spawnProcessAsyncCapture(
+export async function runProcess(
   command: string,
   args: string[] = [],
-  options: SpawnProcessCaptureOptions = {},
+  options: RunProcessOptions = {},
 ): Promise<ProcessCapture> {
-  const cwd = options.cwd ?? repoRoot;
-  const logName = options.logName;
-  const capture = options.capture ?? !logName;
-  const tee = options.tee ?? !!logName;
-  const rejectOnNonZero = options.rejectOnNonZero ?? !logName;
+  const {
+    logName,
+    capture: captureOption,
+    tee: teeOption,
+    exitOnNonZero,
+    stdout,
+    stderr,
+    ...spawnOptions
+  } = options;
+  const cwd = spawnOptions.cwd ?? repoRoot;
+  const env = spawnOptions.env ?? process.env;
+  const capture = captureOption ?? !logName;
+  const tee = teeOption ?? !!logName;
 
   let logStream: ReturnType<typeof createWriteStream> | null = null;
-  if (logName) {
-    await touchLog(logName);
-    const logPath = buildLogPath(logName);
-    console.log(`Log: ${logPath}`);
-    logStream = createWriteStream(logPath, { flags: "w" });
+  try {
+    if (logName) {
+      await touchLog(logName);
+      const logPath = buildLogPath(logName);
+      console.log(`Log: ${logPath}`);
+      logStream = createWriteStream(logPath, { flags: "w" });
+    }
+  } catch (error) {
+    const result = {
+      stdout: "",
+      stderr: String(error),
+      code: 1,
+    };
+    if (exitOnNonZero) {
+      process.exit(result.code);
+    }
+    return result;
   }
 
   let stdoutOutput = "";
   let stderrOutput = "";
 
-  return new Promise((resolve, reject) => {
-    const child = spawn(command, args, {
-      cwd,
-      env: options.env ?? process.env,
-      windowsHide: false,
-    });
+  return new Promise((resolve) => {
+    let settled = false;
+    let child: ReturnType<typeof spawn>;
+
+    const finish = (result: ProcessCapture) => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      const finishResolve = () => {
+        if (exitOnNonZero && result.code !== 0) {
+          process.exit(result.code);
+        }
+        resolve(result);
+      };
+      if (logStream) {
+        logStream.end(finishResolve);
+      } else {
+        finishResolve();
+      }
+    };
+
+    try {
+      child = spawn(command, args, {
+        ...spawnOptions,
+        cwd,
+        env,
+        windowsHide: false,
+      });
+    } catch (error) {
+      finish({
+        stdout: stdoutOutput,
+        stderr: String(error),
+        code: 1,
+      });
+      return;
+    }
 
     const handleChunk = (
       chunk: Buffer | string,
@@ -170,6 +173,10 @@ export async function spawnProcessAsyncCapture(
       if (logStream) {
         logStream.write(chunk);
       }
+      const outputStream = stream === "stdout" ? stdout : stderr;
+      if (outputStream) {
+        outputStream.write(chunk);
+      }
       if (tee) {
         (stream === "stdout" ? process.stdout : process.stderr).write(chunk);
       }
@@ -179,78 +186,30 @@ export async function spawnProcessAsyncCapture(
     child.stderr?.on("data", (chunk) => handleChunk(chunk, "stderr"));
 
     child.on("error", (error) => {
-      logStream?.destroy();
-      reject(error);
+      const text = `${String(error)}\n`;
+      stderrOutput += text;
+      if (logStream) {
+        logStream.write(text);
+      }
+      if (stderr) {
+        stderr.write(text);
+      }
+      if (tee) {
+        process.stderr.write(text);
+      }
+      finish({
+        stdout: stdoutOutput,
+        stderr: stderrOutput,
+        code: 1,
+      });
     });
 
     child.on("close", (code) => {
-      const result = {
+      finish({
         stdout: stdoutOutput,
         stderr: stderrOutput,
         code: code ?? 0,
-      };
-      const finish = () => {
-        if (options.exitOnNonZero && result.code !== 0) {
-          process.exit(result.code);
-        }
-        if (rejectOnNonZero && result.code !== 0) {
-          reject(
-            new Error(
-              `Process exited with code ${result.code}: ${result.stderr}`,
-            ),
-          );
-          return;
-        }
-        resolve(result);
-      };
-      if (logStream) {
-        logStream.end(finish);
-      } else {
-        finish();
-      }
-    });
-  });
-}
-
-export async function runMsysCommandToLog(
-  msysBash: string,
-  command: string,
-  logName: string,
-  options: RunProcessOptions = {},
-) {
-  // Piped stdio is not a TTY, so bash/make block-buffer unless we force line
-  // buffering (stdbuf) and tee each chunk to the log and terminal as it arrives.
-  const lineBufferedCommand = `exec stdbuf -oL -eL sh -c ${JSON.stringify(command)}`;
-  const { code } = await spawnProcessAsyncCapture(
-    msysBash,
-    ["--login", "-c", lineBufferedCommand],
-    {
-      logName,
-      env: {
-        ...(options.env ?? process.env),
-        PYTHONUNBUFFERED: "1",
-      },
-      capture: false,
-      tee: true,
-      rejectOnNonZero: false,
-      exitOnNonZero: options.exitOnNonZero,
-    },
-  );
-  return code;
-}
-
-export function spawnProcessAsync(
-  command: string,
-  args: string[] = [],
-  options = {},
-): Promise<number> {
-  return new Promise((resolve, reject) => {
-    const p = spawn(command, args, options);
-    p.stdout?.pipe(process.stdout);
-    p.stderr?.pipe(process.stderr);
-    p.on("error", reject);
-    p.on("exit", (code) => {
-      resolve(code);
+      });
     });
   });
 }

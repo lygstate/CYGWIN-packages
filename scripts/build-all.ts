@@ -9,9 +9,7 @@ import {
 } from "./install-stages.ts";
 import {
   buildLogPath,
-  runCommand,
-  runMsysCommand,
-  runMsysCommandToLog,
+  runProcess,
   runStepToLog,
   type RunProcessOptions,
 } from "./utils.ts";
@@ -40,7 +38,12 @@ const rustCrossEnvs =
 const cmdExe = process.env.COMSPEC || "C:\\Windows\\System32\\cmd.exe";
 const checkBootstrap = "source scripts/sh/check-bootstrap.sh";
 const buildSingle = "sh scripts/sh/single.sh";
-const exitOpts: RunProcessOptions = { env, exitOnNonZero: true };
+const exitOpts: RunProcessOptions = {
+  env,
+  exitOnNonZero: true,
+  capture: false,
+  tee: true,
+};
 
 type PipelineStep = {
   id: string;
@@ -70,15 +73,13 @@ function initMsys64Stage(stage: "stage0" | "stage2" | "stage3") {
 
 async function extractMsys64() {
   env.CI_TOOLS_DISABLE_PAUSE = "true";
-  await runCommand(cmdExe, ["/c", "delete-msys64.bat"], {
+  await runProcess(cmdExe, ["/c", "delete-msys64.bat"], {
+    ...exitOpts,
     cwd: msys64StageDir,
-    env,
-    exitOnNonZero: true,
   });
-  await runCommand(cmdExe, ["/c", "extract.bat"], {
+  await runProcess(cmdExe, ["/c", "extract.bat"], {
+    ...exitOpts,
     cwd: msys64StageDir,
-    env,
-    exitOnNonZero: true,
   });
 }
 
@@ -102,7 +103,17 @@ async function runMsysBuild(
   logName: string,
   command: string,
 ) {
-  await runMsysCommandToLog(msysBash, command, logName, exitOpts);
+  // Piped stdio is not a TTY, so bash/make block-buffer unless we force line
+  // buffering (stdbuf) and tee each chunk to the log and terminal as it arrives.
+  const lineBufferedCommand = `exec stdbuf -oL -eL sh -c ${JSON.stringify(command)}`;
+  await runProcess(msysBash, ["--login", "-c", lineBufferedCommand], {
+    ...exitOpts,
+    logName,
+    env: {
+      ...env,
+      PYTHONUNBUFFERED: "1",
+    },
+  });
 }
 
 async function installMsys2OriginalRuntime() {
@@ -110,14 +121,14 @@ async function installMsys2OriginalRuntime() {
     "./dist-pkg/msys2-runtime-$MSYS_RUNTIME_PKGVER-$MSYS_RUNTIME_PKGREL-x86_64.pkg.tar.zst",
     "./dist-pkg/msys2-runtime-devel-$MSYS_RUNTIME_PKGVER-$MSYS_RUNTIME_PKGREL-x86_64.pkg.tar.zst",
   ].join(" ");
-  await runMsysCommand(
+  await runProcess(
     msysBash,
-    `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${packages}`,
+    ["--login", "-c", `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${packages}`],
     exitOpts,
   );
-  await runMsysCommand(
+  await runProcess(
     msysBash,
-    `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${runtimePackagesInit}`,
+    ["--login", "-c", `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${runtimePackagesInit}`],
     exitOpts,
   );
 }
@@ -127,14 +138,14 @@ async function installMsys2HookRuntime() {
     "./dist/init/msys2-runtime-$MSYS_RUNTIME_PKGVER-5-x86_64.pkg.tar.zst",
     "./dist/init/msys2-runtime-devel-$MSYS_RUNTIME_PKGVER-5-x86_64.pkg.tar.zst",
   ].join(" ");
-  await runMsysCommand(
+  await runProcess(
     msysBash,
-    `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${packages}`,
+    ["--login", "-c", `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${packages}`],
     exitOpts,
   );
-  await runMsysCommand(
+  await runProcess(
     msysBash,
-    `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${runtimePackagesInit}`,
+    ["--login", "-c", `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${runtimePackagesInit}`],
     exitOpts,
   );
 }
@@ -158,13 +169,13 @@ async function rebaseallMsys64Stage2() {
   //
   // Remove /etc/rebase.db.x86_64 before and after (before avoids stale-db merge
   // errors; after matches the old batch). -p skips the dash-only process check.
-  await runMsysCommand(msysBash, "rm -rf /etc/rebase.db.x86_64", exitOpts);
+  await runProcess(msysBash, ["--login", "-c", "rm -rf /etc/rebase.db.x86_64"], exitOpts);
   const rebaseEnv = { ...env, MSYS: "", MSYSTEM: "", CHERE_INVOKING: "" };
-  await runCommand(msysDash, ["/usr/bin/rebaseall", "-p", "-b", "0x400000000"], {
+  await runProcess(msysDash, ["/usr/bin/rebaseall", "-p", "-b", "0x400000000"], {
+    ...exitOpts,
     env: rebaseEnv,
-    exitOnNonZero: true,
   });
-  await runMsysCommand(msysBash, "rm -rf /etc/rebase.db.x86_64", exitOpts);
+  await runProcess(msysBash, ["--login", "-c", "rm -rf /etc/rebase.db.x86_64"], exitOpts);
 }
 
 const pipeline: PipelineStep[] = [

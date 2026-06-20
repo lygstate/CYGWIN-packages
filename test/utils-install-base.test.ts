@@ -6,11 +6,11 @@ import {
   bash_detach_pacman_pkg_cache,
   Msys2Installer,
   wrapPacmanNonInteractiveCommand,
-} from "../msys2-installer.ts";
+} from "../scripts/msys2-installer.ts";
 import {
   dedupeDistPackageDir,
   parsePkgArchiveFilename,
-} from "../utils.ts";
+} from "../scripts/utils.ts";
 
 function makeInstaller(overrides = {}) {
   return new Msys2Installer(overrides);
@@ -29,6 +29,14 @@ function spawnCalls(spawns) {
   }));
 }
 
+function captureCalls(captures) {
+  return captures.map((capture) => [capture.command, capture.args]);
+}
+
+function processResult(stdout = "", code = 0) {
+  return { stdout, stderr: "", code };
+}
+
 test("installMsys2BasePackages", async () => {
   const ci_tools_msys64_parent = "D:\\CI-Tools\\msys64-stage0";
 
@@ -39,9 +47,9 @@ test("installMsys2BasePackages", async () => {
     clearMsys64,
     fsExistsAsync: mock.fn(async () => true),
     linkPacmanCache,
-    spawnProcessAsync: mock.fn(async (command, args, options) => {
+    runProcess: mock.fn(async (command, args, options) => {
       spawns.push({ command, args, options });
-      return 0;
+      return processResult();
     }),
   });
 
@@ -55,7 +63,7 @@ test("installMsys2BasePackages", async () => {
       has_msys64,
       clearMsys64Calls: mockArguments(clearMsys64),
       linkPacmanCacheCalls: mockArguments(linkPacmanCache),
-      spawnProcessAsyncCalls: spawnCalls(spawns),
+      runProcessCalls: spawnCalls(spawns),
     },
     {
       has_msys64: true,
@@ -66,7 +74,7 @@ test("installMsys2BasePackages", async () => {
         ["D:\\CI-Tools\\msys64-stage0\\msys64", false],
         ["D:\\CI-Tools\\msys64-stage0\\msys64"],
       ],
-      spawnProcessAsyncCalls: [
+      runProcessCalls: [
         ...bash_bootstrap_core_upgrade_steps.map((step) => ({
           command:
             "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\bash.exe",
@@ -141,6 +149,7 @@ test("installMsys2AllPackages", async () => {
   const pkg_root_cygwin = "/d/work/xemu/CYGWIN-packages";
 
   const spawns = [];
+  const captures = [];
   const linkPacmanCache = mock.fn(async () => {});
   const mkdir = mock.fn(async () => {});
   const writeFile = mock.fn(async () => {});
@@ -148,17 +157,14 @@ test("installMsys2AllPackages", async () => {
   const installer = makeInstaller({
     installMsys2BasePackages,
     linkPacmanCache,
-    spawnProcessAsyncCapture: mock.fn(async (command, args) => {
+    runProcess: mock.fn(async (command, args, options) => {
       if (
         command ===
           "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\cygpath.exe" &&
         args[0] === pkg_root_win
       ) {
-        return {
-          stdout: `${pkg_root_cygwin}\n`,
-          stderr: "",
-          code: 0,
-        };
+        captures.push({ command, args });
+        return processResult(`${pkg_root_cygwin}\n`);
       }
       if (
         command ===
@@ -166,18 +172,13 @@ test("installMsys2AllPackages", async () => {
         args[0] === "-Sl" &&
         args[1] === "msys"
       ) {
-        return {
-          stdout:
-            "msys foo 1.0-1\n\nmsys uutils-coreutils 0.2.0-1\nmsys bar 2.0-1\n",
-          stderr: "",
-          code: 0,
-        };
+        captures.push({ command, args });
+        return processResult(
+          "msys foo 1.0-1\n\nmsys uutils-coreutils 0.2.0-1\nmsys bar 2.0-1\n",
+        );
       }
-      throw new Error(`Unexpected capture call: ${command} ${args.join(" ")}`);
-    }),
-    spawnProcessAsync: mock.fn(async (command, args, options) => {
       spawns.push({ command, args, options });
-      return 0;
+      return processResult();
     }),
     fs: { mkdir, writeFile },
   });
@@ -192,20 +193,18 @@ test("installMsys2AllPackages", async () => {
     {
       has_msys64,
       installMsys2BasePackagesCalls: mockArguments(installMsys2BasePackages),
-      spawnProcessAsyncCaptureCalls: mockArguments(
-        installer.spawnProcessAsyncCapture,
-      ),
+      runProcessCaptureCalls: captureCalls(captures),
       msysTxtMkdir: mockArguments(mkdir),
       msysTxtWrite: mockArguments(writeFile),
       linkPacmanCacheCalls: mockArguments(linkPacmanCache),
-      spawnProcessAsyncCalls: spawnCalls(spawns),
+      runProcessCalls: spawnCalls(spawns),
     },
     {
       has_msys64: true,
       installMsys2BasePackagesCalls: [
         ["D:\\CI-Tools\\msys64-stage0", false],
       ],
-      spawnProcessAsyncCaptureCalls: [
+      runProcessCaptureCalls: [
         [
           "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\cygpath.exe",
           ["D:\\work\\xemu\\CYGWIN-packages"],
@@ -232,7 +231,7 @@ test("installMsys2AllPackages", async () => {
         ["D:\\CI-Tools\\msys64-stage0\\msys64", false],
         ["D:\\CI-Tools\\msys64-stage0\\msys64"],
       ],
-      spawnProcessAsyncCalls: [
+      runProcessCalls: [
         {
           command:
             "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\bash.exe",
@@ -261,28 +260,23 @@ test("archiveFull", async () => {
   const ci_tools_msys64_parent_cygwin = "/d/CI-Tools/msys64-stage0";
 
   const spawns = [];
+  const captures = [];
   const linkPacmanCache = mock.fn(async () => {});
   const rm = mock.fn(async () => {});
   const installer = makeInstaller({
     linkPacmanCache,
     fs: { rm },
-    spawnProcessAsyncCapture: mock.fn(async (command, args) => {
+    runProcess: mock.fn(async (command, args, options) => {
       if (
         command ===
           "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\cygpath.exe" &&
         args[0] === ci_tools_msys64_parent
       ) {
-        return {
-          stdout: `${ci_tools_msys64_parent_cygwin}\n`,
-          stderr: "",
-          code: 0,
-        };
+        captures.push({ command, args });
+        return processResult(`${ci_tools_msys64_parent_cygwin}\n`);
       }
-      throw new Error(`Unexpected capture call: ${command} ${args.join(" ")}`);
-    }),
-    spawnProcessAsync: mock.fn(async (command, args, options) => {
       spawns.push({ command, args, options });
-      return 0;
+      return processResult();
     }),
   });
 
@@ -295,16 +289,14 @@ test("archiveFull", async () => {
   assert.deepEqual(
     {
       result,
-      spawnProcessAsyncCaptureCalls: mockArguments(
-        installer.spawnProcessAsyncCapture,
-      ),
+      runProcessCaptureCalls: captureCalls(captures),
       rmCalls: mockArguments(rm),
       linkPacmanCacheCalls: mockArguments(linkPacmanCache),
-      spawnProcessAsyncCalls: spawnCalls(spawns),
+      runProcessCalls: spawnCalls(spawns),
     },
     {
       result: "msys2-base-x86_64-20251213-full.tar",
-      spawnProcessAsyncCaptureCalls: [
+      runProcessCaptureCalls: [
         [
           "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\cygpath.exe",
           ["D:\\CI-Tools\\msys64-stage0"],
@@ -317,7 +309,7 @@ test("archiveFull", async () => {
         ],
       ],
       linkPacmanCacheCalls: [["D:\\CI-Tools\\msys64-stage0\\msys64"]],
-      spawnProcessAsyncCalls: [
+      runProcessCalls: [
         {
           command:
             "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\bash.exe",
