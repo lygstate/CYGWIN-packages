@@ -44,7 +44,7 @@ test("installMsys2BasePackages", async () => {
   const linkPacmanCache = mock.fn(async () => {});
   const clearMsys64 = mock.fn(async () => {});
   const step = {
-    runProcess: mock.fn(async (command, args, options) => {
+    run: mock.fn(async (command, args, options) => {
       spawns.push({ command, args, options });
       return processResult();
     }),
@@ -119,7 +119,7 @@ test("clearMsys64 skips cache merge when bash is missing", async () => {
   const linkPacmanCache = mock.fn(async () => {});
   const rm = mock.fn(async () => {});
   const step = {
-    runProcess: mock.fn(async () => processResult()),
+    run: mock.fn(async () => processResult()),
   };
   const installer = makeInstaller({
     linkPacmanCache,
@@ -161,7 +161,7 @@ test("installMsys2AllPackages", async () => {
   const writeFile = mock.fn(async () => {});
   const installMsys2BasePackages = mock.fn(async () => true);
   const step = {
-    runProcess: mock.fn(async (command, args, options) => {
+    run: mock.fn(async (command, args, options) => {
       if (
         command ===
           "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\cygpath.exe" &&
@@ -273,7 +273,7 @@ test("archiveFull", async () => {
   const linkPacmanCache = mock.fn(async () => {});
   const rm = mock.fn(async () => {});
   const step = {
-    runProcess: mock.fn(async (command, args, options) => {
+    run: mock.fn(async (command, args, options) => {
       if (
         command ===
           "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\cygpath.exe" &&

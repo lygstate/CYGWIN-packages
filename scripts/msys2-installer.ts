@@ -17,8 +17,10 @@ import {
   black_list,
 } from "./build-config.ts";
 import {
+  type ProcessRunner,
+} from "./run-context.ts";
+import {
   getYYYYMMDD,
-  type RunContext,
 } from "./utils.ts";
 
 export {
@@ -145,8 +147,6 @@ function msysBashEnv() {
   return { ...MSYS_BASH_ENV };
 }
 
-export type ProcessRunner = Pick<RunContext, "runProcess">;
-
 export class Msys2Installer {
   fs: any;
   baseTarball: string;
@@ -159,7 +159,7 @@ export class Msys2Installer {
 
   async runMsysBash(msys_root, script, step: ProcessRunner) {
     const prelude = `mkdir -p /tmp\n${script}`;
-    await step.runProcess(
+    await step.run(
       msysBashExe(msys_root),
       ["--login", "-c", prelude],
       {
@@ -178,7 +178,7 @@ export class Msys2Installer {
   ) {
     const wrapped_command = wrapPacmanNonInteractiveCommand(install_command);
     console.log(`===Execute: "${install_command}" at ${msys_root} at ${cwd}`);
-    const { code } = await step.runProcess(
+    const { code } = await step.run(
       msysBashExe(msys_root),
       ["--login", "-c", wrapped_command],
       {
@@ -244,7 +244,7 @@ ${tail}`.trim();
     const wrapped_command = wrapPacmanNonInteractiveCommand(install_command);
     console.log(`===Execute: "${install_command}" at ${msys_root} at ${cwd}`);
     await this.linkPacmanCache(msys_root, bootstrap, step);
-    const { code } = await step.runProcess(
+    const { code } = await step.run(
       msysBashExe(msys_root),
       ["--login", "-c", wrapped_command],
       {
@@ -304,7 +304,7 @@ ${tail}`.trim();
     }
     if (!has_msys64) {
       console.log(`===Extracting base`);
-      await step.runProcess(
+      await step.run(
         `tar`,
         [
           "xf",
@@ -345,13 +345,13 @@ ${tail}`.trim();
       step,
     );
     const pkg_root_cygwin = (
-      await step.runProcess(
+      await step.run(
         path.join(msys_root, "usr", "bin", "cygpath.exe"),
         [pkg_root],
       )
     ).stdout.trim();
 
-    const msys_list_capture = await step.runProcess(
+    const msys_list_capture = await step.run(
       path.join(msys_root, "usr", "bin", "pacman.exe"),
       ["-Sl", "msys"],
     );
@@ -398,7 +398,7 @@ ${tail}`.trim();
     step: ProcessRunner,
   ) {
     const ci_tools_msys64_parent_cygwin = (
-      await step.runProcess(
+      await step.run(
         path.join(msys_root, "usr", "bin", "cygpath.exe"),
         [ci_tools_msys64_parent],
       )
@@ -418,7 +418,7 @@ ${tail}`.trim();
       console.log(`remove ${target_msys_tar_path} failed with: ${e}`);
     }
 
-    await step.runProcess(
+    await step.run(
       msysBashExe(msys_root),
       [
         "--login",
@@ -436,7 +436,7 @@ ${tail}`.trim();
         tee: true,
       },
     );
-    await step.runProcess(
+    await step.run(
       path.join(msys_root, "usr", "bin", "tar.exe"),
       ["cf", target_msys_tar_path_cygwin, MSYS64_DIR_NAME],
       {

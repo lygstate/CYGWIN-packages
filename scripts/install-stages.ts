@@ -17,9 +17,11 @@ import {
   writeExtractBat,
 } from "./msys2-installer.ts";
 import {
+  type RunContext,
+} from "./run-context.ts";
+import {
   dedupeDistPackageDir,
   getYYYYMMDD,
-  type RunContext,
   repoRoot,
 } from "./utils.ts";
 

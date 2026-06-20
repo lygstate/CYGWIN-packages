@@ -10,7 +10,8 @@ import {
 import {
   RunContext,
   type RunProcessOptions,
-} from "./utils.ts";
+} from "./run-context.ts";
+import { repoPath } from "./utils.ts";
 
 const ciToolsRoot = process.env.CI_TOOLS_ROOT || "D:\\CI-Tools";
 const env: NodeJS.ProcessEnv = {
@@ -43,6 +44,10 @@ const exitOpts: RunProcessOptions = {
   tee: true,
 };
 
+function runContext(logName: string, label: string) {
+  return new RunContext(repoPath("scripts", "logs", logName), label);
+}
+
 type PipelineStep = {
   id: string;
   group: number;
@@ -71,11 +76,11 @@ function initMsys64Stage(stage: "stage0" | "stage2" | "stage3") {
 
 async function extractMsys64(step: RunContext) {
   env.CI_TOOLS_DISABLE_PAUSE = "true";
-  await step.runProcess(cmdExe, ["/c", "delete-msys64.bat"], {
+  await step.run(cmdExe, ["/c", "delete-msys64.bat"], {
     ...exitOpts,
     cwd: msys64StageDir,
   });
-  await step.runProcess(cmdExe, ["/c", "extract.bat"], {
+  await step.run(cmdExe, ["/c", "extract.bat"], {
     ...exitOpts,
     cwd: msys64StageDir,
   });
@@ -88,8 +93,8 @@ async function runMsysBuild(
   // Piped stdio is not a TTY, so bash/make block-buffer unless we force line
   // buffering (stdbuf) and tee each chunk to the log and terminal as it arrives.
   const lineBufferedCommand = `exec stdbuf -oL -eL sh -c ${JSON.stringify(command)}`;
-  await new RunContext(logName, command).run(async (step) => {
-    await step.runProcess(msysBash, ["--login", "-c", lineBufferedCommand], {
+  await runContext(logName, command).step(async (step) => {
+    await step.run(msysBash, ["--login", "-c", lineBufferedCommand], {
       ...exitOpts,
       env: {
         ...env,
@@ -104,12 +109,12 @@ async function installMsys2OriginalRuntime(step: RunContext) {
     "./dist-pkg/msys2-runtime-$MSYS_RUNTIME_PKGVER-$MSYS_RUNTIME_PKGREL-x86_64.pkg.tar.zst",
     "./dist-pkg/msys2-runtime-devel-$MSYS_RUNTIME_PKGVER-$MSYS_RUNTIME_PKGREL-x86_64.pkg.tar.zst",
   ].join(" ");
-  await step.runProcess(
+  await step.run(
     msysBash,
     ["--login", "-c", `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${packages}`],
     exitOpts,
   );
-  await step.runProcess(
+  await step.run(
     msysBash,
     ["--login", "-c", `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${runtimePackagesInit}`],
     exitOpts,
@@ -121,12 +126,12 @@ async function installMsys2HookRuntime(step: RunContext) {
     "./dist/init/msys2-runtime-$MSYS_RUNTIME_PKGVER-5-x86_64.pkg.tar.zst",
     "./dist/init/msys2-runtime-devel-$MSYS_RUNTIME_PKGVER-5-x86_64.pkg.tar.zst",
   ].join(" ");
-  await step.runProcess(
+  await step.run(
     msysBash,
     ["--login", "-c", `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${packages}`],
     exitOpts,
   );
-  await step.runProcess(
+  await step.run(
     msysBash,
     ["--login", "-c", `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${runtimePackagesInit}`],
     exitOpts,
@@ -152,13 +157,13 @@ async function rebaseallMsys64Stage2(step: RunContext) {
   //
   // Remove /etc/rebase.db.x86_64 before and after (before avoids stale-db merge
   // errors; after matches the old batch). -p skips the dash-only process check.
-  await step.runProcess(msysBash, ["--login", "-c", "rm -rf /etc/rebase.db.x86_64"], exitOpts);
+  await step.run(msysBash, ["--login", "-c", "rm -rf /etc/rebase.db.x86_64"], exitOpts);
   const rebaseEnv = { ...env, MSYS: "", MSYSTEM: "", CHERE_INVOKING: "" };
-  await step.runProcess(msysDash, ["/usr/bin/rebaseall", "-p", "-b", "0x400000000"], {
+  await step.run(msysDash, ["/usr/bin/rebaseall", "-p", "-b", "0x400000000"], {
     ...exitOpts,
     env: rebaseEnv,
   });
-  await step.runProcess(msysBash, ["--login", "-c", "rm -rf /etc/rebase.db.x86_64"], exitOpts);
+  await step.run(msysBash, ["--login", "-c", "rm -rf /etc/rebase.db.x86_64"], exitOpts);
 }
 
 const pipeline: PipelineStep[] = [
@@ -167,10 +172,10 @@ const pipeline: PipelineStep[] = [
     group: 1,
     label: "stage0 install MSYS packages",
     run: async () => {
-      await new RunContext(
+      await runContext(
         "install-for-stage0.txt",
         "Install MSYS base packages into msys64-stage0",
-      ).run(installStage0);
+      ).step(installStage0);
     },
   },
   {
@@ -179,14 +184,14 @@ const pipeline: PipelineStep[] = [
     label: "stage0 generate deps and package lists",
     run: async () => {
       initMsys64Stage("stage0");
-      await new RunContext(
+      await runContext(
         "deps.txt",
         "Generate scripts/generated/deps.json (deps.ts)",
-      ).run(runDeps);
-      await new RunContext(
+      ).step(runDeps);
+      await runContext(
         "gen-build-all.txt",
         "Generate stage1/stage2 package lists (gen-build-all.ts)",
-      ).run(runGenBuildAll);
+      ).step(runGenBuildAll);
     },
   },
   {
@@ -195,10 +200,10 @@ const pipeline: PipelineStep[] = [
     label: "stage0 extract archive",
     run: async () => {
       initMsys64Stage("stage0");
-      await new RunContext(
+      await runContext(
         "extract-stage0.txt",
         "Extract msys64-stage0 from archive",
-      ).run(extractMsys64);
+      ).step(extractMsys64);
     },
   },
   {
@@ -207,20 +212,20 @@ const pipeline: PipelineStep[] = [
     label: "hook/runtime builds",
     run: async () => {
       initMsys64Stage("stage0");
-      await new RunContext(
+      await runContext(
         "install-original-runtime.txt",
         "Install original msys2-runtime packages",
-      ).run(installMsys2OriginalRuntime);
+      ).step(installMsys2OriginalRuntime);
       console.log("Build hook-patched msys2-runtime (stage-hook.sh)");
       await runMsysBuild(
         "build-stage-hook.txt",
         "source scripts/sh/stage-hook.sh",
       );
       initMsys64Stage("stage0");
-      await new RunContext(
+      await runContext(
         "install-hook-runtime.txt",
         "Install hook-patched msys2-runtime packages",
-      ).run(installMsys2HookRuntime);
+      ).step(installMsys2HookRuntime);
       console.log("Build stage0 bootstrap packages (stage0.sh)");
       await runMsysBuild("build-stage0.txt", "source scripts/sh/stage0.sh");
     },
@@ -241,10 +246,10 @@ const pipeline: PipelineStep[] = [
     label: "stage2 prep",
     run: async () => {
       initMsys64Stage("stage2");
-      await new RunContext(
+      await runContext(
         "install-for-stage2.txt",
         "Install stage1-built packages into msys64-stage2",
-      ).run(installStage2);
+      ).step(installStage2);
     },
   },
   {
@@ -279,10 +284,10 @@ const pipeline: PipelineStep[] = [
     label: "stage2 rebaseall (before rust native)",
     run: async () => {
       initMsys64Stage("stage2");
-      await new RunContext(
+      await runContext(
         "rebaseall-stage2-before-rust-native.txt",
         "Run rebaseall -p before rust native",
-      ).run(rebaseallMsys64Stage2);
+      ).step(rebaseallMsys64Stage2);
     },
   },
   {
@@ -304,10 +309,10 @@ const pipeline: PipelineStep[] = [
     label: "stage2 rebaseall (after rust native)",
     run: async () => {
       initMsys64Stage("stage2");
-      await new RunContext(
+      await runContext(
         "rebaseall-stage2-after-rust-native.txt",
         "Run rebaseall -p after rust native",
-      ).run(rebaseallMsys64Stage2);
+      ).step(rebaseallMsys64Stage2);
     },
   },
   {
@@ -342,10 +347,10 @@ const pipeline: PipelineStep[] = [
     label: "stage3 prep (cygwin packages + archive)",
     run: async () => {
       initMsys64Stage("stage3");
-      await new RunContext(
+      await runContext(
         "install-for-stage3.txt",
         "Install stage1/stage2 packages into msys64-stage3 and create archive",
-      ).run(installStage3);
+      ).step(installStage3);
     },
   },
   {
@@ -354,14 +359,14 @@ const pipeline: PipelineStep[] = [
     label: "stage3 extract + mingw packages",
     run: async () => {
       initMsys64Stage("stage3");
-      await new RunContext(
+      await runContext(
         "extract-stage3.txt",
         "Extract msys64-stage3 from archive",
-      ).run(extractMsys64);
-      await new RunContext(
+      ).step(extractMsys64);
+      await runContext(
         "install-mingw-for-stage3.txt",
         "Install mingw-w64 packages for stage3",
-      ).run(installMingwStage3);
+      ).step(installMingwStage3);
     },
   },
 ];

@@ -7,7 +7,9 @@ import {
   ci_tools_msys64_stage0,
 } from "./build-config.ts";
 import {
-  RunContext,
+  type RunContext,
+} from "./run-context.ts";
+import {
   repoPath,
   repoRoot,
 } from "./utils.ts";
@@ -19,7 +21,7 @@ process.on("SIGINT", function () {
 });
 
 export async function runDeps(step: RunContext) {
-  const run = step.runProcess.bind(step);
+  const run = step.run.bind(step);
   const portsDir = repoPath("ports");
   const generatedDir = repoPath("scripts", "generated");
   const packages_list = await fs.readdir(portsDir);
