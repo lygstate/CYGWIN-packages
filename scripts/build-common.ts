@@ -58,15 +58,38 @@ export async function runMsysCommandToLog(
   env: NodeJS.ProcessEnv = process.env,
 ) {
   await touchLog(logFile);
-  const stream = createWriteStream(path.join(repoRoot, logFile));
-  const code = await runCommand(msysBash, ["--login", "-c", command], {
-    cwd: repoRoot,
-    env,
-    stdout: stream,
-    stderr: stream,
+  const logPath = path.join(repoRoot, logFile);
+  const logStream = createWriteStream(logPath, { flags: "w" });
+  // Piped stdio is not a TTY, so bash/make block-buffer unless we force line
+  // buffering (stdbuf) and tee each chunk to the log and terminal as it arrives.
+  const lineBufferedCommand = `exec stdbuf -oL -eL sh -c ${JSON.stringify(command)}`;
+
+  return new Promise<number>((resolve, reject) => {
+    const child = spawn(msysBash, ["--login", "-c", lineBufferedCommand], {
+      cwd: repoRoot,
+      env: {
+        ...env,
+        PYTHONUNBUFFERED: "1",
+      },
+      windowsHide: false,
+    });
+
+    const tee = (chunk: Buffer | string, output: NodeJS.WriteStream) => {
+      logStream.write(chunk);
+      output.write(chunk);
+    };
+
+    child.stdout?.on("data", (chunk) => tee(chunk, process.stdout));
+    child.stderr?.on("data", (chunk) => tee(chunk, process.stderr));
+
+    child.on("error", (error) => {
+      logStream.destroy();
+      reject(error);
+    });
+    child.on("close", (code) => {
+      logStream.end(() => resolve(code ?? 0));
+    });
   });
-  stream.close();
-  return code;
 }
 
 export async function touchLog(logFile: string) {

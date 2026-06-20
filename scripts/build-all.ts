@@ -350,11 +350,20 @@ const pipeline: PipelineStep[] = [
   {
     id: "stage3-prep",
     group: 7,
-    label: "stage3 prep",
+    label: "stage3 prep (cygwin packages + archive)",
     run: async () => {
       console.log("Preparing msys64 for stage3 by install packages built by stage1 and stage2");
       initMsys64Stage("stage3");
       await runNodeInstall("install-for-stage3.ts", "install-for-stage3.txt");
+    },
+  },
+  {
+    id: "stage3-mingw",
+    group: 8,
+    label: "stage3 extract + mingw packages",
+    run: async () => {
+      initMsys64Stage("stage3");
+      console.log("Extracting stage3 MSYS2 from archive before mingw install");
       await extractMsys64();
       await runNodeInstall(
         "install-mingw-for-stage3.ts",
@@ -365,7 +374,7 @@ const pipeline: PipelineStep[] = [
 ];
 
 function resolveFromStep(fromArg: string): string {
-  if (/^[1-7]$/.test(fromArg)) {
+  if (/^[1-8]$/.test(fromArg)) {
     const group = Number(fromArg);
     const step = pipeline.find((item) => item.group === group);
     if (!step) {
@@ -403,9 +412,10 @@ Pipeline groups:
   4. stage2 prep
   5. stage2 gcc/rust/cargo
   6. stage2 package lists
-  7. stage3 prep
+  7. stage3 prep (cygwin + archive)
+  8. stage3 extract + mingw
 
-Steps (--from accepts the id or group number 1-7):
+Steps (--from accepts the id or group number 1-8):
 `);
   for (const step of pipeline) {
     console.log(`  ${step.group}. ${step.id.padEnd(20)} ${step.label}`);
@@ -416,6 +426,7 @@ Examples:
   start.bat --from 4
   start.bat --from stage2-gcc
   start.bat --from stage2-rust-native
+  start.bat --from stage3-mingw
 
 More detail: BUILD-START.md
 `);

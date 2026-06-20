@@ -193,6 +193,12 @@ export const bash_bootstrap_core_upgrade = [
   `rm -rf /var/lib/pacman/db.lck`,
 ].join("; ");
 
+// Node spawn has no TTY; pacman still prompts on corrupted cache files and
+// treats EOF as No even with --noconfirm. Pipe yes so delete-it queries get Y.
+export function wrapPacmanNonInteractiveCommand(install_command: string) {
+  return `yes | { ${install_command}; }`;
+}
+
 export function parsePkgArchiveFilename(filename) {
   const suffix = ".pkg.tar.zst";
   if (!filename.endsWith(suffix)) {
@@ -380,11 +386,12 @@ ${tail}`.trim();
     cwd,
     bootstrap = false,
   ) {
+    const wrapped_command = wrapPacmanNonInteractiveCommand(install_command);
     console.log(`===Execute: "${install_command}" at ${msys_root} at ${cwd}`);
     await this.linkPacmanCache(msys_root, bootstrap);
     const code = await this.spawnProcessAsync(
       msysBashExe(msys_root),
-      ["--login", "-c", install_command],
+      ["--login", "-c", wrapped_command],
       {
         cwd: cwd,
         env: msysBashEnv(),

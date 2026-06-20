@@ -77,7 +77,7 @@ Order of operations:
 3. `node scripts/install-for-stage2.ts`
 4. Build stage2 `gcc`, `rust` cross, `rebaseall -p`, `rust` native, `rebaseall -p`, `cargo-c`
 5. Run `scripts/sh/stage2-list.sh` and `scripts/sh/stage2-list-extra.sh`
-6. `node scripts/install-for-stage3.ts`, extract stage3, `node scripts/install-mingw-for-stage3.ts`
+6. `node scripts/install-for-stage3.ts`, then `stage3-mingw` (extract + mingw install)
 
 ## Resume with `--from`
 
@@ -87,6 +87,7 @@ start.bat --from stage2-gcc
 start.bat --from stage2-rust-native
 start.bat --from stage2-lists
 start.bat --from stage3-prep
+start.bat --from stage3-mingw
 ```
 
 Group numbers also work and start at the first step in that group:
@@ -185,7 +186,15 @@ Run rebaseall again, then build `cargo-c`.
 
 ```bat
 node scripts/install-for-stage3.ts
-node scripts/install-mingw-for-stage3.ts
+```
+
+### Stage3 mingw only (extract archive + install mingw)
+
+Requires `install-for-stage3.ts` to have finished (creates `extract.bat` under
+`%CI_TOOLS_ROOT%\msys64-stage3`).
+
+```bat
+start.bat --from stage3-mingw
 ```
 
 ## Why `rebaseall -p` failed

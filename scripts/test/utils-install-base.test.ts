@@ -7,6 +7,7 @@ import {
   bash_detach_pacman_pkg_cache,
   parsePkgArchiveFilename,
   dedupeDistPackageDir,
+  wrapPacmanNonInteractiveCommand,
 } from "../utils.ts";
 
 function makeInstaller(overrides = {}) {
@@ -67,7 +68,11 @@ test("installMsys2BasePackages", async () => {
         {
           command:
             "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\bash.exe",
-          args: ["--login", "-c", bash_bootstrap_core_upgrade],
+          args: [
+            "--login",
+            "-c",
+            wrapPacmanNonInteractiveCommand(bash_bootstrap_core_upgrade),
+          ],
           cwd: "D:\\CI-Tools\\msys64-stage0\\msys64",
           env: {
             MSYS: "winsymlinks:native",
@@ -78,7 +83,11 @@ test("installMsys2BasePackages", async () => {
         {
           command:
             "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\bash.exe",
-          args: ["--login", "-c", "pacman -Syu --noconfirm"],
+          args: [
+            "--login",
+            "-c",
+            wrapPacmanNonInteractiveCommand("pacman -Syu --noconfirm"),
+          ],
           cwd: "D:\\CI-Tools\\msys64-stage0\\msys64",
           env: {
             MSYS: "winsymlinks:native",
@@ -228,7 +237,9 @@ test("installMsys2AllPackages", async () => {
           args: [
             "--login",
             "-c",
-            "cd /d/work/xemu/CYGWIN-packages/; sed -i 's/^SigLevel.*$/SigLevel=Never/g' /etc/pacman.conf; cat /etc/pacman.conf | grep ^SigLevel; pacman -S --noconfirm --needed $(cat scripts/generated/msys.txt)",
+            wrapPacmanNonInteractiveCommand(
+              "cd /d/work/xemu/CYGWIN-packages/; sed -i 's/^SigLevel.*$/SigLevel=Never/g' /etc/pacman.conf; cat /etc/pacman.conf | grep ^SigLevel; pacman -S --noconfirm --needed $(cat scripts/generated/msys.txt)",
+            ),
           ],
           cwd: "D:\\work\\xemu\\CYGWIN-packages",
           env: {
