@@ -7,5 +7,5 @@ if not defined CI_TOOLS_ROOT (
 )
 
 cd /d %~dp0
-node scripts/build-all.ts %*
+node scripts/start.ts %*
 exit /B %ERRORLEVEL%

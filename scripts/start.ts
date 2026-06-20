@@ -9,9 +9,15 @@ import {
 } from "./install-stages.ts";
 import {
   RunContext,
+  type RunProcessLogOptions,
   type RunProcessOptions,
 } from "./run-context.ts";
 import { repoPath } from "./utils.ts";
+
+process.on("SIGINT", () => {
+  console.log("Caught interrupt signal");
+  process.exit(130);
+});
 
 const ciToolsRoot = process.env.CI_TOOLS_ROOT || "D:\\CI-Tools";
 const env: NodeJS.ProcessEnv = {
@@ -37,18 +43,21 @@ const rustCrossEnvs =
 const cmdExe = process.env.COMSPEC || "C:\\Windows\\System32\\cmd.exe";
 const checkBootstrap = "source scripts/sh/check-bootstrap.sh";
 const buildSingle = "sh scripts/sh/single.sh";
-const exitOpts: RunProcessOptions = {
-  env,
-  exitOnNonZero: true,
-  capture: false,
-  tee: true,
-};
+const envOpts: RunProcessOptions = { env };
 
-function runContext(logName: string, label: string, teeConsole = false) {
+function runContext(
+  logName: string,
+  label: string,
+  logOptions: RunProcessLogOptions = {},
+) {
   return new RunContext(
     repoPath("scripts", "logs", logName),
     label,
-    { teeConsole },
+    {
+      capture: false,
+      exitOnNonZero: true,
+      ...logOptions,
+    },
   );
 }
 
@@ -81,11 +90,11 @@ function initMsys64Stage(stage: "stage0" | "stage2" | "stage3") {
 async function extractMsys64(step: RunContext) {
   env.CI_TOOLS_DISABLE_PAUSE = "true";
   await step.run(cmdExe, ["/c", "delete-msys64.bat"], {
-    ...exitOpts,
+    ...envOpts,
     cwd: msys64StageDir,
   });
   await step.run(cmdExe, ["/c", "extract.bat"], {
-    ...exitOpts,
+    ...envOpts,
     cwd: msys64StageDir,
   });
 }
@@ -97,9 +106,9 @@ async function runMsysBuild(
   // Piped stdio is not a TTY, so bash/make block-buffer unless we force line
   // buffering (stdbuf) and tee each chunk to the log and terminal as it arrives.
   const lineBufferedCommand = `exec stdbuf -oL -eL sh -c ${JSON.stringify(command)}`;
-  await runContext(logName, command, true).step(async (step) => {
+  await runContext(logName, command, { teeConsole: true }).step(async (step) => {
     await step.run(msysBash, ["--login", "-c", lineBufferedCommand], {
-      ...exitOpts,
+      ...envOpts,
       env: {
         ...env,
         PYTHONUNBUFFERED: "1",
@@ -116,12 +125,12 @@ async function installMsys2OriginalRuntime(step: RunContext) {
   await step.run(
     msysBash,
     ["--login", "-c", `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${packages}`],
-    exitOpts,
+    envOpts,
   );
   await step.run(
     msysBash,
     ["--login", "-c", `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${runtimePackagesInit}`],
-    exitOpts,
+    envOpts,
   );
 }
 
@@ -133,12 +142,12 @@ async function installMsys2HookRuntime(step: RunContext) {
   await step.run(
     msysBash,
     ["--login", "-c", `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${packages}`],
-    exitOpts,
+    envOpts,
   );
   await step.run(
     msysBash,
     ["--login", "-c", `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${runtimePackagesInit}`],
-    exitOpts,
+    envOpts,
   );
 }
 
@@ -161,13 +170,13 @@ async function rebaseallMsys64Stage2(step: RunContext) {
   //
   // Remove /etc/rebase.db.x86_64 before and after (before avoids stale-db merge
   // errors; after matches the old batch). -p skips the dash-only process check.
-  await step.run(msysBash, ["--login", "-c", "rm -rf /etc/rebase.db.x86_64"], exitOpts);
+  await step.run(msysBash, ["--login", "-c", "rm -rf /etc/rebase.db.x86_64"], envOpts);
   const rebaseEnv = { ...env, MSYS: "", MSYSTEM: "", CHERE_INVOKING: "" };
   await step.run(msysDash, ["/usr/bin/rebaseall", "-p", "-b", "0x400000000"], {
-    ...exitOpts,
+    ...envOpts,
     env: rebaseEnv,
   });
-  await step.run(msysBash, ["--login", "-c", "rm -rf /etc/rebase.db.x86_64"], exitOpts);
+  await step.run(msysBash, ["--login", "-c", "rm -rf /etc/rebase.db.x86_64"], envOpts);
 }
 
 const pipeline: PipelineStep[] = [
@@ -191,12 +200,12 @@ const pipeline: PipelineStep[] = [
       await runContext(
         "deps.txt",
         "Generate scripts/generated/deps.json (deps.ts)",
-        true,
+        { teeConsole: true },
       ).step(runDeps);
       await runContext(
         "gen-build-all.txt",
         "Generate stage1/stage2 package lists (gen-build-all.ts)",
-        true,
+        { teeConsole: true },
       ).step(runGenBuildAll);
     },
   },

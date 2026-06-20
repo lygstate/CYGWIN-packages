@@ -1,7 +1,6 @@
 import * as fs from "fs/promises";
 import * as fsSync from "fs";
 import * as path from "path";
-import process from "node:process";
 import {
   black_list,
   ci_tools_msys64_stage0,
@@ -13,12 +12,6 @@ import {
   repoPath,
   repoRoot,
 } from "./utils.ts";
-
-let need_exit = false;
-process.on("SIGINT", function () {
-  console.log("Caught interrupt signal");
-  need_exit = true;
-});
 
 export async function runDeps(step: RunContext) {
   const run = step.run.bind(step);
@@ -61,9 +54,6 @@ export async function runDeps(step: RunContext) {
     if (black_list.has(pkg_name)) continue;
     if (pkg_name == undefined) {
       continue;
-    }
-    if (need_exit) {
-      break;
     }
     const deps = await run(
       `${ci_tools_msys64_stage0}/msys64/usr/bin/pactree.exe`,

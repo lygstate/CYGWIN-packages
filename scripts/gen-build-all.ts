@@ -3,12 +3,6 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { repoPath } from "./utils.ts";
 
-let need_exit = false;
-process.on("SIGINT", function () {
-  console.log("Caught interrupt signal");
-  need_exit = true;
-});
-
 const packages_provides_by = {
   "perl-CPAN-Meta": "perl",
   "perl-Test-Simple": "perl",

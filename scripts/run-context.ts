@@ -7,33 +7,49 @@ import util from "node:util";
 export class RunContext {
   logPath: string;
   label: string;
+  logStream: NodeJS.WritableStream | null;
   logOptions: RunProcessLogOptions;
 
   constructor(
     logPath: string,
     label: string,
     logOptions: RunProcessLogOptions = {},
+    logStream: NodeJS.WritableStream | null = null,
   ) {
     this.logPath = logPath;
     this.label = label;
-    this.logOptions = { teeConsole: false, logStream: null, ...logOptions };
+    this.logStream = logStream;
+    this.logOptions = {
+      teeConsole: false,
+      capture: true,
+      exitOnNonZero: false,
+      ...logOptions,
+    };
   }
 
   // Not safe to call step() concurrently: it patches global console.log/error.
-  // build-all runs one RunContext at a time; parallel use needs per-session logging.
+  // start.ts runs one RunContext at a time; parallel use needs per-session logging.
   async step(fn: (step: RunContext) => Promise<void>) {
     const origLog = console.log;
     const origErr = console.error;
+    if (!this.logStream) {
+      await fs.mkdir(path.dirname(this.logPath), { recursive: true });
+      this.logStream = createWriteStream(this.logPath, {
+        flags: "w",
+      });
+    }
+    const teeLine = (line: string) => {
+      this.logStream!.write(line);
+    };
+    const logToFileAndConsole = (...args: unknown[]) => {
+      teeLine(`${util.format(...args)}\n`);
+      origLog(...args);
+    };
+    const logErrorToFileAndConsole = (...args: unknown[]) => {
+      teeLine(`${util.format(...args)}\n`);
+      origErr(...args);
+    };
     try {
-      if (!this.logOptions.logStream) {
-        await fs.mkdir(path.dirname(this.logPath), { recursive: true });
-        this.logOptions.logStream = createWriteStream(this.logPath, {
-          flags: "w",
-        });
-      }
-      const teeLine = (line: string) => {
-        this.logOptions.logStream!.write(line);
-      };
       console.log = (...args: unknown[]) => {
         teeLine(`${util.format(...args)}\n`);
         if (this.logOptions.teeConsole) {
@@ -46,18 +62,18 @@ export class RunContext {
           origErr(...args);
         }
       };
-      console.log(this.label);
-      console.log(`Log: ${this.logPath}`);
+      logToFileAndConsole(this.label);
+      logToFileAndConsole(`Log: ${this.logPath}`);
       await fn(this);
     } catch (error) {
-      console.log("");
-      console.log(`ERROR: ${this.label} failed`);
-      console.log(`Log file: ${this.logPath}`);
-      console.error(error);
+      logToFileAndConsole("");
+      logToFileAndConsole(`ERROR: ${this.label} failed`);
+      logToFileAndConsole(`Log file: ${this.logPath}`);
+      logErrorToFileAndConsole(error);
       process.exit(1);
     } finally {
-      const logStream = this.logOptions.logStream;
-      this.logOptions.logStream = null;
+      const logStream = this.logStream;
+      this.logStream = null;
       console.log = origLog;
       console.error = origErr;
       if (logStream) {
@@ -71,7 +87,7 @@ export class RunContext {
     args: string[] = [],
     options: RunProcessOptions = {},
   ) {
-    return runProcess(command, args, options, this.logOptions);
+    return runProcess(command, args, options, this.logStream, this.logOptions);
   }
 }
 
@@ -85,36 +101,38 @@ type ProcessCapture = {
 
 export type RunProcessOptions = SpawnOptions & {
   capture?: boolean;
-  tee?: boolean;
-  exitOnNonZero?: boolean;
   stdout?: NodeJS.WritableStream;
   stderr?: NodeJS.WritableStream;
 };
 
-type RunProcessLogOptions = {
-  logStream?: NodeJS.WritableStream | null;
+export type RunProcessLogOptions = {
   teeConsole?: boolean;
+  capture?: boolean;
+  exitOnNonZero?: boolean;
 };
 
 async function runProcess(
   command: string,
   args: string[] = [],
   options: RunProcessOptions = {},
+  logStream: NodeJS.WritableStream | null = null,
   logOptions: RunProcessLogOptions = {},
 ): Promise<ProcessCapture> {
   const {
-    capture: captureOption,
-    tee: teeOption,
-    exitOnNonZero,
+    capture: captureOverride,
     stdout,
     stderr,
     ...spawnOptions
   } = options;
-  const { logStream, teeConsole = false } = logOptions;
+  const {
+    teeConsole = false,
+    capture: stepCapture = true,
+    exitOnNonZero = false,
+  } = logOptions;
   const cwd = spawnOptions.cwd ?? process.cwd();
   const env = spawnOptions.env ?? process.env;
-  const capture = captureOption ?? true;
-  const tee = teeConsole && (teeOption ?? false);
+  const capture = captureOverride ?? stepCapture;
+  const tee = teeConsole && !capture;
 
   let stdoutOutput = "";
   let stderrOutput = "";

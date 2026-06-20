@@ -14,7 +14,7 @@
   "author": "",
   "type": "module",
   "packageManager": "yarn@4.17.0",
-  "main": "scripts/build-all.ts",
+  "main": "scripts/start.ts",
   "scripts": {
     "test": "node --test test/*.test.ts",
     "check": "tsc --noEmit",

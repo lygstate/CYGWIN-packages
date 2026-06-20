@@ -166,8 +166,6 @@ export class Msys2Installer {
       ["--login", "-c", prelude],
       {
         env: msysBashEnv(),
-        capture: false,
-        tee: true,
       },
     );
   }
@@ -181,8 +179,6 @@ export class Msys2Installer {
       {
         cwd: cwd,
         env: msysBashEnv(),
-        capture: false,
-        tee: true,
       },
     );
     if (code !== 0) {
@@ -242,8 +238,6 @@ ${tail}`.trim();
       {
         cwd: cwd,
         env: msysBashEnv(),
-        capture: false,
-        tee: true,
       },
     );
     if (code !== 0) {
@@ -270,8 +264,7 @@ ${tail}`.trim();
     try {
       await this.fs.rm(msys_root, { recursive: true, force: true });
     } catch (e) {
-      console.log(`remove with error: ${e}`);
-      process.exit(0);
+      throw new Error(`remove ${msys_root} failed: ${e}`);
     }
   }
 
@@ -303,8 +296,6 @@ ${tail}`.trim();
         ],
         {
           cwd: ci_tools_msys64_parent,
-          capture: false,
-          tee: true,
         },
       );
       console.log("===Extract base finished\n");
@@ -336,12 +327,14 @@ ${tail}`.trim();
       await this.step.run(
         path.join(msys_root, "usr", "bin", "cygpath.exe"),
         [pkg_root],
+        { capture: true },
       )
     ).stdout.trim();
 
     const msys_list_capture = await this.step.run(
       path.join(msys_root, "usr", "bin", "pacman.exe"),
       ["-Sl", "msys"],
+      { capture: true },
     );
     const msys_list_content = msys_list_capture.stdout.trim();
     const packages = [];
@@ -387,6 +380,7 @@ ${tail}`.trim();
       await this.step.run(
         path.join(msys_root, "usr", "bin", "cygpath.exe"),
         [ci_tools_msys64_parent],
+        { capture: true },
       )
     ).stdout.trim();
     if (!msys2_base_filename) {
@@ -418,8 +412,6 @@ ${tail}`.trim();
       ],
       {
         env: msysBashEnv(),
-        capture: false,
-        tee: true,
       },
     );
     await this.step.run(
@@ -428,8 +420,6 @@ ${tail}`.trim();
       {
         cwd: ci_tools_msys64_parent,
         env: msysBashEnv(),
-        capture: false,
-        tee: true,
       },
     );
 
@@ -443,8 +433,7 @@ export async function removeDirectory(folder_dir) {
   try {
     await fs.rm(folder_dir, { recursive: true, force: true });
   } catch (e) {
-    console.log(`remove with error: ${e}`);
-    process.exit(0);
+    throw new Error(`remove ${folder_dir} failed: ${e}`);
   }
   let has_folder = false;
   try {

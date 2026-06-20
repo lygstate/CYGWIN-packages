@@ -148,6 +148,83 @@ test("clearMsys64 skips cache merge when bash is missing", async () => {
   );
 });
 
+test("clearMsys64 throws when rm fails with EPERM", async () => {
+  const msys_root = "D:\\CI-Tools\\msys64-stage0\\msys64";
+  const bash_exe = `${msys_root}\\usr\\bin\\bash.exe`;
+  const eperm = Object.assign(
+    new Error(
+      "EPERM: operation not permitted, unlink 'D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\bash.exe'",
+    ),
+    { code: "EPERM" },
+  );
+
+  const linkPacmanCache = mock.fn(async () => {});
+  const rm = mock.fn(async () => {
+    throw eperm;
+  });
+  const step = {
+    run: mock.fn(async () => processResult()),
+  };
+  const installer = makeInstaller(step, {
+    linkPacmanCache,
+    fs: { rm },
+    fsExistsAsync: mock.fn(async (target) => {
+      return target === msys_root || target === bash_exe;
+    }),
+  });
+
+  await assert.rejects(
+    () => installer.clearMsys64(msys_root),
+    (err) => {
+      assert.match(
+        err.message,
+        /remove D:\\CI-Tools\\msys64-stage0\\msys64 failed:.*EPERM/,
+      );
+      return true;
+    },
+  );
+
+  assert.deepEqual(
+    {
+      linkPacmanCacheCalls: mockArguments(linkPacmanCache),
+      rmCalls: mockArguments(rm),
+    },
+    {
+      linkPacmanCacheCalls: [[msys_root, false]],
+      rmCalls: [[msys_root, { recursive: true, force: true }]],
+    },
+  );
+});
+
+test("installMsys2BasePackages propagates clearMsys64 rm failure", async () => {
+  const ci_tools_msys64_parent = "D:\\CI-Tools\\msys64-stage0";
+  const rmError = new Error("EPERM: operation not permitted, unlink");
+
+  const step = {
+    run: mock.fn(async () => processResult()),
+  };
+  const installer = makeInstaller(step, {
+    fs: {
+      rm: mock.fn(async () => {
+        throw rmError;
+      }),
+    },
+    fsExistsAsync: mock.fn(async () => true),
+    linkPacmanCache: mock.fn(async () => {}),
+  });
+
+  await assert.rejects(
+    () => installer.installMsys2BasePackages(ci_tools_msys64_parent, true),
+    (err) => {
+      assert.match(
+        err.message,
+        /remove D:\\CI-Tools\\msys64-stage0\\msys64 failed:.*EPERM/,
+      );
+      return true;
+    },
+  );
+});
+
 test("installMsys2AllPackages", async () => {
   const ci_tools_msys64_parent = "D:\\CI-Tools\\msys64-stage0";
   const pkg_root_win = "D:\\work\\xemu\\CYGWIN-packages";

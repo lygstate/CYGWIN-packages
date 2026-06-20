@@ -19,7 +19,7 @@ export default defineConfig({
     rollupOptions: {
       external: (id) => external.has(id),
       input: {
-        "build-all": resolve(rootDir, "scripts/build-all.ts"),
+        start: resolve(rootDir, "scripts/start.ts"),
         deps: resolve(rootDir, "scripts/deps.ts"),
         "gen-build-all": resolve(rootDir, "scripts/gen-build-all.ts"),
         "install-stages": resolve(rootDir, "scripts/install-stages.ts"),
