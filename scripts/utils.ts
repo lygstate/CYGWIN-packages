@@ -21,7 +21,10 @@ export type Msys64Stage = {
   env: NodeJS.ProcessEnv;
 };
 
-export function initMsys64Stage(stage: "stage0" | "stage2" | "stage3"): Msys64Stage {
+export function initMsys64Stage(
+  stage: "stage1" | "stage2" | "stage3",
+  bootstrapEnv: NodeJS.ProcessEnv = {},
+): Msys64Stage {
   const stageDir = path.join(ciToolsRoot, `msys64-${stage}`);
   const bash = path.join(stageDir, "msys64", "usr", "bin", "bash.exe");
   const dash = path.join(stageDir, "msys64", "usr", "bin", "dash.exe");
@@ -43,6 +46,7 @@ export function initMsys64Stage(stage: "stage0" | "stage2" | "stage3"): Msys64St
         path.join(stageDir, "msys64", "usr", "bin"),
         pathOld,
       ].join(path.delimiter),
+      ...bootstrapEnv,
     },
   };
   console.log(`The ${stage} PATH is:${stagePaths.env.PATH}`);

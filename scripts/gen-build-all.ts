@@ -1,6 +1,14 @@
 import * as fs from "fs/promises";
 import process from "node:process";
+import {
+  GENERATED_STAGE1_LIST_TXT,
+  GENERATED_STAGE2_LIST_TXT,
+} from "./build-config.ts";
 import { repoPath } from "./utils.ts";
+
+function generatedRepoPath(relativePath: string) {
+  return repoPath(...relativePath.split("/"));
+}
 
 const packages_provides_by = {
   "perl-CPAN-Meta": "perl",
@@ -133,22 +141,22 @@ function dump_deps(deps_map) {
   return packages;
 }
 
-async function write_script(
-  script_init_content,
+async function write_package_list(
+  prefix_packages,
   packages,
   output_filename,
-  filter_package_out_set,
+  filter_package_out_set = new Set(),
 ) {
-  let script = script_init_content;
   let packages_will_build = [];
+  let lines = [...prefix_packages];
   for (let pkg of packages) {
     if (filter_package_out_set.has(pkg)) {
       continue;
     }
-    script += `sh scripts/sh/single.sh ${pkg}\n`;
+    lines.push(pkg);
     packages_will_build.push(pkg);
   }
-  await fs.writeFile(output_filename, script);
+  await fs.writeFile(output_filename, lines.join("\n") + "\n");
   return packages_will_build;
 }
 
@@ -263,41 +271,24 @@ export async function runGenBuildAll() {
     packages_to_include_base_devel.has(x),
   );
 
-  const packages_will_build = await write_script(
-    "",
+  const packages_will_build = await write_package_list(
+    [],
     packages_base_devel,
-    repoPath("scripts", "generated", "stage1-list.sh"),
+    generatedRepoPath(GENERATED_STAGE1_LIST_TXT),
     new Set(packages_deferred_to_stage2),
   );
 
   let packages_will_build_set = new Set(packages_will_build);
   let packages_other = packages.filter((x) => !packages_will_build_set.has(x));
 
-  await write_script(
+  await write_package_list(
+    // gcc is built in stage2-gcc first; list it here so stage2-install.txt
+    // records it after clearInstallPackageList at stage2-list.
     // texinfo need build twice as it's called perl in runtime for testing it self
     // libxml2 and libxslt depends on each other, so build libxml2 twice,
     // as libxml2 is already built before libxslt at stage1
-    `sh scripts/sh/single.sh texinfo
-sh scripts/sh/single.sh libxml2
-`,
+    ["gcc", "texinfo", "libxml2"],
     packages_other,
-    repoPath("scripts", "generated", "stage2-list.sh"),
-    new Set([
-      // :: cmake-bootstrap-4.2.1-1 and cmake-4.2.1-2 are in conflict. Remove cmake? [Y/n]
-      "cmake-bootstrap",
-
-      // :: mingw-w64-cross-clang-crt-13.0.0.r1.gb45abfec4-1 and mingw-w64-cross-crt-13.0.0.r1.gb45abfec4-1 are in conflict. Remove mingw-w64-cross-crt? [Y/n] n
-      "mingw-w64-cross-clang",
-      // :: mingw-w64-cross-clang-crt-13.0.0.r1.gb45abfec4-1 and mingw-w64-cross-crt-13.0.0.r1.gb45abfec4-1 are in conflict. Remove mingw-w64-cross-crt? [Y/n] n
-      "mingw-w64-cross-clang-crt",
-      // :: mingw-w64-cross-clang-headers-13.0.0.r1.gb45abfec4-1 and mingw-w64-cross-headers-13.0.0.r1.gb45abfec4-1 are in conflict. Remove mingw-w64-cross-headers?
-      "mingw-w64-cross-clang-headers",
-
-      // parallel: /usr/bin/parallel exists in filesystem /usr/bin/parallel.exe is owned by moreutils 0.70-1
-      "parallel",
-
-      // gnu-netcat-0.7.1-3 and openbsd-netcat-1.234_1-1 are in conflict. Remove openbsd-netcat? [Y/n] "
-      "gnu-netcat",
-    ]),
+    generatedRepoPath(GENERATED_STAGE2_LIST_TXT),
   );
 }

@@ -1,11 +1,13 @@
 import * as fs from "fs/promises";
 import * as path from "path";
 import {
-  ci_tools_msys64_stage0,
+  ci_tools_msys64_stage1,
   ci_tools_msys64_stage2,
   ci_tools_msys64_stage3,
   EXTRACT_MINGW_BAT_FILENAME,
   GENERATED_MINGW_STAGE3_PACKAGES_TXT,
+  GENERATED_STAGE1_INSTALL_TXT,
+  GENERATED_STAGE2_INSTALL_TXT,
   MSYS64_DIR_NAME,
 } from "./build-config.ts";
 import {
@@ -16,25 +18,27 @@ import {
 import {
   type RunContext,
 } from "./run-context.ts";
+import { pacmanUInstallListedCommand } from "./single.ts";
 import {
   dedupeDistPackageDir,
   getYYYYMMDD,
+  repoPath,
   repoRoot,
 } from "./utils.ts";
 
 export async function installStage0(step: RunContext) {
   const installer = new Msys2Installer(step);
-  const msys_root = path.join(ci_tools_msys64_stage0, MSYS64_DIR_NAME);
+  const msys_root = path.join(ci_tools_msys64_stage1, MSYS64_DIR_NAME);
   const pkg_root = repoRoot;
 
   const has_msys64 = await installer.installMsys2AllPackages(
-    ci_tools_msys64_stage0,
+    ci_tools_msys64_stage1,
     pkg_root,
     true,
   );
 
   const msys2_base_filename = await installer.archiveFull(
-    ci_tools_msys64_stage0,
+    ci_tools_msys64_stage1,
     msys_root,
     "",
   );
@@ -42,7 +46,7 @@ export async function installStage0(step: RunContext) {
     `===stage0: Archive finished as: ${msys2_base_filename} with has_msys64:${has_msys64}`,
   );
   await installMsys2StageBatchScripts(
-    ci_tools_msys64_stage0,
+    ci_tools_msys64_stage1,
     msys2_base_filename,
   );
   console.log(`===stage0: Wrote extract.bat and delete-msys64.bat`);
@@ -64,9 +68,13 @@ export async function installStage2(step: RunContext) {
     `===Removed ${removed.length} duplicate package(s) from dist/stage1`,
   );
 
+  const stage1_install = await pacmanUInstallListedCommand(
+    repoPath(...GENERATED_STAGE1_INSTALL_TXT.split("/")),
+    stage1_dist,
+  );
   const install_commands = [
-    "pacman -U --noconfirm --overwrite \\* `ls | tr '\n' ' '`",
-    "pacman -U --noconfirm --overwrite \\* `ls | tr '\n' ' '`",
+    stage1_install,
+    stage1_install,
     "pacman -S --needed --noconfirm --overwrite \\* mingw-w64-x86_64-python mingw-w64-x86_64-llvm mingw-w64-x86_64-clang",
   ];
   for (let i = 0; i < install_commands.length; i += 1) {
@@ -115,10 +123,15 @@ export async function installStage3(step: RunContext) {
     `===Removed ${removed_stage2.length} duplicate package(s) from dist/stage2`,
   );
 
-  const install_commands = [
-    "pacman -U --noconfirm --overwrite \\* `ls | tr '\n' ' '`",
-    "pacman -U --noconfirm --overwrite \\* `ls | tr '\n' ' '`",
-  ];
+  const stage1_install = await pacmanUInstallListedCommand(
+    repoPath(...GENERATED_STAGE1_INSTALL_TXT.split("/")),
+    stage1_dist,
+  );
+  const stage2_install = await pacmanUInstallListedCommand(
+    repoPath(...GENERATED_STAGE2_INSTALL_TXT.split("/")),
+    stage2_dist,
+  );
+  const install_commands = [stage1_install, stage1_install];
   for (let i = 0; i < install_commands.length; i += 1) {
     await installer.executePacmanInstall(
       msys_root,
@@ -129,7 +142,7 @@ export async function installStage3(step: RunContext) {
   }
   await installer.executePacmanInstall(
     msys_root,
-    "pacman -U --noconfirm --overwrite \\* `ls | tr '\n' ' '`",
+    stage2_install,
     stage2_dist,
     false,
   );

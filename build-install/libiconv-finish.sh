@@ -1,4 +1,4 @@
-if [[ "$MSYS_BOOTSTRAP_STAGE" == "stage0" ]]; then
+if [[ "$MSYS_BOOTSTRAP_STAGE" == "stage1_core" ]]; then
     echo "Finish building of libiconv as $MSYS_BOOTSTRAP_STAGE, recover the packages msys2-libtool and msys2-runtime."
     pushd ${pkg_root_dir}
     pacman -U --noconfirm --overwrite \* ./dist-pkg/libltdl-$LIBTOOL_PKGVER-$LIBTOOL_PKGREL-x86_64.pkg.tar.zst

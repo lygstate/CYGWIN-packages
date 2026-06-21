@@ -1,17 +1,7 @@
-new_dir=$1
-
 if [ -z "$new_dir" ]; then
   echo "Please provide the package name as the first argument"
   exit -1
 fi
-
-currnent_script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." &> /dev/null && pwd)
-if [ -z "$currnent_script_dir" ]; then
-  currnent_script_dir=$PWD
-fi
-source "${currnent_script_dir}/ports/msys2-runtime/check-bootstrap.sh"
-
-export pkg_root_dir=$currnent_script_dir
 
 if [ -d "${pkg_root_dir}/ports/${new_dir}" ]; then
   pkg_source_dir="${pkg_root_dir}/ports/${new_dir}"
@@ -22,11 +12,11 @@ else
   exit -1
 fi
 
-if [[ "$MSYS_BOOTSTRAP_STAGE" == "stage_origin" ]]; then
+if [[ "$MSYS_BOOTSTRAP_STAGE" == "stage1_rt_origin" ]]; then
   DIST_TARGET_DIR_NAME=origin
-elif [[ "$MSYS_BOOTSTRAP_STAGE" == "stage_origin_hook" ]]; then
+elif [[ "$MSYS_BOOTSTRAP_STAGE" == "stage1_rt_hook" ]]; then
   DIST_TARGET_DIR_NAME=init
-elif [[ "$MSYS_BOOTSTRAP_STAGE" == "stage0" ]]; then
+elif [[ "$MSYS_BOOTSTRAP_STAGE" == "stage1_core" ]]; then
   DIST_TARGET_DIR_NAME=init
 elif [[ "$MSYS_BOOTSTRAP_STAGE" == "stage1" ]]; then
   DIST_TARGET_DIR_NAME=stage1
@@ -38,6 +28,28 @@ else
   echo "Unknown MSYS_BOOTSTRAP_STAGE: $MSYS_BOOTSTRAP_STAGE"
   exit -1
 fi
+
+record_built_install_packages() {
+  if [[ -z "$current_packages" ]]; then
+    return
+  fi
+  local install_list=""
+  if [[ "$stage_name" == "stage1" ]]; then
+    install_list="${pkg_root_dir}/scripts/generated/stage1-install.txt"
+  elif [[ "$stage_name" == "stage2" ]]; then
+    install_list="${pkg_root_dir}/scripts/generated/stage2-install.txt"
+  else
+    return
+  fi
+  mkdir -p "${pkg_root_dir}/scripts/generated"
+  IFS=' ' read -r -a current_package_list <<< "$current_packages"
+  for package_name in "${current_package_list[@]}"; do
+    [[ -z "$package_name" ]] && continue
+    if ! grep -qxF "$package_name" "$install_list" 2>/dev/null; then
+      echo "$package_name" >> "$install_list"
+    fi
+  done
+}
 
 do_build() {
   pkg_current_dir=$PWD
@@ -145,7 +157,9 @@ do_build() {
   popd
 
   echo "Install packages for stage:'$stage_name'"
-  if [[ "$stage_name" == "stage1" ]]; then
+  if [[ "$MSYS_SINGLE_SKIP_PACMAN_INSTALL" == "1" ]]; then
+    echo "Build-only package '${new_dir}', skip pacman -U into msys64"
+  elif [[ "$stage_name" == "stage1" ]]; then
     rm -rf tmp
     mkdir -p tmp
     IFS=' ' read -r -a current_package_list <<< "$current_packages"
@@ -189,9 +203,11 @@ do_build() {
       # Dereference the symlink during Extraction
       tar -xhf ${new_dir}-tmp.tar -C /
     fi
+    record_built_install_packages
   elif [[ "$stage_name" == "stage2" ]]; then
     pushd $package_cache_dir
     pacman -U --noconfirm --overwrite \* $current_packages
+    record_built_install_packages
     popd
   else
     echo "Do not install for '${stage_name}'"

@@ -29,8 +29,9 @@ Use `start.bat --from <step>` to resume from any pipeline step. Run
    start.bat
    ```
 
-   The pipeline runs `deps.ts` and `gen-build-all.ts` in the `stage0-generate`
-   step immediately after stage0 install. Manual re-run when ports change:
+   The pipeline runs `deps.ts` and `gen-build-all.ts` in the `stage0-deps` and
+   `stage0-gen-build-all` steps immediately after stage0 install. Manual re-run
+   when ports change:
 
    ```bat
    node scripts/deps.ts
@@ -42,8 +43,8 @@ Use `start.bat --from <step>` to resume from any pipeline step. Run
    - `scripts/generated/msys.txt` (from stage0 install)
    - `scripts/generated/deps.json`
    - `scripts/generated/deps-map-make.json`
-   - `scripts/generated/stage1-list.sh`
-   - `scripts/generated/stage2-list.sh`
+   - `scripts/generated/stage1-list.txt`
+   - `scripts/generated/stage2-list.txt`
 
 ## Run the full bootstrap
 
@@ -65,46 +66,56 @@ start.bat --from 6
 start.bat --from stage2-gcc
 ```
 
-Logs are written under `scripts/logs/`:
+Logs are written under `scripts/logs/` (one file per pipeline step id):
 
-- `scripts/logs/install-for-stage0.txt`
-- `scripts/logs/deps.txt`
-- `scripts/logs/gen-build-all.txt`
-- `scripts/logs/install-for-stage2.txt`
-- `scripts/logs/install-for-stage3.txt`
-- `scripts/logs/install-mingw-for-stage3.txt`
-- `scripts/logs/build-stage0.txt`
-- `scripts/logs/build-stage1.txt`
-- `scripts/logs/build-stage2-gcc.txt`
-- `scripts/logs/build-stage2-rust-cross.txt`
-- `scripts/logs/build-stage2-rust-native.txt`
-- `scripts/logs/build-stage2-cargo-native.txt`
-- `scripts/logs/build-stage2.txt`
+- `scripts/logs/stage0-install-prep.txt`
+- `scripts/logs/stage0-deps.txt`
+- `scripts/logs/stage0-gen-build-all.txt`
+- `scripts/logs/stage0-extract.txt`
+- `scripts/logs/hook-runtime-*.txt`
+- `scripts/logs/stage1-init.txt`
+- `scripts/logs/stage1-list.txt`
+- `scripts/logs/stage2-install-prep.txt`
+- `scripts/logs/stage2-gcc.txt`
+- `scripts/logs/stage2-rust-cross.txt`
+- `scripts/logs/stage2-rebaseall.txt`
+- `scripts/logs/stage2-rust-native.txt`
+- `scripts/logs/stage2-rebaseall-2.txt`
+- `scripts/logs/stage2-cargo.txt`
+- `scripts/logs/stage2-list.txt`
+- `scripts/logs/stage3-install-prep.txt`
+- `scripts/logs/stage3-extract.txt`
+- `scripts/logs/stage3-mingw-install.txt`
 
-## What `build-all.ts` runs
+## What `start.bat` runs
 
 Order of operations:
 
-1. `stage0-install` -- install MSYS packages into `msys64-stage0`
-2. `stage0-generate` -- `deps.ts` and `gen-build-all.ts`
+1. `stage0-install-prep` -- install MSYS packages into `msys64-stage0`
+2. `stage0-deps` and `stage0-gen-build-all` -- `deps.ts` and `gen-build-all.ts`
 3. `stage0-extract` -- extract `msys64-stage0` from archive
-4. Hook/runtime builds, then `stage1.sh`
-5. `stage2-prep` -- install stage1-built packages
+4. Hook/runtime builds (`hook-runtime-*`), then `stage1-init` and `stage1-list`
+5. `stage2-install-prep` -- install stage1-built packages into `msys64-stage2`
 6. Build stage2 `gcc`, `rust` cross, `rebaseall -p`, `rust` native, `rebaseall -p`, `cargo-c`
-7. Run `scripts/generated/stage2-list.sh`
-8. `stage3-prep`, then `stage3-mingw` (extract + mingw install)
+7. `stage2-list` -- build packages from `scripts/generated/stage2-list.txt`
+   (`gcc` is built only in step 6; `rust` and `cargo-c` appear in the list
+   for a second pass after the dedicated cross/native/cargo steps)
+8. `stage3-install-prep`, then `stage3-extract` and `stage3-mingw-install`
+
+Packages in `packages_build_only` (for example `uutils-coreutils`) are built
+from the list but not installed into the live msys64 or stage prep trees.
 
 ## Resume with `--from`
 
 ```bat
-start.bat --from stage0-install
-start.bat --from stage0-generate
-start.bat --from stage2-prep
+start.bat --from stage0-install-prep
+start.bat --from stage0-deps
+start.bat --from stage2-install-prep
 start.bat --from stage2-gcc
 start.bat --from stage2-rust-native
-start.bat --from stage2-lists
-start.bat --from stage3-prep
-start.bat --from stage3-mingw
+start.bat --from stage2-list
+start.bat --from stage3-install-prep
+start.bat --from stage3-mingw-install
 ```
 
 Group numbers also work and start at the first step in that group:
@@ -124,15 +135,15 @@ Use these only if you need to run one command outside `start.bat`.
 ### Stage0 install only
 
 ```bat
-start.bat --from stage0-install
+start.bat --from stage0-install-prep
 ```
 
 ### Stage0 generate only (deps + stage lists)
 
-Requires `stage0-install` to have finished.
+Requires `stage0-install-prep` to have finished.
 
 ```bat
-start.bat --from stage0-generate
+start.bat --from stage0-deps
 ```
 
 Or manually:
@@ -151,24 +162,30 @@ start.bat --from stage0-extract
 Or extract from `%CI_TOOLS_ROOT%\msys64-stage0` with `delete-msys64.bat` and
 `extract.bat`.
 
-### Stage1 only
+### Stage1 init and package list
 
-Use stage0 MSYS bash from `%CI_TOOLS_ROOT%\msys64-stage0\msys64\usr\bin\bash.exe`:
+First run (group 5, both steps):
 
 ```bat
-set MSYS=winsymlinks:native
-set MSYSTEM=CYGWIN
-set CHERE_INVOKING=1
-"%CI_TOOLS_ROOT%\msys64-stage0\msys64\usr\bin\bash.exe" --login -c "source scripts/sh/stage1.sh >scripts/logs/build-stage1.txt 2>&1"
+start.bat --from 5
 ```
+
+Or individually:
+
+```bat
+start.bat --from stage1-init
+start.bat --from stage1-list
+```
+
+Logs: `scripts/logs/stage1-init.txt`, `scripts/logs/stage1-list.txt`
 
 ### Stage2 prep only
 
 ```bat
-start.bat --from stage2-prep
+start.bat --from stage2-install-prep
 ```
 
-Check `scripts/logs/install-for-stage2.txt` for pacman errors before continuing.
+Check `scripts/logs/stage2-install-prep.txt` for pacman errors before continuing.
 
 ### Stage2 gcc / rust / cargo only
 
@@ -216,22 +233,24 @@ Run rebaseall again, then build `cargo-c`.
 ### Stage2 package lists
 
 ```bat
-"%MSYS_BASH%" --login -c "export MSYS_BOOTSTRAP_STAGE=stage2; source scripts/sh/check-bootstrap.sh; sh scripts/generated/stage2-list.sh >scripts/logs/build-stage2.txt 2>&1"
+start.bat --from stage2-list
 ```
+
+Log: `scripts/logs/stage2-list.txt`
 
 ### Stage3 prep only
 
 ```bat
-start.bat --from stage3-prep
+start.bat --from stage3-install-prep
 ```
 
 ### Stage3 mingw only (extract archive + install mingw)
 
-Requires `stage3-prep` to have finished (creates `extract.bat` under
+Requires `stage3-install-prep` to have finished (creates `extract.bat` under
 `%CI_TOOLS_ROOT%\msys64-stage3`).
 
 ```bat
-start.bat --from stage3-mingw
+start.bat --from stage3-mingw-install
 ```
 
 ## Why `rebaseall -p` failed
@@ -265,7 +284,7 @@ Fix:
 
 Other things that can still break rebase:
 
-1. **Stage2 tree unhealthy** - pacman `dofork` errors during `stage2-prep`
+1. **Stage2 tree unhealthy** - pacman `dofork` errors during `stage2-install-prep`
    mean the Cygwin layer may already be broken.
 2. **IDE terminal PATH** - prefer a plain Command Prompt, but the errors above
    are not caused by Cursor being on `PATH`.
@@ -296,7 +315,7 @@ Other things that can still break rebase:
    of continuing in the broken tree:
 
    ```bat
-   start.bat --from stage2-prep
+   start.bat --from stage2-install-prep
    ```
 
 6. If rebase still fails, inspect which DLL still has the old base:

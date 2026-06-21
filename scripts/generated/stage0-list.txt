@@ -1,0 +1,8 @@
+msys2-runtime
+libtool
+libiconv
+gcc
+binutils
+cmake
+meson
+scons

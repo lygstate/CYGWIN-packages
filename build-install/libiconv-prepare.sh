@@ -1,5 +1,5 @@
 echo "Prepare building libiconv as $MSYS_BOOTSTRAP_STAGE"
-if [[ "$MSYS_BOOTSTRAP_STAGE" == "stage0" ]]; then
+if [[ "$MSYS_BOOTSTRAP_STAGE" == "stage1_core" ]]; then
     pushd ${pkg_root_dir}
     set -x
     # The libtool-bootstrap/msys2-runtime-bootstrap are built at stage0, so they can not be pre-installed, install it here.

@@ -14,7 +14,7 @@ import {
   bash_detach_pacman_pkg_cache,
   bash_merge_pacman_pkg_to_shared,
   bat_safe_unlink_dir,
-  black_list,
+  skipUpstreamPacman,
 } from "./build-config.ts";
 import {
   type ProcessRunner,
@@ -125,7 +125,7 @@ export async function writeDeleteMsys64Bat(ci_tools_msys64_parent) {
   console.log(`===Wrote ${delete_bat_path}`);
 }
 
-// Write extract.bat and delete-msys64.bat into a stage folder (e.g. msys64-stage0).
+// Write extract.bat and delete-msys64.bat into a stage folder (e.g. msys64-stage1).
 export async function installMsys2StageBatchScripts(
   ci_tools_msys64_parent,
   msys2_base_filename,
@@ -342,7 +342,7 @@ ${tail}`.trim();
     for (let pkg of msys_list_content.split("\n")) {
       const pkg_name = pkg.trim().split(/\s+/)[1];
       if (!pkg_name) continue;
-      if (black_list.has(pkg_name)) continue;
+      if (skipUpstreamPacman(pkg_name)) continue;
       packages.push(pkg_name);
     }
     const msys_txt_path = path.join(pkg_root, GENERATED_MSYS_TXT);

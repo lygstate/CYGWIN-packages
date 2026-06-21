@@ -2,7 +2,7 @@ export const DEFAULT_CI_TOOLS_ROOT = "D:/CI-Tools";
 
 export const ci_tools_base = process.env.CI_TOOLS_ROOT || DEFAULT_CI_TOOLS_ROOT;
 
-export const ci_tools_msys64_stage0 = `${ci_tools_base}/msys64-stage0`;
+export const ci_tools_msys64_stage1 = `${ci_tools_base}/msys64-stage1`;
 export const ci_tools_msys64_stage2 = `${ci_tools_base}/msys64-stage2`;
 export const ci_tools_msys64_stage3 = `${ci_tools_base}/msys64-stage3`;
 
@@ -27,27 +27,78 @@ export const PKG_ARCHES = ["any", "x86_64", "i686"] as const;
 
 export const GENERATED_MSYS_TXT = "scripts/generated/msys.txt";
 
+export const GENERATED_STAGE0_LIST_TXT = "scripts/generated/stage0-list.txt";
+
+export const GENERATED_STAGE1_LIST_TXT = "scripts/generated/stage1-list.txt";
+
+export const GENERATED_STAGE2_LIST_TXT = "scripts/generated/stage2-list.txt";
+
+export const GENERATED_STAGE1_INSTALL_TXT =
+  "scripts/generated/stage1-install.txt";
+
+export const GENERATED_STAGE2_INSTALL_TXT =
+  "scripts/generated/stage2-install.txt";
+
 export const GENERATED_MINGW_STAGE3_PACKAGES_TXT =
   "scripts/generated/install-mingw-for-stage3-packages.txt";
 
-export const black_list = new Set([
-  // "ca-certificates",
-  "cmake-bootstrap", // cmake-emacs-4.2.1-1 and cmake-bootstrap-4.2.1-1 are in conflict.
-  "mingw-w64-cross-clang", // mingw-w64-cross-clang: /opt/i686-w64-mingw32/bin/ar exists in filesystem
-  "mingw-w64-cross-clang-crt",
-  "mingw-w64-cross-clang-headers",
+export const bootstrap_env_hook = {
+  MSYS_BUILD_PKGSUMS: "disabled",
+  MSYS_BOOTSTRAP_STAGE: "",
+};
+
+export const bootstrap_env_stage1_rt_hook = {
+  MSYS_BUILD_PKGSUMS: "disabled",
+  MSYS_BOOTSTRAP_STAGE: "stage1_rt_hook",
+};
+
+export const bootstrap_env_stage1_core = {
+  MSYS_BOOTSTRAP_STAGE: "stage1_core",
+};
+
+export const bootstrap_env_stage1 = {
+  MSYS_BOOTSTRAP_STAGE: "stage1",
+  MSYS_BOOTSTRAP_EXIT_ON_ERROR: "enabled",
+};
+
+export const bootstrap_env_stage2 = {
+  MSYS_BOOTSTRAP_STAGE: "stage2",
+};
+
+export const bootstrap_env_stage2_rust_cross = {
+  MSYS_BOOTSTRAP_STAGE: "stage2",
+  MSYS_BOOTSTRAP_RUST: "enabled",
+  MSYS_BOOTSTRAP_DISABLE_COPY_PACKAGES: "enabled",
+  MSYS_BOOTSTRAP_PACKAGE_NAME_SUFFIX: "cross",
+};
+
+/** Skip upstream pacman -S / pactree in deps.ts and msys2-installer.ts. */
+export const packages_skip_build = new Set([
   "msys2-runtime-3.3",
   "msys2-runtime-3.3-devel",
   "msys2-runtime-3.4",
   "msys2-runtime-3.4-devel",
   "msys2-runtime-3.5",
   "msys2-runtime-3.5-devel",
+]);
+
+/** Build from ports only: skip stage0 bulk pacman -S / pactree; single.ts skips pacman -U. */
+export const packages_build_only = new Set([
+  // "ca-certificates",
+  "cmake-bootstrap", // cmake-emacs-4.2.1-1 and cmake-bootstrap-4.2.1-1 are in conflict.
+  "mingw-w64-cross-clang", // mingw-w64-cross-clang: /opt/i686-w64-mingw32/bin/ar exists in filesystem
+  "mingw-w64-cross-clang-crt",
+  "mingw-w64-cross-clang-headers",
   "parallel", // parallel: /usr/bin/parallel exists in filesystem /usr/bin/parallel.exe is owned by moreutils 0.70-1
   "gnu-netcat", // gnu-netcat-0.7.1-3 and openbsd-netcat-1.234_1-1 are in conflict. Remove openbsd-netcat? [Y/n] "
   // uutils cp -a breaks Cygwin bootstrap (xattr spam, EEXIST on dir merge).
   // Use GNU coreutils during stage0; uutils-coreutils is built at stage2.
   "uutils-coreutils",
 ]);
+
+export function skipUpstreamPacman(pkg: string) {
+  return packages_skip_build.has(pkg) || packages_build_only.has(pkg);
+}
 
 // Remove /var/cache/pacman/pkg without following a symlink into msys64-caches.
 export const bash_unlink_pacman_pkg = `

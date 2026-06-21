@@ -2,7 +2,7 @@ import * as fs from "fs/promises";
 import * as fsSync from "fs";
 import * as path from "path";
 import {
-  black_list,
+  skipUpstreamPacman,
 } from "./build-config.ts";
 import {
   type RunContext,
@@ -65,7 +65,7 @@ export async function runDeps(step: RunContext, stage: Msys64Stage) {
 
   const deps_map = {};
   for (let pkg_name of packages.trim().split("\n")) {
-    if (black_list.has(pkg_name)) continue;
+    if (skipUpstreamPacman(pkg_name)) continue;
     if (pkg_name == undefined) {
       continue;
     }

@@ -1,4 +1,12 @@
 import * as path from "node:path";
+import {
+  bootstrap_env_stage1_core,
+  bootstrap_env_stage1,
+  bootstrap_env_stage2,
+  bootstrap_env_stage2_rust_cross,
+  GENERATED_STAGE1_INSTALL_TXT,
+  GENERATED_STAGE2_INSTALL_TXT,
+} from "./build-config.ts";
 import { runDeps } from "./deps.ts";
 import { runGenBuildAll } from "./gen-build-all.ts";
 import {
@@ -12,6 +20,12 @@ import {
   type RunProcessLogOptions,
   type RunProcessOptions,
 } from "./run-context.ts";
+import {
+  runSinglePackage,
+  runPackageList,
+  clearInstallPackageList,
+} from "./single.ts";
+import { runStageHook } from "./stage-hook.ts";
 import { initMsys64Stage, repoPath, type Msys64Stage } from "./utils.ts";
 
 process.on("SIGINT", () => {
@@ -39,9 +53,6 @@ function winBatchEnv(): NodeJS.ProcessEnv {
   return batchEnv;
 }
 
-const msysStage2BasicExports = "export MSYS_BOOTSTRAP_STAGE=stage2";
-const rustCrossEnvs =
-  "export MSYS_BOOTSTRAP_RUST=enabled; export MSYS_BOOTSTRAP_DISABLE_COPY_PACKAGES=enabled; export MSYS_BOOTSTRAP_PACKAGE_NAME_SUFFIX=cross; export MSYS_BOOTSTRAP_STAGE=stage2";
 const runtimePackagesInit = [
   "./dist-pkg/libiconv-devel-$LIBICONV_PKGVER-1-x86_64.pkg.tar.zst",
   "./dist-pkg/libiconv-$LIBICONV_PKGVER-1-x86_64.pkg.tar.zst",
@@ -51,7 +62,6 @@ const runtimePackagesInit = [
 ].join(" ");
 
 const checkBootstrap = "source scripts/sh/check-bootstrap.sh";
-const buildSingle = "sh scripts/sh/single.sh";
 
 function runContext(
   logName: string,
@@ -175,7 +185,7 @@ const pipeline: PipelineStep[] = [
   {
     id: "stage0-install-prep",
     group: 1,
-    label: "Install MSYS base packages into msys64-stage0",
+    label: "Install MSYS base packages into msys64-stage1",
     step: installStage0,
   },
   {
@@ -183,7 +193,7 @@ const pipeline: PipelineStep[] = [
     group: 2,
     label: "Generate scripts/generated/deps.json (deps.ts)",
     step: async (step) => {
-      await runDeps(step, initMsys64Stage("stage0"));
+      await runDeps(step, initMsys64Stage("stage1"));
     },
   },
   {
@@ -197,9 +207,9 @@ const pipeline: PipelineStep[] = [
   {
     id: "stage0-extract",
     group: 3,
-    label: "Extract msys64-stage0 from archive",
+    label: "Extract msys64-stage1 from archive",
     step: async (step) => {
-      const stage = initMsys64Stage("stage0");
+      const stage = initMsys64Stage("stage1");
       await extractMsys64(step, stage);
     },
   },
@@ -208,17 +218,17 @@ const pipeline: PipelineStep[] = [
     group: 4,
     label: "Install original msys2-runtime packages",
     step: async (step) => {
-      const stage = initMsys64Stage("stage0");
+      const stage = initMsys64Stage("stage1");
       await installMsys2OriginalRuntime(step, stage);
     },
   },
   {
     id: "hook-runtime-build-hook",
     group: 4,
-    label: "source scripts/sh/stage-hook.sh",
+    label: "hook runtime build (stage-hook)",
     step: async (step) => {
-      const stage = initMsys64Stage("stage0");
-      await runMsysBuildStep(step, "source scripts/sh/stage-hook.sh", stage);
+      const stage = initMsys64Stage("stage1");
+      await runStageHook(step, stage);
     },
   },
   {
@@ -226,26 +236,50 @@ const pipeline: PipelineStep[] = [
     group: 4,
     label: "Install hook-patched msys2-runtime packages",
     step: async (step) => {
-      const stage = initMsys64Stage("stage0");
+      const stage = initMsys64Stage("stage1");
       await installMsys2HookRuntime(step, stage);
     },
   },
   {
-    id: "hook-runtime-build-stage0",
+    id: "stage0-list",
     group: 4,
-    label: "source scripts/sh/stage0.sh",
+    label: "stage0 package list (stage0-list.txt)",
     step: async (step) => {
-      const stage = initMsys64Stage("stage0");
-      await runMsysBuildStep(step, "source scripts/sh/stage0.sh", stage);
+      const stage = initMsys64Stage("stage1", bootstrap_env_stage1_core);
+      await runPackageList(
+        step,
+        stage,
+        repoPath("scripts", "generated", "stage0-list.txt"),
+      );
     },
   },
   {
-    id: "stage1",
+    id: "stage1-init",
     group: 5,
-    label: "source scripts/sh/stage1.sh",
+    label: "stage1 init (stage1-init.sh)",
     step: async (step) => {
-      const stage = initMsys64Stage("stage0");
-      await runMsysBuildStep(step, "source scripts/sh/stage1.sh", stage);
+      const stage = initMsys64Stage("stage1", bootstrap_env_stage1);
+      await step.run(
+        stage.bash,
+        ["--login", "-c", "source scripts/sh/stage1-init.sh"],
+        { cwd: repoPath("."), env: stage.env },
+      );
+    },
+  },
+  {
+    id: "stage1-list",
+    group: 5,
+    label: "stage1 package list (stage1-list.txt)",
+    step: async (step) => {
+      const stage = initMsys64Stage("stage1", bootstrap_env_stage1);
+      await clearInstallPackageList(
+        repoPath(...GENERATED_STAGE1_INSTALL_TXT.split("/")),
+      );
+      await runPackageList(
+        step,
+        stage,
+        repoPath("scripts", "generated", "stage1-list.txt"),
+      );
     },
   },
   {
@@ -259,27 +293,19 @@ const pipeline: PipelineStep[] = [
   {
     id: "stage2-gcc",
     group: 7,
-    label: `${msysStage2BasicExports}; ${checkBootstrap}; ${buildSingle} gcc`,
+    label: "stage2 build gcc",
     step: async (step) => {
-      const stage = initMsys64Stage("stage2");
-      await runMsysBuildStep(
-        step,
-        `${msysStage2BasicExports}; ${checkBootstrap}; ${buildSingle} gcc`,
-        stage,
-      );
+      const stage = initMsys64Stage("stage2", bootstrap_env_stage2);
+      await runSinglePackage(step, stage, "gcc");
     },
   },
   {
     id: "stage2-rust-cross",
     group: 7,
-    label: `${rustCrossEnvs}; ${checkBootstrap}; ${buildSingle} rust`,
+    label: "stage2 build rust (cross)",
     step: async (step) => {
-      const stage = initMsys64Stage("stage2");
-      await runMsysBuildStep(
-        step,
-        `${rustCrossEnvs}; ${checkBootstrap}; ${buildSingle} rust`,
-        stage,
-      );
+      const stage = initMsys64Stage("stage2", bootstrap_env_stage2_rust_cross);
+      await runSinglePackage(step, stage, "rust");
     },
   },
   {
@@ -294,14 +320,10 @@ const pipeline: PipelineStep[] = [
   {
     id: "stage2-rust-native",
     group: 7,
-    label: `${msysStage2BasicExports}; ${checkBootstrap}; ${buildSingle} rust`,
+    label: "stage2 build rust (native)",
     step: async (step) => {
-      const stage = initMsys64Stage("stage2");
-      await runMsysBuildStep(
-        step,
-        `${msysStage2BasicExports}; ${checkBootstrap}; ${buildSingle} rust`,
-        stage,
-      );
+      const stage = initMsys64Stage("stage2", bootstrap_env_stage2);
+      await runSinglePackage(step, stage, "rust");
     },
   },
   {
@@ -316,26 +338,26 @@ const pipeline: PipelineStep[] = [
   {
     id: "stage2-cargo",
     group: 7,
-    label: `${msysStage2BasicExports}; ${checkBootstrap}; ${buildSingle} cargo-c`,
+    label: "stage2 build cargo-c",
     step: async (step) => {
-      const stage = initMsys64Stage("stage2");
-      await runMsysBuildStep(
-        step,
-        `${msysStage2BasicExports}; ${checkBootstrap}; ${buildSingle} cargo-c`,
-        stage,
-      );
+      const stage = initMsys64Stage("stage2", bootstrap_env_stage2);
+      await runSinglePackage(step, stage, "cargo-c");
     },
   },
   {
-    id: "stage2-lists",
+    id: "stage2-list",
     group: 8,
-    label: `${msysStage2BasicExports}; ${checkBootstrap}; sh scripts/generated/stage2-list.sh`,
+    label: "stage2 package list (stage2-list.txt)",
     step: async (step) => {
-      const stage = initMsys64Stage("stage2");
-      await runMsysBuildStep(
+      const stage2InstallList = repoPath(
+        ...GENERATED_STAGE2_INSTALL_TXT.split("/"),
+      );
+      await clearInstallPackageList(stage2InstallList);
+      const stage = initMsys64Stage("stage2", bootstrap_env_stage2);
+      await runPackageList(
         step,
-        `${msysStage2BasicExports}; ${checkBootstrap}; sh scripts/generated/stage2-list.sh`,
         stage,
+        repoPath("scripts", "generated", "stage2-list.txt"),
       );
     },
   },
@@ -402,7 +424,7 @@ Pipeline groups ( --from <n> starts at the first step in group n ):
   2. stage0 deps and package lists
   3. stage0 extract archive
   4. hook/runtime (4 steps)
-  5. stage1
+  5. stage1 init and package list
   6. stage2 install prep
   7. stage2 gcc/rust/cargo/rebaseall
   8. stage2 package lists
@@ -422,6 +444,8 @@ Examples:
   start.bat --from stage0-gen-build-all --only
   start.bat --from stage2-install-prep
   start.bat --from stage2-gcc
+  start.bat --from stage1-list
+  start.bat --from stage2-list
   start.bat --from stage3-extract
   start.bat --from stage3-mingw-install
 

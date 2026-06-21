@@ -1,6 +1,6 @@
 if [[ "$MSYS_IN_PKGBUILD" == "enabled" ]]; then
     echo "Under MSYS_IN_PKGBUILD, building gcc as stage: $MSYS_BOOTSTRAP_STAGE pkg_root_dir:$pkg_root_dir"
-    if [[ "$MSYS_BOOTSTRAP_STAGE" == "stage0" ]]; then
+    if [[ "$MSYS_BOOTSTRAP_STAGE" == "stage1_core" ]]; then
         pushd ${pkg_root_dir}/
         # Then gcc-libs linkage to cygwin msys2-runtime and libiconv
         # the msys2-runtime-bootstrap and libiconv-bootstrap are built by stage0, so they can not be pre-installed.

@@ -38,7 +38,7 @@ function processResult(stdout = "", code = 0) {
 }
 
 test("installMsys2BasePackages", async () => {
-  const ci_tools_msys64_parent = "D:\\CI-Tools\\msys64-stage0";
+  const ci_tools_msys64_parent = "D:\\CI-Tools\\msys64-stage1";
 
   const spawns = [];
   const linkPacmanCache = mock.fn(async () => {});
@@ -71,21 +71,21 @@ test("installMsys2BasePackages", async () => {
       has_msys64: true,
       clearMsys64Calls: [],
       linkPacmanCacheCalls: [
-        ["D:\\CI-Tools\\msys64-stage0\\msys64", true],
-        ["D:\\CI-Tools\\msys64-stage0\\msys64", false],
-        ["D:\\CI-Tools\\msys64-stage0\\msys64", false],
-        ["D:\\CI-Tools\\msys64-stage0\\msys64", false],
+        ["D:\\CI-Tools\\msys64-stage1\\msys64", true],
+        ["D:\\CI-Tools\\msys64-stage1\\msys64", false],
+        ["D:\\CI-Tools\\msys64-stage1\\msys64", false],
+        ["D:\\CI-Tools\\msys64-stage1\\msys64", false],
       ],
       runProcessCalls: [
         ...bash_bootstrap_core_upgrade_steps.map((step) => ({
           command:
-            "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\bash.exe",
+            "D:\\CI-Tools\\msys64-stage1\\msys64\\usr\\bin\\bash.exe",
           args: [
             "--login",
             "-c",
             wrapPacmanNonInteractiveCommand(step),
           ],
-          cwd: "D:\\CI-Tools\\msys64-stage0\\msys64",
+          cwd: "D:\\CI-Tools\\msys64-stage1\\msys64",
           env: {
             MSYS: "winsymlinks:native",
             MSYSTEM: "MSYS",
@@ -94,13 +94,13 @@ test("installMsys2BasePackages", async () => {
         })),
         {
           command:
-            "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\bash.exe",
+            "D:\\CI-Tools\\msys64-stage1\\msys64\\usr\\bin\\bash.exe",
           args: [
             "--login",
             "-c",
             wrapPacmanNonInteractiveCommand("pacman -Syu --noconfirm"),
           ],
-          cwd: "D:\\CI-Tools\\msys64-stage0\\msys64",
+          cwd: "D:\\CI-Tools\\msys64-stage1\\msys64",
           env: {
             MSYS: "winsymlinks:native",
             MSYSTEM: "MSYS",
@@ -149,11 +149,11 @@ test("clearMsys64 skips cache merge when bash is missing", async () => {
 });
 
 test("clearMsys64 throws when rm fails with EPERM", async () => {
-  const msys_root = "D:\\CI-Tools\\msys64-stage0\\msys64";
+  const msys_root = "D:\\CI-Tools\\msys64-stage1\\msys64";
   const bash_exe = `${msys_root}\\usr\\bin\\bash.exe`;
   const eperm = Object.assign(
     new Error(
-      "EPERM: operation not permitted, unlink 'D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\bash.exe'",
+      "EPERM: operation not permitted, unlink 'D:\\CI-Tools\\msys64-stage1\\msys64\\usr\\bin\\bash.exe'",
     ),
     { code: "EPERM" },
   );
@@ -178,7 +178,7 @@ test("clearMsys64 throws when rm fails with EPERM", async () => {
     (err) => {
       assert.match(
         err.message,
-        /remove D:\\CI-Tools\\msys64-stage0\\msys64 failed:.*EPERM/,
+        /remove D:\\CI-Tools\\msys64-stage1\\msys64 failed:.*EPERM/,
       );
       return true;
     },
@@ -197,7 +197,7 @@ test("clearMsys64 throws when rm fails with EPERM", async () => {
 });
 
 test("installMsys2BasePackages propagates clearMsys64 rm failure", async () => {
-  const ci_tools_msys64_parent = "D:\\CI-Tools\\msys64-stage0";
+  const ci_tools_msys64_parent = "D:\\CI-Tools\\msys64-stage1";
   const rmError = new Error("EPERM: operation not permitted, unlink");
 
   const step = {
@@ -218,7 +218,7 @@ test("installMsys2BasePackages propagates clearMsys64 rm failure", async () => {
     (err) => {
       assert.match(
         err.message,
-        /remove D:\\CI-Tools\\msys64-stage0\\msys64 failed:.*EPERM/,
+        /remove D:\\CI-Tools\\msys64-stage1\\msys64 failed:.*EPERM/,
       );
       return true;
     },
@@ -226,7 +226,7 @@ test("installMsys2BasePackages propagates clearMsys64 rm failure", async () => {
 });
 
 test("installMsys2AllPackages", async () => {
-  const ci_tools_msys64_parent = "D:\\CI-Tools\\msys64-stage0";
+  const ci_tools_msys64_parent = "D:\\CI-Tools\\msys64-stage1";
   const pkg_root_win = "D:\\work\\xemu\\CYGWIN-packages";
   const pkg_root_cygwin = "/d/work/xemu/CYGWIN-packages";
 
@@ -240,7 +240,7 @@ test("installMsys2AllPackages", async () => {
     run: mock.fn(async (command, args, options) => {
       if (
         command ===
-          "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\cygpath.exe" &&
+          "D:\\CI-Tools\\msys64-stage1\\msys64\\usr\\bin\\cygpath.exe" &&
         args[0] === pkg_root_win
       ) {
         captures.push({ command, args });
@@ -248,7 +248,7 @@ test("installMsys2AllPackages", async () => {
       }
       if (
         command ===
-          "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\pacman.exe" &&
+          "D:\\CI-Tools\\msys64-stage1\\msys64\\usr\\bin\\pacman.exe" &&
         args[0] === "-Sl" &&
         args[1] === "msys"
       ) {
@@ -286,15 +286,15 @@ test("installMsys2AllPackages", async () => {
     {
       has_msys64: true,
       installMsys2BasePackagesCalls: [
-        ["D:\\CI-Tools\\msys64-stage0", false],
+        ["D:\\CI-Tools\\msys64-stage1", false],
       ],
       runProcessCaptureCalls: [
         [
-          "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\cygpath.exe",
+          "D:\\CI-Tools\\msys64-stage1\\msys64\\usr\\bin\\cygpath.exe",
           ["D:\\work\\xemu\\CYGWIN-packages"],
         ],
         [
-          "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\pacman.exe",
+          "D:\\CI-Tools\\msys64-stage1\\msys64\\usr\\bin\\pacman.exe",
           ["-Sl", "msys"],
         ],
       ],
@@ -312,13 +312,13 @@ test("installMsys2AllPackages", async () => {
         ],
       ],
       linkPacmanCacheCalls: [
-        ["D:\\CI-Tools\\msys64-stage0\\msys64", false],
-        ["D:\\CI-Tools\\msys64-stage0\\msys64", false],
+        ["D:\\CI-Tools\\msys64-stage1\\msys64", false],
+        ["D:\\CI-Tools\\msys64-stage1\\msys64", false],
       ],
       runProcessCalls: [
         {
           command:
-            "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\bash.exe",
+            "D:\\CI-Tools\\msys64-stage1\\msys64\\usr\\bin\\bash.exe",
           args: [
             "--login",
             "-c",
@@ -339,9 +339,9 @@ test("installMsys2AllPackages", async () => {
 });
 
 test("archiveFull", async () => {
-  const ci_tools_msys64_parent = "D:\\CI-Tools\\msys64-stage0";
+  const ci_tools_msys64_parent = "D:\\CI-Tools\\msys64-stage1";
   const msys2_base_filename = "msys2-base-x86_64-20251213-full.tar";
-  const ci_tools_msys64_parent_cygwin = "/d/CI-Tools/msys64-stage0";
+  const ci_tools_msys64_parent_cygwin = "/d/CI-Tools/msys64-stage1";
 
   const spawns = [];
   const captures = [];
@@ -351,7 +351,7 @@ test("archiveFull", async () => {
     run: mock.fn(async (command, args, options) => {
       if (
         command ===
-          "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\cygpath.exe" &&
+          "D:\\CI-Tools\\msys64-stage1\\msys64\\usr\\bin\\cygpath.exe" &&
         args[0] === ci_tools_msys64_parent
       ) {
         captures.push({ command, args });
@@ -384,26 +384,26 @@ test("archiveFull", async () => {
       result: "msys2-base-x86_64-20251213-full.tar",
       runProcessCaptureCalls: [
         [
-          "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\cygpath.exe",
-          ["D:\\CI-Tools\\msys64-stage0"],
+          "D:\\CI-Tools\\msys64-stage1\\msys64\\usr\\bin\\cygpath.exe",
+          ["D:\\CI-Tools\\msys64-stage1"],
         ],
       ],
       rmCalls: [
         [
-          "D:\\CI-Tools\\msys64-stage0\\msys2-base-x86_64-20251213-full.tar",
+          "D:\\CI-Tools\\msys64-stage1\\msys2-base-x86_64-20251213-full.tar",
           { force: true, recursive: true },
         ],
       ],
-      linkPacmanCacheCalls: [["D:\\CI-Tools\\msys64-stage0\\msys64", false]],
+      linkPacmanCacheCalls: [["D:\\CI-Tools\\msys64-stage1\\msys64", false]],
       runProcessCalls: [
         {
           command:
-            "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\bash.exe",
+            "D:\\CI-Tools\\msys64-stage1\\msys64\\usr\\bin\\bash.exe",
           args: [
             "--login",
             "-c",
             [
-              "rm -f /d/CI-Tools/msys64-stage0/msys2-base-x86_64-20251213-full.tar",
+              "rm -f /d/CI-Tools/msys64-stage1/msys2-base-x86_64-20251213-full.tar",
               bash_detach_pacman_pkg_cache,
               "mkdir -p /var/cache/pacman/pkg",
               "touch /var/cache/pacman/pkg/gitignore",
@@ -417,13 +417,13 @@ test("archiveFull", async () => {
           },
         },
         {
-          command: "D:\\CI-Tools\\msys64-stage0\\msys64\\usr\\bin\\tar.exe",
+          command: "D:\\CI-Tools\\msys64-stage1\\msys64\\usr\\bin\\tar.exe",
           args: [
             "cf",
-            "/d/CI-Tools/msys64-stage0/msys2-base-x86_64-20251213-full.tar",
+            "/d/CI-Tools/msys64-stage1/msys2-base-x86_64-20251213-full.tar",
             "msys64",
           ],
-          cwd: "D:\\CI-Tools\\msys64-stage0",
+          cwd: "D:\\CI-Tools\\msys64-stage1",
           env: {
             MSYS: "winsymlinks:native",
             MSYSTEM: "MSYS",
