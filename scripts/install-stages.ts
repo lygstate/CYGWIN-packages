@@ -26,7 +26,7 @@ import {
   repoRoot,
 } from "./utils.ts";
 
-export async function installStage0(step: RunContext) {
+export async function installStage1(step: RunContext) {
   const installer = new Msys2Installer(step);
   const msys_root = path.join(ci_tools_msys64_stage1, MSYS64_DIR_NAME);
   const pkg_root = repoRoot;
@@ -43,13 +43,13 @@ export async function installStage0(step: RunContext) {
     "",
   );
   console.log(
-    `===stage0: Archive finished as: ${msys2_base_filename} with has_msys64:${has_msys64}`,
+    `===stage1: Archive finished as: ${msys2_base_filename} with has_msys64:${has_msys64}`,
   );
   await installMsys2StageBatchScripts(
     ci_tools_msys64_stage1,
     msys2_base_filename,
   );
-  console.log(`===stage0: Wrote extract.bat and delete-msys64.bat`);
+  console.log(`===stage1: Wrote extract.bat and delete-msys64.bat`);
 }
 
 export async function installStage2(step: RunContext) {

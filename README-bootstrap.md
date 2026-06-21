@@ -6,7 +6,7 @@
 
 ### Run the full pipeline
 
-`start.bat` installs stage0 MSYS packages, then runs `deps.ts` and
+`start.bat` installs stage1 MSYS packages into `msys64-stage1`, then runs `deps.ts` and
 `gen-build-all.ts` to refresh `scripts/generated/deps.json` and the stage
 package lists before stage1.
 

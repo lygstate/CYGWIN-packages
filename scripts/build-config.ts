@@ -27,7 +27,14 @@ export const PKG_ARCHES = ["any", "x86_64", "i686"] as const;
 
 export const GENERATED_MSYS_TXT = "scripts/generated/msys.txt";
 
-export const GENERATED_STAGE0_LIST_TXT = "scripts/generated/stage0-list.txt";
+export const GENERATED_STAGE1_CORE_TXT =
+  "scripts/generated/stage1-core.txt";
+
+export const GENERATED_STAGE1_RT_ORIGIN_TXT =
+  "scripts/generated/stage1-rt-origin.txt";
+
+export const GENERATED_STAGE1_RT_HOOK_TXT =
+  "scripts/generated/stage1-rt-hook.txt";
 
 export const GENERATED_STAGE1_LIST_TXT = "scripts/generated/stage1-list.txt";
 
@@ -42,7 +49,7 @@ export const GENERATED_STAGE2_INSTALL_TXT =
 export const GENERATED_MINGW_STAGE3_PACKAGES_TXT =
   "scripts/generated/install-mingw-for-stage3-packages.txt";
 
-export const bootstrap_env_hook = {
+export const bootstrap_env_stage1_rt_origin = {
   MSYS_BUILD_PKGSUMS: "disabled",
   MSYS_BOOTSTRAP_STAGE: "",
 };
@@ -82,7 +89,7 @@ export const packages_skip_build = new Set([
   "msys2-runtime-3.5-devel",
 ]);
 
-/** Build from ports only: skip stage0 bulk pacman -S / pactree; single.ts skips pacman -U. */
+/** Build from ports only: skip stage1 prep bulk pacman -S / pactree; single.ts skips pacman -U. */
 export const packages_build_only = new Set([
   // "ca-certificates",
   "cmake-bootstrap", // cmake-emacs-4.2.1-1 and cmake-bootstrap-4.2.1-1 are in conflict.
@@ -92,7 +99,7 @@ export const packages_build_only = new Set([
   "parallel", // parallel: /usr/bin/parallel exists in filesystem /usr/bin/parallel.exe is owned by moreutils 0.70-1
   "gnu-netcat", // gnu-netcat-0.7.1-3 and openbsd-netcat-1.234_1-1 are in conflict. Remove openbsd-netcat? [Y/n] "
   // uutils cp -a breaks Cygwin bootstrap (xattr spam, EEXIST on dir merge).
-  // Use GNU coreutils during stage0; uutils-coreutils is built at stage2.
+  // Use GNU coreutils during stage1 prep; uutils-coreutils is built at stage2.
   "uutils-coreutils",
 ]);
 

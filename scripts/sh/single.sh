@@ -13,17 +13,17 @@ else
 fi
 
 if [[ "$MSYS_BOOTSTRAP_STAGE" == "stage1_rt_origin" ]]; then
-  DIST_TARGET_DIR_NAME=origin
+  DIST_TARGET_DIR_NAME=stage1_rt_origin
 elif [[ "$MSYS_BOOTSTRAP_STAGE" == "stage1_rt_hook" ]]; then
-  DIST_TARGET_DIR_NAME=init
+  DIST_TARGET_DIR_NAME=stage1_rt_hook
 elif [[ "$MSYS_BOOTSTRAP_STAGE" == "stage1_core" ]]; then
-  DIST_TARGET_DIR_NAME=init
+  DIST_TARGET_DIR_NAME=stage1_core
 elif [[ "$MSYS_BOOTSTRAP_STAGE" == "stage1" ]]; then
   DIST_TARGET_DIR_NAME=stage1
 elif [[ "$MSYS_BOOTSTRAP_STAGE" == "stage2" ]]; then
   DIST_TARGET_DIR_NAME=stage2
 elif [[ "$MSYS_BOOTSTRAP_STAGE" == "stage3" ]]; then
-  DIST_TARGET_DIR_NAME=final
+  DIST_TARGET_DIR_NAME=stage3
 else
   echo "Unknown MSYS_BOOTSTRAP_STAGE: $MSYS_BOOTSTRAP_STAGE"
   exit -1

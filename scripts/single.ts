@@ -127,6 +127,9 @@ export async function runSinglePackage(
   } else {
     console.log(`Build-only ${packageDir} (skip pacman -U into msys64)`);
   }
+  // TODO: restore line-buffered log output (stdbuf -oL -eL sh -c ...) for piped
+  // bash builds; old runMsysBuildStep in start.ts did this before the TS refactor.
+  // Apply in runSinglePackage for piped bash builds.
   const { code } = await step.run(
     stage.bash,
     ["--login", "-c", singleShellCommand(packageDir)],

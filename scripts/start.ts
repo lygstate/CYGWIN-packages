@@ -1,16 +1,23 @@
 import * as path from "node:path";
 import {
+  bootstrap_env_stage1_rt_origin,
+  bootstrap_env_stage1_rt_hook,
   bootstrap_env_stage1_core,
   bootstrap_env_stage1,
   bootstrap_env_stage2,
   bootstrap_env_stage2_rust_cross,
+  GENERATED_STAGE1_CORE_TXT,
+  GENERATED_STAGE1_RT_ORIGIN_TXT,
+  GENERATED_STAGE1_RT_HOOK_TXT,
+  GENERATED_STAGE1_LIST_TXT,
+  GENERATED_STAGE2_LIST_TXT,
   GENERATED_STAGE1_INSTALL_TXT,
   GENERATED_STAGE2_INSTALL_TXT,
 } from "./build-config.ts";
 import { runDeps } from "./deps.ts";
 import { runGenBuildAll } from "./gen-build-all.ts";
 import {
-  installStage0,
+  installStage1,
   installStage2,
   installStage3,
   installMingwStage3,
@@ -25,7 +32,6 @@ import {
   runPackageList,
   clearInstallPackageList,
 } from "./single.ts";
-import { runStageHook } from "./stage-hook.ts";
 import { initMsys64Stage, repoPath, type Msys64Stage } from "./utils.ts";
 
 process.on("SIGINT", () => {
@@ -102,22 +108,6 @@ async function extractMsys64(step: RunContext, stage: Msys64Stage) {
   await step.run(cmdExe, ["/c", "extract.bat"], batchOpts);
 }
 
-async function runMsysBuildStep(
-  step: RunContext,
-  command: string,
-  stage: Msys64Stage,
-) {
-  // Piped stdio is not a TTY, so bash/make block-buffer unless we force line
-  // buffering (stdbuf) so log file output arrives incrementally.
-  const lineBufferedCommand = `exec stdbuf -oL -eL sh -c ${JSON.stringify(command)}`;
-  await step.run(stage.bash, ["--login", "-c", lineBufferedCommand], {
-    env: {
-      ...stage.env,
-      PYTHONUNBUFFERED: "1",
-    },
-  });
-}
-
 async function installMsys2OriginalRuntime(step: RunContext, stage: Msys64Stage) {
   const packages = [
     "./dist-pkg/msys2-runtime-$MSYS_RUNTIME_PKGVER-$MSYS_RUNTIME_PKGREL-x86_64.pkg.tar.zst",
@@ -138,8 +128,8 @@ async function installMsys2OriginalRuntime(step: RunContext, stage: Msys64Stage)
 
 async function installMsys2HookRuntime(step: RunContext, stage: Msys64Stage) {
   const packages = [
-    "./dist/init/msys2-runtime-$MSYS_RUNTIME_PKGVER-5-x86_64.pkg.tar.zst",
-    "./dist/init/msys2-runtime-devel-$MSYS_RUNTIME_PKGVER-5-x86_64.pkg.tar.zst",
+    "./dist/stage1_rt_hook/msys2-runtime-$MSYS_RUNTIME_PKGVER-5-x86_64.pkg.tar.zst",
+    "./dist/stage1_rt_hook/msys2-runtime-devel-$MSYS_RUNTIME_PKGVER-5-x86_64.pkg.tar.zst",
   ].join(" ");
   const runOpts: RunProcessOptions = { env: stage.env };
   await step.run(
@@ -183,13 +173,13 @@ async function rebaseallMsys64Stage2(step: RunContext, stage: Msys64Stage) {
 
 const pipeline: PipelineStep[] = [
   {
-    id: "stage0-install-prep",
+    id: "stage1-install-prep",
     group: 1,
     label: "Install MSYS base packages into msys64-stage1",
-    step: installStage0,
+    step: installStage1,
   },
   {
-    id: "stage0-deps",
+    id: "stage1-deps",
     group: 2,
     label: "Generate scripts/generated/deps.json (deps.ts)",
     step: async (step) => {
@@ -197,7 +187,7 @@ const pipeline: PipelineStep[] = [
     },
   },
   {
-    id: "stage0-gen-build-all",
+    id: "stage1-gen-lists",
     group: 2,
     label: "Generate stage1/stage2 package lists (gen-build-all.ts)",
     step: async () => {
@@ -205,7 +195,7 @@ const pipeline: PipelineStep[] = [
     },
   },
   {
-    id: "stage0-extract",
+    id: "stage1-extract",
     group: 3,
     label: "Extract msys64-stage1 from archive",
     step: async (step) => {
@@ -214,7 +204,20 @@ const pipeline: PipelineStep[] = [
     },
   },
   {
-    id: "hook-runtime-install-original",
+    id: "stage1-rt-origin-build",
+    group: 4,
+    label: "Build stage1_rt_origin packages (stage1-rt-origin.txt)",
+    step: async (step) => {
+      const stage = initMsys64Stage("stage1", bootstrap_env_stage1_rt_origin);
+      await runPackageList(
+        step,
+        stage,
+        repoPath(...GENERATED_STAGE1_RT_ORIGIN_TXT.split("/")),
+      );
+    },
+  },
+  {
+    id: "stage1-rt-origin-install",
     group: 4,
     label: "Install original msys2-runtime packages",
     step: async (step) => {
@@ -223,16 +226,20 @@ const pipeline: PipelineStep[] = [
     },
   },
   {
-    id: "hook-runtime-build-hook",
+    id: "stage1-rt-hook-build",
     group: 4,
-    label: "hook runtime build (stage-hook)",
+    label: "Build msys2-runtime (stage1-rt-hook.txt)",
     step: async (step) => {
-      const stage = initMsys64Stage("stage1");
-      await runStageHook(step, stage);
+      const stage = initMsys64Stage("stage1", bootstrap_env_stage1_rt_hook);
+      await runPackageList(
+        step,
+        stage,
+        repoPath(...GENERATED_STAGE1_RT_HOOK_TXT.split("/")),
+      );
     },
   },
   {
-    id: "hook-runtime-install-hook",
+    id: "stage1-rt-hook-install",
     group: 4,
     label: "Install hook-patched msys2-runtime packages",
     step: async (step) => {
@@ -241,15 +248,15 @@ const pipeline: PipelineStep[] = [
     },
   },
   {
-    id: "stage0-list",
+    id: "stage1-core-build",
     group: 4,
-    label: "stage0 package list (stage0-list.txt)",
+    label: "Build stage1_core packages (stage1-core.txt)",
     step: async (step) => {
       const stage = initMsys64Stage("stage1", bootstrap_env_stage1_core);
       await runPackageList(
         step,
         stage,
-        repoPath("scripts", "generated", "stage0-list.txt"),
+        repoPath(...GENERATED_STAGE1_CORE_TXT.split("/")),
       );
     },
   },
@@ -278,7 +285,7 @@ const pipeline: PipelineStep[] = [
       await runPackageList(
         step,
         stage,
-        repoPath("scripts", "generated", "stage1-list.txt"),
+        repoPath(...GENERATED_STAGE1_LIST_TXT.split("/")),
       );
     },
   },
@@ -309,7 +316,7 @@ const pipeline: PipelineStep[] = [
     },
   },
   {
-    id: "stage2-rebaseall",
+    id: "stage2-rebaseall-before-rust",
     group: 7,
     label: "Run rebaseall -p before rust native",
     step: async (step) => {
@@ -327,7 +334,7 @@ const pipeline: PipelineStep[] = [
     },
   },
   {
-    id: "stage2-rebaseall-2",
+    id: "stage2-rebaseall-after-rust",
     group: 7,
     label: "Run rebaseall -p after rust native",
     step: async (step) => {
@@ -357,7 +364,7 @@ const pipeline: PipelineStep[] = [
       await runPackageList(
         step,
         stage,
-        repoPath("scripts", "generated", "stage2-list.txt"),
+        repoPath(...GENERATED_STAGE2_LIST_TXT.split("/")),
       );
     },
   },
@@ -420,10 +427,10 @@ Environment:
   CI_TOOLS_ROOT        CI tools root (default: D:\\CI-Tools)
 
 Pipeline groups ( --from <n> starts at the first step in group n ):
-  1. stage0 install prep
-  2. stage0 deps and package lists
-  3. stage0 extract archive
-  4. hook/runtime (4 steps)
+  1. stage1 install prep
+  2. stage1 deps and package lists
+  3. stage1 extract archive
+  4. stage1 hook/runtime builds (6 steps)
   5. stage1 init and package list
   6. stage2 install prep
   7. stage2 gcc/rust/cargo/rebaseall
@@ -439,9 +446,10 @@ Steps (--from accepts the id or group number 1-10):
   console.log(`
 Examples:
   start.bat
-  start.bat --from stage0-install-prep
-  start.bat --from stage0-deps
-  start.bat --from stage0-gen-build-all --only
+  start.bat --from stage1-install-prep
+  start.bat --from stage1-deps
+  start.bat --from stage1-gen-lists --only
+  start.bat --from stage1-rt-origin-build
   start.bat --from stage2-install-prep
   start.bat --from stage2-gcc
   start.bat --from stage1-list

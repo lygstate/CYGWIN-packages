@@ -23,14 +23,14 @@ Use `start.bat --from <step>` to resume from any pipeline step. Run
 3. Check `ci_tools_base` in [scripts/utils.ts](scripts/utils.ts).
 
 4. Run the bootstrap (dependency data and stage lists are generated
-   automatically after stage0 install):
+   automatically after `stage1-install-prep`):
 
    ```bat
    start.bat
    ```
 
-   The pipeline runs `deps.ts` and `gen-build-all.ts` in the `stage0-deps` and
-   `stage0-gen-build-all` steps immediately after stage0 install. Manual re-run
+   The pipeline runs `deps.ts` and `gen-build-all.ts` in the `stage1-deps` and
+   `stage1-gen-lists` steps immediately after stage1 install prep. Manual re-run
    when ports change:
 
    ```bat
@@ -40,7 +40,7 @@ Use `start.bat --from <step>` to resume from any pipeline step. Run
 
    Generated outputs:
 
-   - `scripts/generated/msys.txt` (from stage0 install)
+   - `scripts/generated/msys.txt` (from stage1 install prep)
    - `scripts/generated/deps.json`
    - `scripts/generated/deps-map-make.json`
    - `scripts/generated/stage1-list.txt`
@@ -68,19 +68,23 @@ start.bat --from stage2-gcc
 
 Logs are written under `scripts/logs/` (one file per pipeline step id):
 
-- `scripts/logs/stage0-install-prep.txt`
-- `scripts/logs/stage0-deps.txt`
-- `scripts/logs/stage0-gen-build-all.txt`
-- `scripts/logs/stage0-extract.txt`
-- `scripts/logs/hook-runtime-*.txt`
+- `scripts/logs/stage1-install-prep.txt`
+- `scripts/logs/stage1-deps.txt`
+- `scripts/logs/stage1-gen-lists.txt`
+- `scripts/logs/stage1-extract.txt`
+- `scripts/logs/stage1-rt-origin-build.txt`
+- `scripts/logs/stage1-rt-origin-install.txt`
+- `scripts/logs/stage1-rt-hook-build.txt`
+- `scripts/logs/stage1-rt-hook-install.txt`
+- `scripts/logs/stage1-core-build.txt`
 - `scripts/logs/stage1-init.txt`
 - `scripts/logs/stage1-list.txt`
 - `scripts/logs/stage2-install-prep.txt`
 - `scripts/logs/stage2-gcc.txt`
 - `scripts/logs/stage2-rust-cross.txt`
-- `scripts/logs/stage2-rebaseall.txt`
+- `scripts/logs/stage2-rebaseall-before-rust.txt`
 - `scripts/logs/stage2-rust-native.txt`
-- `scripts/logs/stage2-rebaseall-2.txt`
+- `scripts/logs/stage2-rebaseall-after-rust.txt`
 - `scripts/logs/stage2-cargo.txt`
 - `scripts/logs/stage2-list.txt`
 - `scripts/logs/stage3-install-prep.txt`
@@ -91,10 +95,12 @@ Logs are written under `scripts/logs/` (one file per pipeline step id):
 
 Order of operations:
 
-1. `stage0-install-prep` -- install MSYS packages into `msys64-stage0`
-2. `stage0-deps` and `stage0-gen-build-all` -- `deps.ts` and `gen-build-all.ts`
-3. `stage0-extract` -- extract `msys64-stage0` from archive
-4. Hook/runtime builds (`hook-runtime-*`), then `stage1-init` and `stage1-list`
+1. `stage1-install-prep` -- install MSYS packages into `msys64-stage1`
+2. `stage1-deps` and `stage1-gen-lists` -- `deps.ts` and `gen-build-all.ts`
+3. `stage1-extract` -- extract `msys64-stage1` from archive
+4. Stage1 runtime builds (`stage1-rt-origin-build`, `stage1-rt-origin-install`,
+   `stage1-rt-hook-build`, `stage1-rt-hook-install`, `stage1-core-build`), then
+   `stage1-init` and `stage1-list`
 5. `stage2-install-prep` -- install stage1-built packages into `msys64-stage2`
 6. Build stage2 `gcc`, `rust` cross, `rebaseall -p`, `rust` native, `rebaseall -p`, `cargo-c`
 7. `stage2-list` -- build packages from `scripts/generated/stage2-list.txt`
@@ -108,8 +114,8 @@ from the list but not installed into the live msys64 or stage prep trees.
 ## Resume with `--from`
 
 ```bat
-start.bat --from stage0-install-prep
-start.bat --from stage0-deps
+start.bat --from stage1-install-prep
+start.bat --from stage1-deps
 start.bat --from stage2-install-prep
 start.bat --from stage2-gcc
 start.bat --from stage2-rust-native
@@ -132,18 +138,18 @@ Run `start.bat --help` for the full step list.
 
 Use these only if you need to run one command outside `start.bat`.
 
-### Stage0 install only
+### Stage1 install prep only
 
 ```bat
-start.bat --from stage0-install-prep
+start.bat --from stage1-install-prep
 ```
 
-### Stage0 generate only (deps + stage lists)
+### Stage1 generate only (deps + stage lists)
 
-Requires `stage0-install-prep` to have finished.
+Requires `stage1-install-prep` to have finished.
 
 ```bat
-start.bat --from stage0-deps
+start.bat --from stage1-deps
 ```
 
 Or manually:
@@ -153,13 +159,13 @@ node scripts/deps.ts
 node scripts/gen-build-all.ts
 ```
 
-### Stage0 extract only
+### Stage1 extract only
 
 ```bat
-start.bat --from stage0-extract
+start.bat --from stage1-extract
 ```
 
-Or extract from `%CI_TOOLS_ROOT%\msys64-stage0` with `delete-msys64.bat` and
+Or extract from `%CI_TOOLS_ROOT%\msys64-stage1` with `delete-msys64.bat` and
 `extract.bat`.
 
 ### Stage1 init and package list
