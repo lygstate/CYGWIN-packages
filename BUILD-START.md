@@ -72,7 +72,7 @@ Logs are written under `scripts/logs/` (one file per pipeline step id):
 - `scripts/logs/stage1-deps.txt`
 - `scripts/logs/stage1-gen-lists.txt`
 - `scripts/logs/stage1-extract.txt`
-- `scripts/logs/stage1-rt-origin-build.txt`
+- `scripts/logs/stage1-rt-origin-download.txt`
 - `scripts/logs/stage1-rt-origin-install.txt`
 - `scripts/logs/stage1-rt-hook-build.txt`
 - `scripts/logs/stage1-rt-hook-install.txt`
@@ -98,7 +98,7 @@ Order of operations:
 1. `stage1-install-prep` -- install MSYS packages into `msys64-stage1`
 2. `stage1-deps` and `stage1-gen-lists` -- `deps.ts` and `gen-build-all.ts`
 3. `stage1-extract` -- extract `msys64-stage1` from archive
-4. Stage1 runtime builds (`stage1-rt-origin-build`, `stage1-rt-origin-install`,
+4. Stage1 runtime init (`stage1-rt-origin-download`, `stage1-rt-origin-install`,
    `stage1-rt-hook-build`, `stage1-rt-hook-install`, `stage1-core-build`), then
    `stage1-init` and `stage1-list`
 5. `stage2-install-prep` -- install stage1-built packages into `msys64-stage2`

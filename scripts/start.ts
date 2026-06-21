@@ -1,13 +1,12 @@
 import * as path from "node:path";
 import {
-  bootstrap_env_stage1_rt_origin,
+  bash_clear_pacman_db_lock,
   bootstrap_env_stage1_rt_hook,
   bootstrap_env_stage1_core,
   bootstrap_env_stage1,
   bootstrap_env_stage2,
   bootstrap_env_stage2_rust_cross,
   GENERATED_STAGE1_CORE_TXT,
-  GENERATED_STAGE1_RT_ORIGIN_TXT,
   GENERATED_STAGE1_RT_HOOK_TXT,
   GENERATED_STAGE1_LIST_TXT,
   GENERATED_STAGE2_LIST_TXT,
@@ -60,11 +59,19 @@ function winBatchEnv(): NodeJS.ProcessEnv {
 }
 
 const runtimePackagesInit = [
-  "./dist-pkg/libiconv-devel-$LIBICONV_PKGVER-1-x86_64.pkg.tar.zst",
-  "./dist-pkg/libiconv-$LIBICONV_PKGVER-1-x86_64.pkg.tar.zst",
+  "./dist-pkg/msys2-runtime-$MSYS_RUNTIME_PKGVER-$MSYS_RUNTIME_PKGREL-x86_64.pkg.tar.zst",
+  "./dist-pkg/msys2-runtime-devel-$MSYS_RUNTIME_PKGVER-$MSYS_RUNTIME_PKGREL-x86_64.pkg.tar.zst",
+  "./dist-pkg/libiconv-devel-$LIBICONV_PKGVER-$LIBICONV_PKGREL-x86_64.pkg.tar.zst",
+  "./dist-pkg/libiconv-$LIBICONV_PKGVER-$LIBICONV_PKGREL-x86_64.pkg.tar.zst",
   "./dist-pkg/libltdl-$LIBTOOL_PKGVER-$LIBTOOL_PKGREL-x86_64.pkg.tar.zst",
   "./dist-pkg/libtool-$LIBTOOL_PKGVER-$LIBTOOL_PKGREL-x86_64.pkg.tar.zst",
-  "./dist-pkg/tcl-8.6.12-3-x86_64.pkg.tar.zst",
+  "./dist-pkg/cmake-$CMAKE_PKGVER-$CMAKE_PKGREL-x86_64.pkg.tar.zst",
+  "./dist-pkg/meson-$MESON_PKGVER-$MESON_PKGREL-any.pkg.tar.zst",
+  "./dist-pkg/scons-$SCONS_PKGVER-$SCONS_PKGREL-any.pkg.tar.zst",
+  "./dist-pkg/binutils-$BINUTILS_PKGVER-$BINUTILS_PKGREL-x86_64.pkg.tar.zst",
+  "./dist-pkg/gcc-libs-$GCC_PKGVER-$GCC_PKGREL-x86_64.pkg.tar.zst",
+  "./dist-pkg/gcc-$GCC_PKGVER-$GCC_PKGREL-x86_64.pkg.tar.zst",
+  "./dist-pkg/tcl-$TCL_PKGVER-$TCL_PKGREL-x86_64.pkg.tar.zst",
 ].join(" ");
 
 const checkBootstrap = "source scripts/sh/check-bootstrap.sh";
@@ -108,17 +115,31 @@ async function extractMsys64(step: RunContext, stage: Msys64Stage) {
   await step.run(cmdExe, ["/c", "extract.bat"], batchOpts);
 }
 
-async function installMsys2OriginalRuntime(step: RunContext, stage: Msys64Stage) {
-  const packages = [
-    "./dist-pkg/msys2-runtime-$MSYS_RUNTIME_PKGVER-$MSYS_RUNTIME_PKGREL-x86_64.pkg.tar.zst",
-    "./dist-pkg/msys2-runtime-devel-$MSYS_RUNTIME_PKGVER-$MSYS_RUNTIME_PKGREL-x86_64.pkg.tar.zst",
-  ].join(" ");
-  const runOpts: RunProcessOptions = { env: stage.env };
-  await step.run(
-    stage.bash,
-    ["--login", "-c", `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${packages}`],
-    runOpts,
+async function downloadRuntimePackagesInit(step: RunContext, stage: Msys64Stage) {
+  const basenames = runtimePackagesInit.split(/\s+/).map((path) =>
+    path.replace(/^\.\/dist-pkg\//, ""),
   );
+  const downloadSpecs = basenames
+    .map((name) => name.replace(/-(x86_64|any|i686)\.pkg\.tar\.zst$/, ""))
+    .join(" ");
+  const cacheCopyFiles = basenames.join(",");
+  const command = [
+    "set -e",
+    checkBootstrap,
+    "mkdir -p dist-pkg",
+    bash_clear_pacman_db_lock,
+    "pacman -Sy --noconfirm",
+    `pacman -Sw --noconfirm ${downloadSpecs}`,
+    `cp -af /var/cache/pacman/pkg/{${cacheCopyFiles}} dist-pkg/`,
+  ].join("; ");
+  await step.run(stage.bash, ["--login", "-c", command], {
+    cwd: repoPath("."),
+    env: stage.env,
+  });
+}
+
+async function installMsys2OriginalRuntime(step: RunContext, stage: Msys64Stage) {
+  const runOpts: RunProcessOptions = { env: stage.env };
   await step.run(
     stage.bash,
     ["--login", "-c", `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${runtimePackagesInit}`],
@@ -128,18 +149,13 @@ async function installMsys2OriginalRuntime(step: RunContext, stage: Msys64Stage)
 
 async function installMsys2HookRuntime(step: RunContext, stage: Msys64Stage) {
   const packages = [
-    "./dist/stage1_rt_hook/msys2-runtime-$MSYS_RUNTIME_PKGVER-5-x86_64.pkg.tar.zst",
-    "./dist/stage1_rt_hook/msys2-runtime-devel-$MSYS_RUNTIME_PKGVER-5-x86_64.pkg.tar.zst",
+    "./dist/stage1_rt_hook/msys2-runtime-$MSYS_RUNTIME_PKGVER-$MSYS_RUNTIME_HOOK_PKGREL-x86_64.pkg.tar.zst",
+    "./dist/stage1_rt_hook/msys2-runtime-devel-$MSYS_RUNTIME_PKGVER-$MSYS_RUNTIME_HOOK_PKGREL-x86_64.pkg.tar.zst",
   ].join(" ");
   const runOpts: RunProcessOptions = { env: stage.env };
   await step.run(
     stage.bash,
     ["--login", "-c", `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${packages}`],
-    runOpts,
-  );
-  await step.run(
-    stage.bash,
-    ["--login", "-c", `${checkBootstrap}; pacman -U --noconfirm --overwrite \\* ${runtimePackagesInit}`],
     runOpts,
   );
 }
@@ -204,16 +220,12 @@ const pipeline: PipelineStep[] = [
     },
   },
   {
-    id: "stage1-rt-origin-build",
+    id: "stage1-rt-origin-download",
     group: 4,
-    label: "Build stage1_rt_origin packages (stage1-rt-origin.txt)",
+    label: "Download runtime init packages into dist-pkg",
     step: async (step) => {
-      const stage = initMsys64Stage("stage1", bootstrap_env_stage1_rt_origin);
-      await runPackageList(
-        step,
-        stage,
-        repoPath(...GENERATED_STAGE1_RT_ORIGIN_TXT.split("/")),
-      );
+      const stage = initMsys64Stage("stage1");
+      await downloadRuntimePackagesInit(step, stage);
     },
   },
   {
@@ -449,7 +461,7 @@ Examples:
   start.bat --from stage1-install-prep
   start.bat --from stage1-deps
   start.bat --from stage1-gen-lists --only
-  start.bat --from stage1-rt-origin-build
+  start.bat --from stage1-rt-origin-download
   start.bat --from stage2-install-prep
   start.bat --from stage2-gcc
   start.bat --from stage1-list
