@@ -11,7 +11,7 @@
     {
       "makedepends": "python-setuptools python-build python-installer python-setuptools",
       "pkgrel": "1",
-      "pkgver": "14.0.0",
+      "pkgver": "14.1.0",
       "dir": "ansible",
       "pkgname": "ansible",
       "pkgbase": ""
@@ -19,7 +19,7 @@
     {
       "makedepends": "tar python-build python-installer python-setuptools",
       "pkgrel": "1",
-      "pkgver": "2.21.0",
+      "pkgver": "2.21.1",
       "dir": "ansible-core",
       "pkgname": "ansible-core",
       "pkgbase": ""
@@ -282,7 +282,7 @@
     },
     {
       "makedepends": "libiconv-devel gettext-devel zlib-devel libzstd-devel autotools gcc",
-      "pkgrel": "6",
+      "pkgrel": "1",
       "pkgver": "2.46.1",
       "dir": "binutils",
       "pkgname": "binutils",
@@ -426,8 +426,8 @@
     },
     {
       "makedepends": "gcc emacs autotools jsoncpp-devel libarchive-devel libbz2-devel libcurl-devel libexpat-devel liblzma-devel librhash-devel libutil-linux-devel libuv-devel libzstd-devel ncurses-devel zlib-devel",
-      "pkgrel": "6",
-      "pkgver": "4.3.3",
+      "pkgrel": "1",
+      "pkgver": "4.3.4",
       "dir": "cmake",
       "pkgname": "cmake cmake-emacs cmake-vim",
       "pkgbase": ""
@@ -435,7 +435,7 @@
     {
       "makedepends": "gcc make",
       "pkgrel": "1",
-      "pkgver": "4.3.3",
+      "pkgver": "4.3.4",
       "dir": "cmake-bootstrap",
       "pkgname": "cmake-bootstrap",
       "pkgbase": ""
@@ -898,7 +898,7 @@
     },
     {
       "makedepends": "gcc binutils autotools isl-devel gmp-devel mpc-devel mpfr-devel zlib-devel libzstd-devel windows-default-manifest gperf",
-      "pkgrel": "6",
+      "pkgrel": "1",
       "pkgver": "15.3.0",
       "dir": "gcc",
       "pkgname": "gcc gcc-libs",
@@ -1083,7 +1083,7 @@
     {
       "makedepends": "",
       "pkgrel": "1",
-      "pkgver": "9.5.1",
+      "pkgver": "9.6.0",
       "dir": "gradle",
       "pkgname": "gradle gradle-doc",
       "pkgbase": ""
@@ -1450,7 +1450,7 @@
     },
     {
       "makedepends": "autotools gcc gettext-devel",
-      "pkgrel": "6",
+      "pkgrel": "1",
       "pkgver": "1.19",
       "dir": "libiconv",
       "pkgname": "libiconv iconv libiconv-devel",
@@ -1570,7 +1570,7 @@
     },
     {
       "makedepends": "autoconf-wrapper automake-wrapper gcc help2man m4",
-      "pkgrel": "6",
+      "pkgrel": "5",
       "pkgver": "2.5.4",
       "dir": "libtool",
       "pkgname": "libtool libltdl",
@@ -1794,7 +1794,7 @@
     },
     {
       "makedepends": "python-setuptools python-build python-installer",
-      "pkgrel": "6",
+      "pkgrel": "1",
       "pkgver": "1.11.0",
       "dir": "meson",
       "pkgname": "meson",
@@ -2091,7 +2091,7 @@
     {
       "makedepends": "docbook-xml docbook-xsl elinks libgdbm-devel libgnutls-devel libgpgme-devel libidn2-devel libsasl-devel libsqlite-devel ncurses-devel autotools gcc zlib-devel",
       "pkgrel": "1",
-      "pkgver": "2.3.3",
+      "pkgver": "2.4.0",
       "dir": "mutt",
       "pkgname": "mutt",
       "pkgbase": ""
@@ -3643,7 +3643,7 @@
     {
       "makedepends": "python-setuptools python-build python-installer",
       "pkgrel": "1",
-      "pkgver": "2026.5.20",
+      "pkgver": "2026.6.17",
       "dir": "python-certifi",
       "pkgname": "python-certifi",
       "pkgbase": ""
@@ -4290,7 +4290,7 @@
     },
     {
       "makedepends": "python-build python-installer python-setuptools",
-      "pkgrel": "6",
+      "pkgrel": "1",
       "pkgver": "4.10.1",
       "dir": "scons",
       "pkgname": "scons",
@@ -4618,8 +4618,8 @@
     },
     {
       "makedepends": "gawk perl-devel python-devel ruby ncurses-devel autotools gcc libiconv-devel gettext-devel libxcrypt-devel",
-      "pkgrel": "1",
-      "pkgver": "9.2.0663",
+      "pkgrel": "2",
+      "pkgver": "9.2.0677",
       "dir": "vim",
       "pkgname": "vim",
       "pkgbase": ""
@@ -4823,7 +4823,7 @@
     ],
     "ansible": [
       "python",
-      "ansible-core>=2.21.0"
+      "ansible-core>=2.21.1"
     ],
     "ansible-core": [
       "python",
